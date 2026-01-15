@@ -1,0 +1,688 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #1a1a2e;
+    color: #ffffff;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.schedule-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.table-wrapper {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+}
+
+table {
+    min-width: 1000px;
+    width: 1000px;
+    height: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #16213e;
+    table-layout: fixed;
+}
+
+th,
+td {
+    padding: 4px 8px;
+    text-align: center;
+    border: 1px solid #2a2a4a;
+    font-size: 13px;
+    overflow: hidden;
+    white-space: normal;
+    word-wrap: break-word;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #0f3460;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Frozen columns styling */
+th:nth-child(1),
+td:nth-child(1) {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    min-width: 70px;
+    width: 70px;
+    background-color: #1a1a3e;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+    position: sticky;
+    left: 70px;
+    z-index: 2;
+    min-width: 100px;
+    width: 100px;
+    background-color: #2a2a5e;
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Header row frozen columns need higher z-index */
+thead th:nth-child(1),
+thead th:nth-child(2) {
+    z-index: 11;
+}
+
+thead th:nth-child(2) {
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Day columns */
+th:nth-child(n+3),
+td:nth-child(n+3) {
+    min-width: 110px;
+}
+
+.time-col {
+    background-color: #1a1a3e;
+    font-weight: 500;
+    color: #7ec8e3;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.rituals-col {
+    background-color: #2a2a5e;
+    color: #ffd700;
+    font-weight: 500;
+}
+
+.day-header {
+    background: linear-gradient(135deg, #e94560, #c73e54);
+    color: white;
+    font-size: 12px;
+    padding: 10px 8px;
+}
+
+/* Today highlight */
+.today-header {
+    background: linear-gradient(135deg, #0a2a4c, #1a3a5c) !important;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.4), inset 0 0 15px rgba(0, 217, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 217, 255, 0.4);
+}
+
+.today-header .date-display {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #00d9ff;
+    margin-top: 2px;
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.6);
+}
+
+.today-header .month-progress {
+    display: block;
+    font-size: 9px;
+    font-weight: 500;
+    color: #7ec8e3;
+    margin-top: 1px;
+}
+
+/* Day progress bar in header - matches time progress style */
+.day-progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.5), rgba(0, 217, 255, 0.25));
+    z-index: 0;
+    pointer-events: none;
+    transition: width 1s linear;
+    border-radius: 0 4px 4px 0;
+    overflow: hidden;
+}
+
+.day-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: progressShimmer 4s ease-in-out infinite;
+}
+
+.today-header>*:not(.day-progress-fill) {
+    position: relative;
+    z-index: 1;
+}
+
+.today {
+    background-color: rgba(0, 217, 255, 0.15) !important;
+}
+
+/* Day progress bar for today's cells */
+.day-cell-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.35), rgba(0, 217, 255, 0.15));
+    z-index: 0;
+    pointer-events: none;
+    transition: width 1s linear;
+    border-radius: 0 4px 4px 0;
+    overflow: hidden;
+}
+
+.day-cell-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: progressShimmer 4s ease-in-out infinite;
+}
+
+.today>*:not(.day-cell-progress):not(.cell-flap) {
+    position: relative;
+    z-index: 1;
+}
+
+/* Header content relative positioning */
+.header-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Current time row highlight */
+.current-time-row td {
+    position: relative;
+    background-color: rgba(0, 217, 255, 0.25) !important;
+    box-shadow: inset 0 0 15px rgba(0, 217, 255, 0.3);
+}
+
+.current-time-row td.time-col {
+    background: linear-gradient(135deg, #0a2a4c, #1a3a5c) !important;
+    color: #fff !important;
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 5 !important;
+}
+
+.current-time-row td.rituals-col {
+    background: linear-gradient(135deg, #1a3a5c, #1f4a6c) !important;
+    box-shadow: inset 0 0 20px rgba(0, 217, 255, 0.4), 4px 0 8px rgba(0, 0, 0, 0.3) !important;
+    position: sticky !important;
+    left: 70px !important;
+    z-index: 5 !important;
+    border-right: 2px solid rgba(0, 217, 255, 0.5) !important;
+}
+
+.current-time-row td::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00d9ff, #ff6b6b, #00d9ff);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Live time display */
+.live-time {
+    display: block;
+    font-size: 10px;
+    color: #00d9ff;
+    font-weight: 600;
+    margin-top: 2px;
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.6);
+    animation: liveTimePulse 3s ease-in-out infinite;
+}
+
+@keyframes liveTimePulse {
+
+    0%,
+    100% {
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Progress fill for current time cell */
+.time-progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.5), rgba(0, 217, 255, 0.25));
+    z-index: 0;
+    pointer-events: none;
+    transition: width 1s linear;
+    border-radius: 0 4px 4px 0;
+    overflow: hidden;
+}
+
+.time-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: progressShimmer 4s ease-in-out infinite;
+}
+
+@keyframes progressShimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.current-time-row td.time-col {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 5 !important;
+    overflow: hidden;
+}
+
+.current-time-row td.time-col>*:not(.time-progress-fill) {
+    position: relative;
+    z-index: 1;
+}
+
+/* Time text in current row - ensure it's visible above progress fill */
+.time-text {
+    position: relative;
+    z-index: 1;
+    display: block;
+}
+
+.monday {
+    background-color: rgba(233, 69, 96, 0.08);
+}
+
+.tuesday {
+    background-color: rgba(0, 173, 181, 0.08);
+}
+
+.wednesday {
+    background-color: rgba(233, 69, 96, 0.08);
+}
+
+.thursday {
+    background-color: rgba(0, 173, 181, 0.08);
+}
+
+.friday {
+    background-color: rgba(233, 69, 96, 0.08);
+}
+
+.saturday {
+    background-color: rgba(255, 215, 0, 0.08);
+}
+
+.sunday {
+    background-color: rgba(255, 215, 0, 0.08);
+}
+
+.activity-paint {
+    color: #ffe66d;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(255, 230, 109, 0.25), rgba(255, 230, 109, 0.15)) !important;
+    box-shadow: inset 0 0 20px rgba(255, 230, 109, 0.3), 0 0 10px rgba(255, 230, 109, 0.2);
+    border: 1px solid rgba(255, 230, 109, 0.4) !important;
+    text-shadow: 0 0 8px rgba(255, 230, 109, 0.5);
+    animation: paintGlow 5s ease-in-out infinite;
+}
+
+@keyframes paintGlow {
+
+    0%,
+    100% {
+        box-shadow: inset 0 0 20px rgba(255, 230, 109, 0.3), 0 0 10px rgba(255, 230, 109, 0.2);
+    }
+
+    50% {
+        box-shadow: inset 0 0 25px rgba(255, 230, 109, 0.4), 0 0 15px rgba(255, 230, 109, 0.35);
+    }
+}
+
+@keyframes gymGlow {
+
+    0%,
+    100% {
+        box-shadow: inset 0 0 20px rgba(255, 71, 87, 0.3), 0 0 10px rgba(255, 71, 87, 0.2);
+    }
+
+    50% {
+        box-shadow: inset 0 0 25px rgba(255, 71, 87, 0.4), 0 0 15px rgba(255, 71, 87, 0.35);
+    }
+}
+
+.activity-work {
+    color: #4ecdc4;
+}
+
+.activity-gym {
+    color: #ff4757;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.25), rgba(255, 107, 107, 0.15)) !important;
+    box-shadow: inset 0 0 20px rgba(255, 71, 87, 0.3), 0 0 10px rgba(255, 71, 87, 0.2);
+    border: 1px solid rgba(255, 71, 87, 0.4) !important;
+    text-shadow: 0 0 8px rgba(255, 71, 87, 0.5);
+    animation: gymGlow 5s ease-in-out infinite;
+}
+
+.activity-meal {
+    color: #95e1d3;
+}
+
+td {
+    padding: 4px 8px;
+    text-align: center;
+    border: 1px solid #2a2a4a;
+    font-size: 13px;
+    overflow: hidden;
+    white-space: normal;
+    word-wrap: break-word;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+    position: relative;
+    perspective: 1000px;
+}
+
+.cell-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #050510;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 20;
+    transform-origin: top;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #1a1a2e;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.cell-flap.open {
+    transform: rotateX(105deg);
+}
+
+/* Header Time Display next to 0% */
+.header-info-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.header-time-display {
+    font-size: 10px;
+    color: #00d9ff;
+    font-weight: 700;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.5);
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.cell-flap .flap-time {
+    display: none;
+    /* Hidden by default for 'blank' look */
+}
+
+.zzz-flap::after {
+    content: 'zZz';
+    position: absolute;
+    font-size: 8px;
+    color: rgba(162, 155, 254, 0.4);
+    animation: flapZzzz 3s infinite ease-in-out;
+    pointer-events: none;
+    top: 20%;
+    right: 10%;
+}
+
+@keyframes flapZzzz {
+    0% {
+        transform: translate(0, 0) scale(0.7);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: translate(5px, -8px) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(10px, -15px) scale(1.2);
+        opacity: 0;
+    }
+}
+
+@keyframes zzzz {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(-5deg);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: translateY(-5px) rotate(5deg);
+        opacity: 1;
+    }
+}
+
+.activity-sleep::after {
+    /* Keep existing zZz for background content if visible */
+    display: none;
+}
+
+.activity-meditate {
+    color: #fd79a8;
+}
+
+.activity-water {
+    color: #74b9ff;
+    font-weight: bold;
+}
+
+.activity-commute {
+    color: #ffeaa7;
+}
+
+.activity-hike {
+    color: #55efc4;
+}
+
+.activity-clean {
+    color: #81ecec;
+}
+
+/* Icons */
+.icon {
+    margin-right: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.zzz-header {
+    display: inline-block;
+    font-size: 0.8em;
+    opacity: 0.7;
+    margin-left: 5px;
+    animation: zzzz 4s infinite ease-in-out;
+    vertical-align: super;
+}
+
+/* Hover effects */
+tr:hover td:not(.time-col):not(.rituals-col) {
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: scale(1.01);
+}
+
+td:hover {
+    box-shadow: inset 0 0 0 2px rgba(0, 217, 255, 0.3);
+}
+
+/* Scrollbar styling */
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #1a1a3e;
+    border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #e94560, #0f3460);
+    border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, #ff6b6b, #1a5276);
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 8px;
+        padding-top: env(safe-area-inset-top, 8px);
+        padding-bottom: env(safe-area-inset-bottom, 8px);
+        padding-left: env(safe-area-inset-left, 8px);
+        padding-right: env(safe-area-inset-right, 8px);
+        touch-action: pan-x pan-y;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .schedule-container {
+        border-radius: 8px;
+    }
+
+    th,
+    td {
+        padding: 6px 4px;
+        font-size: 11px;
+    }
+
+    .time-col {
+        font-size: 10px;
+    }
+
+    .live-time {
+        font-size: 8px;
+    }
+
+    .today-header .date-display {
+        font-size: 8px;
+    }
+
+    .today-header .month-progress {
+        font-size: 7px;
+    }
+
+    .icon {
+        font-size: 9px;
+        margin-right: 3px;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+        min-width: 55px;
+        width: 55px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+        left: 55px;
+        min-width: 70px;
+        width: 70px;
+    }
+
+    .current-time-row td.time-col {
+        left: 0 !important;
+    }
+
+    .current-time-row td.rituals-col {
+        left: 55px !important;
+    }
+
+    /* Disable hover effects on touch devices */
+    tr:hover td:not(.time-col):not(.rituals-col) {
+        background-color: inherit;
+        transform: none;
+    }
+
+    td:hover {
+        box-shadow: none;
+    }
+}
+
+/* Prevent text selection and zoom gestures */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
