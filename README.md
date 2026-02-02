@@ -1,10 +1,12 @@
-# Life Scheduler 📅
+# DAY - Life Scheduler 📅
 
-A beautiful, mobile-friendly weekly schedule web application with real-time progress tracking and animated visual indicators.
+A beautiful, mobile-friendly weekly schedule web application with real-time progress tracking, animated visual indicators, sleep/wake flap system, and **interactive editing capabilities**. Manage your schedule directly in the browser with persistent storage and data export options.
 
 ## 🌐 Live Demo
 
 Open `index.html` in any browser or add to your phone's homescreen for a native app-like experience.
+
+**Current Status:** ✅ Fully functional with interactive editing, localStorage persistence, and export/import features.
 
 ## ✨ Features
 
@@ -13,6 +15,17 @@ Open `index.html` in any browser or add to your phone's homescreen for a native 
 - **Frozen Columns** - Time and Rituals columns stay fixed while scrolling horizontally
 - **Current Time Highlighting** - Automatically highlights the current time slot row
 - **Current Day Highlighting** - Today's column is visually distinct with date and month progress
+- **Interactive Editing** - ✏️ Click the edit button to modify any cell in your schedule
+- **Persistent Storage** - All changes automatically saved to browser localStorage
+- **Data Management** - Export to CSV/JSON, import backups, and reset functionality
+
+### Interactive Editing System 🎨
+- **Edit Mode Toggle** - Click the ✏️ button to enter edit mode
+- **Activity Picker** - Click any cell to choose from predefined activities
+- **Custom Activities** - Add your own custom activities with custom names
+- **Clear Cells** - Remove activities from any time slot
+- **Auto-Save** - Changes are automatically saved to localStorage
+- **Settings Panel** - ⚙️ Access advanced settings and data management
 
 ### Visual Indicators
 - **Live Time Display** - Shows real-time clock (updates every second) in the current time cell
@@ -22,9 +35,22 @@ Open `index.html` in any browser or add to your phone's homescreen for a native 
   - 🟡 **Paint** - Yellow glow (priority creative time)
   - 🔴 **GYM** - Red glow (fitness activities)
 
+### Sleep/Wake Flap System
+- **Cell Flaps** - All cells are covered by dark "flaps" during sleep hours (11 PM - 7:30 AM)
+- **Tap & Hold to Peek** - During sleep hours, tap and hold anywhere to reveal the schedule
+- **Auto Wake/Sleep** - Flaps automatically open at wake time and close at sleep time
+- **zZz Animation** - Subtle sleep animation in headers during sleep hours
+
+### Settings Panel ⚙️
+- **Add Time Slots** - Dynamically add new time slots to your schedule
+- **Export to CSV** - Download your schedule as a spreadsheet-compatible CSV file
+- **Backup/Import** - Save and restore your schedule as JSON files
+- **Reset All** - Clear all data and return to default schedule
+- **Wake/Sleep Configuration** - Customize your wake and sleep times (coming soon)
+
 ### Mobile Support
 - **PWA Ready** - Add to homescreen on iOS/Android for app-like experience
-- **Custom Icon** - SVG icon displays when bookmarked to homescreen
+- **Custom Icon** - PNG icon displays when bookmarked to homescreen
 - **Zoom Disabled** - Prevents accidental zoom gestures
 - **Safe Area Support** - Respects notches on modern phones
 - **Touch Optimized** - Disabled hover effects on touch devices
@@ -63,19 +89,22 @@ Open `index.html` in any browser or add to your phone's homescreen for a native 
 
 ```
 lifeScheduler/
-├── index.html          # Main application (single-file, self-contained)
+├── index.html           # Main HTML structure and schedule table
+├── style.css            # All styles, animations, and responsive design
+├── script.js            # Dynamic highlighting, flaps, and live updates
+├── apple-touch-icon.png # PWA icon for homescreen
 ├── Weekly Schedule.xlsx # Source schedule data (reference)
-├── Mockup1.png         # Design mockup (reference)
-└── README.md           # This file
+├── Mockup1.png          # Design mockup (reference)
+└── README.md            # This file
 ```
 
 ## 🔧 Technical Details
 
-### Single-File Architecture
-The entire application is contained in `index.html`:
-- **CSS** - Inline styles in `<style>` tag
-- **JavaScript** - Inline scripts in `<script>` tag
-- **Icons** - Inline SVG as data URIs (no external files needed)
+### Multi-File Architecture
+The application is organized into three main files:
+- **HTML** (`index.html`) - Schedule table structure and content
+- **CSS** (`style.css`) - All styling, animations, and responsive design
+- **JavaScript** (`script.js`) - Dynamic behavior, highlighting, and flap system
 
 ### Key CSS Selectors
 ```css
@@ -87,18 +116,54 @@ The entire application is contained in `index.html`:
 .time-progress-fill   /* Progress bar in time cell */
 .day-progress-fill    /* Progress bar in day header */
 .live-time            /* Live clock display */
+.cell-flap            /* Sleep mode flap overlay */
+.cell-flap.open       /* Opened flap state */
 ```
 
 ### JavaScript Functions
 ```javascript
-highlightToday()      // Highlights current day column, adds date/month progress
-highlightCurrentTime() // Highlights current time row, adds live clock & progress
-formatTime(date)      // Formats Date object to "H:MM AM/PM" string
+highlightToday()        // Highlights current day column, adds date/month progress
+highlightCurrentTime()  // Highlights current time row, adds live clock & progress
+formatTime(date)        // Formats Date object to "H:MM AM/PM" string
+initializeFlaps()       // Creates flap overlays for all cells
+updateFlapsVisibility() // Controls flap open/close based on current time
+updateHeaderClocks()    // Updates time display in headers (optimized for CPU)
+toggleEditMode()        // Toggles interactive editing mode
+saveSchedule()          // Saves schedule to localStorage
+loadSchedule()          // Loads schedule from localStorage
+exportSchedule()        // Exports schedule as JSON backup
+exportCSV()             // Exports schedule as CSV file
+importSchedule()        // Imports schedule from JSON backup
+addNewTimeSlot()        // Adds a new time slot to the schedule
+```
+
+### Activity Definitions
+The app includes 20+ predefined activities with icons and color classes:
+```javascript
+ACTIVITIES = {
+    paint, gym, work, meal, meditate, water, sleep, commute, 
+    hike, clean, wakeup, home, destim, plan, finances, 
+    foodprep, office, workout, dinner, custom
+}
+```
+
+### localStorage Persistence
+- **Auto-Save** - Schedule changes are automatically saved to browser localStorage
+- **Data Structure** - Stores cell content, icons, and activity classes
+- **Timestamp** - Each save includes ISO timestamp for tracking
+- **Storage Key** - `'lifeScheduler'` (can be cleared via Settings → Reset)
+- **Data Cleaning** - Automatically removes UI artifacts (progress bars, flaps, etc.) before saving
+
+### Configuration Constants
+```javascript
+const WAKEUP_HOUR = 7.5;  // 7:30 AM - flaps open
+const SLEEP_HOUR = 23;    // 11:00 PM - flaps close
 ```
 
 ### Update Intervals
 - Live time & progress: Every **1 second**
 - Day progress: Every **60 seconds**
+- Flap visibility: Every **60 seconds**
 
 ## 📱 Adding to Homescreen
 
@@ -114,29 +179,126 @@ formatTime(date)      // Formats Date object to "H:MM AM/PM" string
 3. Tap "Add to Home screen"
 4. Confirm
 
-## 🛠️ Customization
+## 🎯 How to Use
 
-### Adding New Activities
-1. Add a new CSS class for the activity color:
+### Viewing Your Schedule
+- **Current Time** - The current time slot is highlighted with a cyan glow and shows live time
+- **Current Day** - Today's column has a cyan background with date and day progress percentage
+- **Progress Bars** - Visual indicators show how much of the current time slot and day has elapsed
+- **Sleep Mode** - During sleep hours (11 PM - 7:30 AM), cells are covered with dark flaps
+- **Peek Mode** - Tap and hold anywhere during sleep hours to temporarily reveal the schedule
+
+### Editing Your Schedule
+1. **Enter Edit Mode** - Click the ✏️ (pencil) button in the bottom-right corner
+2. **Select a Cell** - Click any cell in the schedule table (except Time column)
+3. **Choose Activity** - A popup appears with predefined activities
+4. **Apply Changes** - Click an activity to apply it, or "Clear" to empty the cell
+5. **Custom Activity** - Click "Custom..." to enter your own activity name
+6. **Exit Edit Mode** - Click the ✏️ button again to exit and lock the schedule
+
+### Managing Your Data
+1. **Access Settings** - Click the ⚙️ (gear) button in the bottom-right corner
+2. **Add Time Slots** - Click "+ Add Time Slot" and enter a time (e.g., "3:30 PM")
+3. **Export to CSV** - Download your schedule as a spreadsheet file
+4. **Backup** - Save your schedule as a JSON file for safekeeping
+5. **Import** - Restore a previously saved JSON backup
+6. **Reset** - Clear all data and return to the default schedule
+
+## 🛠️ Customization Guide
+
+### Editing Schedule Cells
+
+**Location:** `index.html` → `<tbody>` section
+
+Each cell follows this format:
+```html
+<td class="[day] [activity-class]"><span class="icon">[icon]</span>[Activity Name]</td>
+```
+
+**Example:** Change Monday 9:00 AM from Paint to Reading:
+```html
+<!-- Before -->
+<td class="monday activity-paint"><span class="icon">▣</span>Paint</td>
+
+<!-- After -->
+<td class="monday activity-work"><span class="icon">📖</span>Reading</td>
+```
+
+### Adding/Removing Time Slots
+
+**Location:** `index.html` → `<tbody>` section
+
+Each row represents a time slot with `data-time` attribute in 24-hour decimal format:
+- `7.5` = 7:30 AM
+- `12` = 12:00 PM  
+- `13.5` = 1:30 PM
+- `22` = 10:00 PM
+
+**Add a new time slot:**
+```html
+<tr data-time="15.5">
+    <td class="time-col">3:30 PM</td>
+    <td class="rituals-col"></td>
+    <td class="monday"><!-- activity --></td>
+    <td class="tuesday"><!-- activity --></td>
+    <!-- ... all 7 days ... -->
+</tr>
+```
+
+**Remove a time slot:** Delete the entire `<tr>...</tr>` block.
+
+### Editing Core Tasks (Rituals Column)
+
+**Location:** `index.html` → `<td class="rituals-col">` cells
+
+Rituals appear in the second column and repeat daily:
+```html
+<td class="rituals-col activity-water"><span class="icon">◈</span>Water</td>
+<td class="rituals-col activity-meditate"><span class="icon">◉</span>Meditate</td>
+<td class="rituals-col activity-gym"><span class="icon">▲</span>GYM</td>
+```
+
+### Adding New Activity Types
+
+**Step 1:** Add CSS class in `style.css`:
 ```css
-.activity-newactivity {
-    color: #yourcolor;
+.activity-reading {
+    color: #e84393;
+    /* Optional: Add glow for priority activities */
+    font-weight: 700;
+    box-shadow: inset 0 0 15px rgba(232, 67, 147, 0.3);
 }
 ```
 
-2. Add the activity to the table with the class:
+**Step 2:** Use the class in `index.html`:
 ```html
-<td class="monday activity-newactivity"><span class="icon">●</span>New Activity</td>
+<td class="monday activity-reading"><span class="icon">📚</span>Reading</td>
 ```
 
-### Modifying Time Slots
-Each row has a `data-time` attribute in 24-hour decimal format:
-- `7.5` = 7:30 AM
-- `12` = 12:00 PM
-- `13.5` = 1:30 PM
+### Changing Wake/Sleep Hours
+
+**Location:** `script.js` → Top of file
+
+```javascript
+const WAKEUP_HOUR = 7.5;  // Change to desired wake time (e.g., 6 for 6:00 AM)
+const SLEEP_HOUR = 23;    // Change to desired sleep time (e.g., 22 for 10:00 PM)
+```
+
+### Activity Icons Reference
+| Icon | Meaning | Example Usage |
+|------|---------|---------------|
+| `◈` | Hydration | Water |
+| `◉` | Mindfulness | Meditate |
+| `▲` | Fitness | GYM |
+| `▣` | Creative | Paint |
+| `■` | Productivity | Work |
+| `◇` | Nutrition | Meal |
+| `◆` | Outdoor | Hike |
+| `○` | Maintenance | Clean |
+| `●` | General | Wake up, misc |
 
 ### Changing Animation Speed
-All animations use CSS `animation` property. Increase duration for slower:
+All animations use CSS `animation` property in `style.css`:
 ```css
 animation: animationName 5s ease-in-out infinite; /* Slower */
 animation: animationName 2s ease-in-out infinite; /* Faster */
@@ -145,24 +307,86 @@ animation: animationName 2s ease-in-out infinite; /* Faster */
 ## 🤖 AI Agent Notes
 
 ### Understanding the Codebase
-- This is a **single-file HTML application** with inline CSS and JavaScript
+- This is a **multi-file** web application (HTML + CSS + JS)
 - No build process, frameworks, or external dependencies
-- All icons use **inline SVG data URIs** (no image files needed)
 - Table data is **static HTML** (not dynamically generated from data source)
+- PWA icon is `apple-touch-icon.png` (external file)
+- **localStorage** is used for persistence (key: `'lifeScheduler'`)
+- Interactive editing system with activity picker UI
+- Comprehensive data export/import system (CSV + JSON)
+
+### Architecture Overview
+```
+┌─────────────────────────────────────────┐
+│         index.html (Structure)          │
+│  - Schedule table with data-time attrs  │
+│  - Day headers with data-day attrs      │
+│  - Static HTML cells (modified by JS)   │
+└─────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────┐
+│         style.css (Presentation)        │
+│  - Activity color classes               │
+│  - Flap animations (rotateX)            │
+│  - Progress bar styles                  │
+│  - Edit mode UI styles                  │
+└─────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────┐
+│         script.js (Behavior)            │
+│  - Time/day highlighting                │
+│  - Flap system logic                    │
+│  - Edit mode & activity picker          │
+│  - localStorage persistence             │
+│  - Export/import functionality          │
+└─────────────────────────────────────────┘
+```
 
 ### Common Modification Requests
-1. **Change schedule data** → Edit `<tbody>` rows in HTML
-2. **Adjust colors** → Modify CSS variables/classes in `<style>` section
-3. **Add new activities** → Add new `.activity-*` CSS class
-4. **Modify animations** → Adjust `@keyframes` and `animation` properties
-5. **Change frozen columns** → Modify `position: sticky` and `left` values
+1. **Change schedule data** → Edit `<tbody>` rows in `index.html` OR use Edit Mode in UI
+2. **Adjust colors** → Modify `.activity-*` classes in `style.css`
+3. **Add new activities** → Add to `ACTIVITIES` object in `script.js` + CSS class
+4. **Modify animations** → Adjust `@keyframes` and `animation` properties in `style.css`
+5. **Change frozen columns** → Modify `position: sticky` and `left` values in `style.css`
+6. **Adjust wake/sleep hours** → Modify `WAKEUP_HOUR` and `SLEEP_HOUR` in `script.js`
+7. **Add new features** → Extend `script.js` and update UI in `createSettingsPanel()`
 
 ### Key Implementation Notes
 - Frozen columns use `position: sticky` with explicit `left` values and `z-index`
 - Progress bars use `position: absolute` with dynamic `width` set via JavaScript
 - Current time detection compares `data-time` attributes to current hour as decimal
 - Mobile responsiveness handled via `@media (max-width: 768px)`
+- Flap system uses CSS 3D transforms (`rotateX`) for flip animation
+- **Edit mode** adds `.editable` class to cells and attaches click handlers
+- **Activity picker** is positioned absolutely and shown/hidden via `.visible` class
+- **localStorage** saves complete schedule state including icons, text, and classes
+- **Data cleaning** removes UI elements (`.cell-flap`, `.time-progress-fill`, etc.) before saving
+- **Performance optimization** uses cached DOM queries and selective updates
+
+### Data Flow
+```
+User Edit → updateCell() → saveSchedule() → localStorage
+                                                ↓
+Page Load → loadSchedule() ← localStorage ← JSON.parse()
+                ↓
+         Apply to DOM
+```
+
+### Testing Checklist
+- [ ] Current time highlighting works correctly
+- [ ] Day progress percentage updates
+- [ ] Flaps open/close at wake/sleep times
+- [ ] Edit mode toggles properly
+- [ ] Activity picker appears and functions
+- [ ] Changes persist after page reload
+- [ ] CSV export generates valid file
+- [ ] JSON backup/import works
+- [ ] Mobile responsiveness (frozen columns, touch)
+- [ ] Performance (no excessive CPU usage)
 
 ---
 
 **Made with ❤️ for productivity and focus**
+
+**Version:** 2.0 (Interactive Edition)  
+**Last Updated:** February 2026
