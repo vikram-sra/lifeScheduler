@@ -1346,8 +1346,27 @@ window.addEventListener('resize', () => {
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW registered'))
+            .then(reg => {
+                console.log('SW registered');
+                // Check if we are already controlled
+                if (!navigator.serviceWorker.controller) {
+                    return;
+                }
+
+                // If a new worker is waiting, we can force update (though skipWaiting handle this usually)
+                if (reg.waiting) {
+                    // reg.waiting.postMessage({action: 'skipWaiting'}); // If we didn't have self.skipWaiting() in SW
+                }
+            })
             .catch(err => console.log('SW failed', err));
+
+        // Listen for controller change (meaning new stored version activated)
+        let refreshing;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            window.location.reload();
+            refreshing = true;
+        });
     });
 }
 
