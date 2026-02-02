@@ -613,6 +613,8 @@ td:hover {
         padding-bottom: env(safe-area-inset-bottom, 8px);
         padding-left: env(safe-area-inset-left, 8px);
         padding-right: env(safe-area-inset-right, 8px);
+        padding-bottom: 0;
+        /* Remove bottom bar gap */
         touch-action: pan-x pan-y;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -691,29 +693,55 @@ td:hover {
    INTERACTIVE EDITING SYSTEM STYLES
    ============================================ */
 
-/* Edit mode toggle button */
-.edit-toggle {
+/* ============================================
+   CONTROL BUTTONS (Grouped)
+   ============================================ */
+
+.floating-controls {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
+    display: flex;
+    gap: 12px;
     z-index: 1000;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-    transition: all 0.3s ease;
+    align-items: center;
+}
+
+.edit-toggle,
+.settings-toggle,
+.focus-toggle {
+    position: relative;
+    /* Static inside flex */
+    top: auto;
+    bottom: auto;
+    right: auto;
+    left: auto;
+    /* Reset fixed positioning */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    font-size: 0;
+    /* Hide text if any */
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
+    /* For SVGs */
+    padding: 12px;
+}
+
+/* Edit Button */
+.edit-toggle {
+    background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
 .edit-toggle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
 }
 
 .edit-toggle.active {
@@ -722,34 +750,44 @@ td:hover {
     animation: editPulse 2s ease-in-out infinite;
 }
 
-@keyframes editPulse {
-    0%, 100% { box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5); }
-    50% { box-shadow: 0 4px 30px rgba(0, 217, 255, 0.8); }
-}
-
-/* Settings toggle button */
+/* Settings Button */
 .settings-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 86px;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
     background: linear-gradient(135deg, #2d3436, #636e72);
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .settings-toggle:hover {
-    transform: scale(1.1) rotate(45deg);
+    transform: rotate(45deg);
     background: linear-gradient(135deg, #636e72, #b2bec3);
+}
+
+/* Focus Button */
+.focus-toggle {
+    background: linear-gradient(135deg, #2d3436, #636e72);
+    color: #a4b0be;
+}
+
+.focus-toggle:hover {
+    transform: scale(1.1);
+    color: white;
+    background: linear-gradient(135deg, #636e72, #b2bec3);
+}
+
+.focus-toggle.active {
+    background: linear-gradient(135deg, #00d9ff, #00b4d8);
+    color: white;
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.6);
+}
+
+@keyframes editPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 4px 30px rgba(0, 217, 255, 0.8);
+    }
 }
 
 /* Settings panel */
@@ -1045,4 +1083,262 @@ td:hover {
     .picker-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+}
+
+/* ============================================
+   NEW FEATURES STYLES
+   ============================================ */
+
+/* FOCUS MODE */
+/* Updated: Dim inactive DAYS (columns) instead of rows */
+body.focus-mode td,
+body.focus-mode th {
+    transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+/* Dim all cells that are NOT:
+   1. The Time Column
+   2. The Rituals Column
+   3. The Today Column (marked with .today)
+   4. The Today Header (marked with .today-header)
+*/
+body.focus-mode td:not(.time-col):not(.rituals-col):not(.today),
+body.focus-mode th:not(:nth-child(1)):not(:nth-child(2)):not(.today-header) {
+    opacity: 0.15;
+    filter: blur(1.5px);
+    pointer-events: none;
+}
+
+/* Ensure active day pops */
+body.focus-mode .today,
+body.focus-mode .today-header {
+    opacity: 1;
+    filter: none;
+    z-index: 5;
+    /* Slight elevation */
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.1);
+}
+
+/* Keep sticky columns visible but slightly less focused than active day if desired, 
+   or keep them fully opaque as they are reference. */
+body.focus-mode .time-col,
+body.focus-mode .rituals-col,
+body.focus-mode th:nth-child(1),
+body.focus-mode th:nth-child(2) {
+    opacity: 0.8;
+    filter: none;
+}
+
+/* Hide controls in Focus Mode */
+body.focus-mode .edit-toggle,
+body.focus-mode .settings-toggle {
+    opacity: 0;
+    transform: scale(0) rotate(45deg);
+    width: 0;
+    padding: 0;
+    margin: 0;
+    pointer-events: none;
+    overflow: hidden;
+    min-width: 0;
+}
+
+/* DRAG AND DROP */
+td.draggable {
+    cursor: grab;
+    user-select: none;
+}
+
+td.dragging {
+    opacity: 0.5;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+}
+
+td.drag-over {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 2px dashed #00d9ff;
+    transform: scale(1.05);
+}
+
+/* Ensure buttons stay in container on mobile */
+@media screen and (max-width: 768px) {
+    .floating-controls {
+        bottom: 15px;
+        right: 15px;
+        gap: 10px;
+    }
+
+    .edit-toggle,
+    .settings-toggle,
+    .focus-toggle {
+        position: relative !important;
+        /* Force static */
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: 44px;
+        /* Slightly smaller on mobile */
+        height: 44px;
+    }
+}
+
+/* ANALYTICS DASHBOARD */
+.analytics-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 30, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.analytics-overlay.visible {
+    display: flex;
+    opacity: 1;
+}
+
+.analytics-container {
+    width: 90%;
+    max-width: 800px;
+    height: 80%;
+    background: #16213e;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.analytics-header {
+    padding: 20px;
+    background: linear-gradient(90deg, #0f3460, #16213e);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.analytics-header h2 {
+    color: #00d9ff;
+    margin: 0;
+    font-size: 24px;
+}
+
+.analytics-content {
+    padding: 20px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    margin: 10px 0;
+}
+
+.stat-detail {
+    font-size: 12px;
+    color: #74b9ff;
+}
+
+.close-analytics {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* CUSTOM ACTIVITY PALETTE */
+.palette-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.palette-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    color: #a4b0be;
+}
+
+.settings-toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+/* TOGGLE SWITCH */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #4b4b4b;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: #00d9ff;
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
 }

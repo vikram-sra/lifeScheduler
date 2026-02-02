@@ -88,6 +88,9 @@ function highlightToday() {
                     '<span class="month-progress">' + dayProgress + '%</span>' +
                     '<span class="header-time-display"></span>' +
                     '</div>';
+
+                // Scroll into view on first creation
+                if (window.innerWidth < 1000) setTimeout(scrollToToday, 100);
             } else {
                 // Update text values without full innerHTML replacement
                 const monthProgressText = header.querySelector('.month-progress');
@@ -112,6 +115,12 @@ function highlightToday() {
             header.classList.remove('today-header');
         }
     });
+
+    // Auto-scroll to today if needed (mobile/small screens)
+    // We delay slightly to ensure layout is complete
+    if (window.innerWidth < 1000) {
+        setTimeout(scrollToToday, 500);
+    }
 
     // Cache today class to avoid re-querying all cells every time
     const dayClasses = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -154,27 +163,40 @@ function updateFlapsVisibility() {
 
 // Highlight current time row
 function highlightCurrentTime() {
+    // Check if we need to update at all (only on minute change)
+    // Note: The main loop now handles the minute-check, so we can just run the logic.
+
     const now = new Date();
+    // Optimization: Calculate currentHour once
     const currentHour = now.getHours() + now.getMinutes() / 60;
 
-    if (!window.rowElements) window.rowElements = document.querySelectorAll('tr[data-time]');
+    // Cache row elements
+    if (!window.rowElements) {
+        window.rowElements = Array.from(document.querySelectorAll('tr[data-time]'));
+    }
     const rows = window.rowElements;
+
     let closestRow = null;
     let closestDiff = Infinity;
     let nextRowTime = null;
 
-    // Find all row times sorted
-    const rowTimes = [];
-    rows.forEach(row => {
-        rowTimes.push(parseFloat(row.dataset.time));
-    });
-    rowTimes.sort((a, b) => a - b);
+    // Cache sorted row times
+    if (!window.rowTimesCache) {
+        window.rowTimesCache = rows.map(row => parseFloat(row.dataset.time)).sort((a, b) => a - b);
+    }
+    const rowTimes = window.rowTimesCache;
+
+    // Optimized search for closest row
+    // Since we have N rows, a linear scan is fine, but we can avoid some parsing
+    // We need the actual row element, so we still iterate rows or map times back to rows.
+    // Iterating the cached rows array is fast enough.
 
     rows.forEach(row => {
-        const rowTime = parseFloat(row.dataset.time);
+        const rowTime = parseFloat(row.dataset.time); // getting from dataset is fast enough access
         const diff = Math.abs(currentHour - rowTime);
 
-        if (diff < closestDiff && currentHour >= rowTime) {
+        // We want the row that is <= currentHour and closest to it
+        if (currentHour >= rowTime && diff < closestDiff) {
             closestDiff = diff;
             closestRow = row;
         }
@@ -216,16 +238,17 @@ function highlightCurrentTime() {
             const currentRowTime = parseFloat(closestRow.dataset.time);
             const slotDuration = nextRowTime - currentRowTime;
             const elapsed = currentHour - currentRowTime;
+            // Progress only updates every minute currently
             const progress = Math.min(Math.max((elapsed / slotDuration) * 100, 0), 100);
 
             let progressFill = timeCell.querySelector('.time-progress-fill');
             let liveTimeSpan = timeCell.querySelector('.live-time');
 
             if (!progressFill || !liveTimeSpan) {
+                timeCell.style.position = 'relative'; // Ensure relative
                 timeCell.innerHTML = `<div class="time-progress-fill"></div><span class="time-text">${originalTime}</span><span class="live-time"></span>`;
                 progressFill = timeCell.querySelector('.time-progress-fill');
                 liveTimeSpan = timeCell.querySelector('.live-time');
-                timeCell.style.position = 'relative';
             }
 
             progressFill.style.width = progress + '%';
@@ -322,10 +345,22 @@ function createEditToggle() {
     const toggle = document.createElement('button');
     toggle.id = 'editToggle';
     toggle.className = 'edit-toggle';
-    toggle.innerHTML = '✏️';
+    // Clean Pencil/Edit Icon SVG
+    toggle.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
     toggle.title = 'Toggle Edit Mode';
     toggle.addEventListener('click', toggleEditMode);
-    document.body.appendChild(toggle);
+
+    // Append to controls container if it exists, otherwise delay or body?
+    // Since createEditToggle is called BEFORE createSettingsPanel where container is made,
+    // we should create container globally or here first.
+    // Let's create container here if missing.
+    let container = document.querySelector('.floating-controls');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'floating-controls';
+        document.body.appendChild(container);
+    }
+    container.appendChild(toggle);
 }
 
 // Create settings panel
@@ -340,6 +375,24 @@ function createSettingsPanel() {
         </div>
         <div class="settings-content">
             <div class="settings-section">
+                <h4>App Experience</h4>
+                 <div class="settings-toggle-row">
+                    <span>Target Mode (Focus)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="focusModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                 <div class="settings-toggle-row">
+                    <span>Notifications</span>
+                    <label class="switch">
+                        <input type="checkbox" id="notificationToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="settings-section">
                 <h4>Schedule Hours</h4>
                 <label>Wake up: <input type="time" id="wakeupTime" value="07:30"></label>
                 <label>Sleep: <input type="time" id="sleepTime" value="23:00"></label>
@@ -349,7 +402,8 @@ function createSettingsPanel() {
                 <button class="settings-btn" id="addTimeSlot">+ Add Time Slot</button>
             </div>
             <div class="settings-section">
-                <h4>Data</h4>
+                <h4>Data & Stats</h4>
+                <button class="settings-btn" id="showAnalyticsBtn">📈 View Analytics</button>
                 <button class="settings-btn" id="exportCSV">📊 Export CSV</button>
                 <div class="btn-group">
                     <button class="settings-btn" id="exportData" title="Save backup file (JSON)">📤 Backup</button>
@@ -361,17 +415,78 @@ function createSettingsPanel() {
     `;
     document.body.appendChild(panel);
 
-    // Settings button (gear icon)
+    // Get or create container
+    let container = document.querySelector('.floating-controls');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'floating-controls';
+        document.body.appendChild(container);
+    }
+
+    // Focus Mode Toggle Button
+    const focusBtn = document.createElement('button');
+    focusBtn.id = 'focusToggleBtn';
+    focusBtn.className = 'focus-toggle active';
+    focusBtn.title = 'Toggle Focus';
+    focusBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`;
+    focusBtn.addEventListener('click', () => {
+        const isFocused = document.body.classList.contains('focus-mode');
+        toggleFocusMode(!isFocused);
+    });
+    // Insert Focus button BEFORE Edit button if desired, or just append. 
+    // Usually Focus -> Settings -> Edit (Left to Right)
+    // If container has Edit, and we append, it becomes Edit -> Focus -> Settings.
+    // We want Focus -> Settings -> Edit.
+    // So we should prepend?
+    // Actually, let's just use prepend or insertBefore.
+    // Since createEditToggle runs first, 'Edit' is already the first child.
+    // We want Focus to be FIRST.
+    if (container.firstChild) {
+        container.insertBefore(focusBtn, container.firstChild);
+    } else {
+        container.appendChild(focusBtn);
+    }
+
+    // Settings button
     const settingsBtn = document.createElement('button');
     settingsBtn.id = 'settingsToggle';
     settingsBtn.className = 'settings-toggle';
-    settingsBtn.innerHTML = '⚙️';
     settingsBtn.title = 'Settings';
+    settingsBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`;
     settingsBtn.addEventListener('click', () => panel.classList.toggle('open'));
-    document.body.appendChild(settingsBtn);
+
+    // We want Settings between Focus and Edit.
+    // Current Order: Focus, Edit.
+    // Insert Settings before Edit (which is now second child, or last child).
+    // container.children[1] should be Edit
+    if (container.children.length > 1) {
+        container.insertBefore(settingsBtn, container.children[1]);
+    } else {
+        container.appendChild(settingsBtn);
+    }
 
     // Close button
     document.getElementById('settingsClose').addEventListener('click', () => panel.classList.remove('open'));
+    // Focus Button Block ...
+    // Settings Button Block ...
+
+    // I need to target the whole range.
+
+    // Close button
+    document.getElementById('settingsClose').addEventListener('click', () => panel.classList.remove('open'));
+
+    // Toggles
+    document.getElementById('focusModeToggle').addEventListener('change', (e) => toggleFocusMode(e.target.checked));
+
+    // Check notification status
+    const notifToggle = document.getElementById('notificationToggle');
+    if (Notification.permission === 'granted') {
+        notifToggle.checked = true;
+    }
+    notifToggle.addEventListener('change', (e) => toggleNotifications(e.target.checked));
+
+    // Stats
+    document.getElementById('showAnalyticsBtn').addEventListener('click', showAnalytics);
 
     // Add time slot button
     document.getElementById('addTimeSlot').addEventListener('click', addNewTimeSlot);
@@ -389,24 +504,12 @@ function createActivityPicker() {
     picker.id = 'activityPicker';
     picker.className = 'activity-picker';
 
-    let html = '<div class="picker-grid">';
-    for (const [key, activity] of Object.entries(ACTIVITIES)) {
-        if (key === 'custom') continue; // Skip custom for now
-        html += `<button class="picker-item ${activity.class}" data-activity="${key}">
-            <span class="picker-icon">${activity.icon}</span>
-            <span class="picker-name">${activity.name}</span>
-        </button>`;
-    }
-    html += '</div>';
-    html += '<div class="picker-actions">';
-    html += '<button class="picker-clear" data-activity="clear">✕ Clear</button>';
-    html += '<button class="picker-custom" data-activity="custom">✎ Custom...</button>';
-    html += '</div>';
-
-    picker.innerHTML = html;
+    // We need to rebuild this dynamically whenever it opens to show custom activities
+    // So we'll just set the minimal structure here
+    // The render function will handle the content
     document.body.appendChild(picker);
 
-    // Handle activity selection
+    // Handle activity selection (Event delegation)
     picker.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-activity]');
         if (!btn) return;
@@ -419,7 +522,20 @@ function createActivityPicker() {
         } else if (activityKey === 'custom') {
             const customName = prompt('Enter custom activity name:');
             if (customName) {
-                updateCell(targetCell, { name: customName, icon: '●', class: '' });
+                const icon = prompt('Enter an icon/emoji (optional):') || '●';
+                const newActivity = { name: customName, icon: icon, class: '' };
+
+                // Save to custom activities
+                saveCustomActivity(newActivity);
+
+                updateCell(targetCell, newActivity);
+            }
+        } else if (activityKey.startsWith('custom_')) {
+            // Load from custom activities
+            const savedCustom = getCustomActivities();
+            const index = parseInt(activityKey.replace('custom_', ''));
+            if (savedCustom[index]) {
+                updateCell(targetCell, savedCustom[index]);
             }
         } else {
             updateCell(targetCell, ACTIVITIES[activityKey]);
@@ -434,6 +550,57 @@ function createActivityPicker() {
             hideActivityPicker();
         }
     });
+}
+
+function renderActivityPickerContent() {
+    const picker = document.getElementById('activityPicker');
+    if (!picker) return;
+
+    let html = '<div class="picker-grid">';
+    for (const [key, activity] of Object.entries(ACTIVITIES)) {
+        if (key === 'custom') continue;
+        html += `<button class="picker-item ${activity.class}" data-activity="${key}">
+            <span class="picker-icon">${activity.icon}</span>
+            <span class="picker-name">${activity.name}</span>
+        </button>`;
+    }
+    html += '</div>';
+
+    // Custom Section
+    const customActivities = getCustomActivities();
+    if (customActivities.length > 0) {
+        html += '<div class="palette-section">';
+        html += '<h4>My Palette</h4>';
+        html += '<div class="palette-grid">';
+        customActivities.forEach((act, index) => {
+            html += `<button class="picker-item" data-activity="custom_${index}">
+                <span class="picker-icon">${act.icon}</span>
+                <span class="picker-name">${act.name}</span>
+            </button>`;
+        });
+        html += '</div></div>';
+    }
+
+    html += '<div class="picker-actions">';
+    html += '<button class="picker-clear" data-activity="clear">✕ Clear</button>';
+    html += '<button class="picker-custom" data-activity="custom">✎ New...</button>';
+    html += '</div>';
+
+    picker.innerHTML = html;
+}
+
+function getCustomActivities() {
+    const stored = localStorage.getItem('customActivities');
+    return stored ? JSON.parse(stored) : [];
+}
+
+function saveCustomActivity(activity) {
+    const activities = getCustomActivities();
+    // Check duplicates
+    if (!activities.some(a => a.name === activity.name)) {
+        activities.push(activity);
+        localStorage.setItem('customActivities', JSON.stringify(activities));
+    }
 }
 
 // Toggle edit mode
@@ -452,10 +619,20 @@ function toggleEditMode() {
 
 // Enable cell editing
 function enableCellEditing() {
-    const cells = document.querySelectorAll('tbody td:not(.time-col)');
+    const cells = document.querySelectorAll('tbody td:not(.time-col):not(.rituals-col)');
     cells.forEach(cell => {
-        cell.classList.add('editable');
+        cell.classList.add('editable', 'draggable');
+        cell.setAttribute('draggable', 'true'); // Enable drag API
+
+        // Click for picker
         cell.addEventListener('click', handleCellClick);
+
+        // Drag events
+        cell.addEventListener('dragstart', handleDragStart);
+        cell.addEventListener('dragover', handleDragOver);
+        cell.addEventListener('drop', handleDrop);
+        cell.addEventListener('dragenter', handleDragEnter);
+        cell.addEventListener('dragleave', handleDragLeave);
     });
 }
 
@@ -463,9 +640,86 @@ function enableCellEditing() {
 function disableCellEditing() {
     const cells = document.querySelectorAll('tbody td.editable');
     cells.forEach(cell => {
-        cell.classList.remove('editable');
+        cell.classList.remove('editable', 'draggable');
+        cell.removeAttribute('draggable');
+
         cell.removeEventListener('click', handleCellClick);
+        cell.removeEventListener('dragstart', handleDragStart);
+        cell.removeEventListener('dragover', handleDragOver);
+        cell.removeEventListener('drop', handleDrop);
+        cell.removeEventListener('dragenter', handleDragEnter);
+        cell.removeEventListener('dragleave', handleDragLeave);
     });
+}
+
+// Drag Handlers
+let draggedCell = null;
+
+function handleDragStart(e) {
+    draggedCell = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', ''); // Required for Firefox
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) e.preventDefault(); // Necessary for drop to work
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    this.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) e.stopPropagation();
+
+    draggedCell.classList.remove('dragging');
+    this.classList.remove('drag-over');
+
+    if (draggedCell !== this) {
+        // Swap content logic
+        const sourceHtml = draggedCell.innerHTML;
+        const targetHtml = this.innerHTML;
+
+        const sourceClass = Array.from(draggedCell.classList).find(c => c.startsWith('activity-'));
+        const targetClass = Array.from(this.classList).find(c => c.startsWith('activity-'));
+
+        // Clear old classes
+        if (sourceClass) draggedCell.classList.remove(sourceClass);
+        if (targetClass) this.classList.remove(targetClass);
+
+        // Swap content
+        // Note: We need to respect the 'flap' if it exists.
+        // Actually, updateCell handles reconstruction more cleanly.
+        // Let's parse data from cells first.
+
+        const getCellData = (cell) => {
+            const icon = cell.querySelector('.icon')?.textContent || '';
+            const flap = cell.querySelector('.cell-flap');
+            // Remove UI elements to get text
+            const clone = cell.cloneNode(true);
+            clone.querySelectorAll('.icon, .cell-flap, .time-progress-fill, .live-time').forEach(el => el.remove());
+            const text = clone.textContent.trim();
+            const cls = Array.from(cell.classList).find(c => c.startsWith('activity-')) || '';
+
+            if (!text && !icon) return null;
+            return { name: text, icon: icon, class: cls };
+        };
+
+        const sourceData = getCellData(draggedCell);
+        const targetData = getCellData(this); // Usually empty, but could swap
+
+        updateCell(this, sourceData);
+        updateCell(draggedCell, targetData); // Clears source if target was empty
+    }
+
+    return false;
 }
 
 // Handle cell click in edit mode
@@ -479,6 +733,9 @@ function handleCellClick(e) {
 
 // Show activity picker near cell
 function showActivityPicker(cell) {
+    // Re-render to show updated custom activities
+    renderActivityPickerContent();
+
     const picker = document.getElementById('activityPicker');
     picker.targetCell = cell;
 
@@ -715,6 +972,10 @@ function addNewTimeSlot() {
         });
     }
 
+    // Clear caches so new row is picked up
+    window.rowElements = null;
+    window.rowTimesCache = null;
+
     // Save
     saveSchedule();
 }
@@ -828,7 +1089,170 @@ function importSchedule() {
 function resetSchedule() {
     if (confirm('Are you sure you want to reset? This will clear all saved changes.')) {
         localStorage.removeItem(STORAGE_KEY);
+        // Do not clear custom activities intentionally? Or should we?
+        // Let's keep custom activities.
         location.reload();
+    }
+}
+
+// ============================================
+// NEW FEATURES IMPLEMENTATION
+// ============================================
+
+function toggleFocusMode(enabled) {
+    const btn = document.getElementById('focusToggleBtn');
+    const toggle = document.getElementById('focusModeToggle');
+
+    if (enabled) {
+        document.body.classList.add('focus-mode');
+        if (btn) btn.classList.add('active');
+        if (toggle) toggle.checked = true;
+    } else {
+        document.body.classList.remove('focus-mode');
+        if (btn) btn.classList.remove('active');
+        if (toggle) toggle.checked = false;
+    }
+}
+
+function toggleNotifications(enabled) {
+    if (enabled) {
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission().then(permission => {
+                if (permission !== 'granted') {
+                    document.getElementById('notificationToggle').checked = false;
+                }
+            });
+        }
+    }
+}
+
+function showAnalytics() {
+    // Calculate stats
+    const counts = {};
+    let total = 0;
+
+    const rows = document.querySelectorAll('tbody tr[data-time]');
+    rows.forEach(row => {
+        const time = parseFloat(row.dataset.time);
+
+        // Find next row time for duration
+        // Simplified duration: 1 hour default
+        let duration = 0.5; // Default slot size check? 
+        // Better: look at next row
+        const nextRow = row.nextElementSibling;
+        if (nextRow && nextRow.dataset.time) {
+            duration = parseFloat(nextRow.dataset.time) - time;
+        } else {
+            duration = 1; // End of day assumption
+        }
+
+        row.querySelectorAll('td').forEach((cell, idx) => {
+            if (idx === 0) return; // Time
+            // Skip rituals column if you want only week days? No, count rituals
+
+            const text = cell.textContent.trim();
+            // Need accurate text extracting
+            const clone = cell.cloneNode(true);
+            clone.querySelectorAll('.icon, .cell-flap').forEach(el => el.remove());
+            const actName = clone.textContent.trim();
+
+            if (actName) {
+                // If it's a weekday column (2-6 for Mon-Fri) vs Weekend (7-8)
+                // idx: 0=time, 1=rituals, 2=Mon ... 8=Sun
+                const isWeekDay = idx >= 2 && idx <= 6;
+                const weight = isWeekDay ? 1 : 1; // Count all equal for now
+
+                counts[actName] = (counts[actName] || 0) + duration;
+                total += duration;
+            }
+        });
+    });
+
+    // Create UI
+    let overlay = document.querySelector('.analytics-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'analytics-overlay';
+        overlay.innerHTML = `
+            <div class="analytics-container">
+                <div class="analytics-header">
+                    <h2>📊 Time Analytics</h2>
+                    <button class="close-analytics">×</button>
+                </div>
+                <div class="analytics-content">
+                    <!-- Cards go here -->
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('.close-analytics').addEventListener('click', () => {
+            overlay.classList.remove('visible');
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('visible');
+        });
+    }
+
+    const content = overlay.querySelector('.analytics-content');
+    content.innerHTML = '';
+
+    // Sort counts
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+    sorted.forEach(([name, hours]) => {
+        const card = document.createElement('div');
+        card.className = 'stat-card';
+        card.innerHTML = `
+            <h3>${name}</h3>
+            <div class="stat-value">${hours.toFixed(1)}h</div>
+            <div class="stat-detail">Total Weekly Hours</div>
+        `;
+        content.appendChild(card);
+    });
+
+    overlay.classList.add('visible');
+}
+
+function checkNotifications() {
+    const toggle = document.getElementById('notificationToggle');
+    if (!toggle || !toggle.checked) return;
+
+    const now = new Date();
+    // Only check if we just hit a new minute that matches a row time
+    // Current 'highlightCurrentTime' finds the 'closestRow'. 
+
+    // If we are exactly at the start of a block, notify.
+    // Allow 1 min buffer
+    const currentRow = window.lastActiveRow;
+    if (currentRow && !currentRow.dataset.notified) {
+        const timeCell = currentRow.querySelector('.time-row');
+        // Get activity for today
+        const dayIdx = now.getDay(); // 0-6
+        // Map to column index: Sun=0 -> col 8? 
+        // Columns: Time(0), Rituals(1), Mon(2)...Sat(7), Sun(8)
+        const colIdx = dayIdx === 0 ? 8 : dayIdx + 1;
+
+        const cell = currentRow.children[colIdx];
+        if (cell) {
+            const clone = cell.cloneNode(true);
+            clone.querySelectorAll('.icon, .cell-flap').forEach(el => el.remove());
+            const actName = clone.textContent.trim();
+
+            if (actName) {
+                new Notification('Up Next', {
+                    body: `${actName} starts now`,
+                    icon: 'apple-touch-icon.png'
+                });
+            }
+        }
+        currentRow.dataset.notified = 'true';
+
+        // Reset others
+        document.querySelectorAll('tr').forEach(tr => {
+            if (tr !== currentRow) delete tr.dataset.notified;
+        });
     }
 }
 
@@ -846,22 +1270,89 @@ createEditToggle();
 createActivityPicker();
 createSettingsPanel();
 
+// Default Focus Mode ON
+toggleFocusMode(true);
+
 // Load saved schedule
 loadSchedule();
 
 // Heartbeat interval: Consolidate all background updates into one loop
-setInterval(() => {
+// Main heartbeat loop
+// Optimized for CPU: Only runs updates when the minute changes or for initial load
+let lastMinute = -1;
+
+function runUpdates() {
     const now = new Date();
-    const seconds = now.getSeconds();
+    const currentMinute = now.getMinutes();
 
-    // Every second
-    highlightCurrentTime();
-    updateHeaderClocks();
+    // Check if minute has changed
+    if (currentMinute !== lastMinute) {
+        lastMinute = currentMinute;
 
-    // Every minute (on the 0 second mark or first run)
-    if (seconds === 0 || !window.lastTickMinute) {
-        highlightToday();
-        updateFlapsVisibility();
-        window.lastTickMinute = now.getMinutes();
+        // Check notifications if enabled
+        checkNotifications();
+
+        // Run all updates
+        requestAnimationFrame(() => {
+            highlightCurrentTime();
+            updateHeaderClocks();
+            highlightToday();
+            updateFlapsVisibility();
+        });
     }
-}, 1000);
+}
+
+// Scroll active day into view
+function scrollToToday() {
+    const tableWrapper = document.querySelector('.table-wrapper');
+    const todayHeader = document.querySelector('.today-header');
+
+    if (tableWrapper && todayHeader) {
+        // Calculate position relative to the scrolling container
+        // We want to center it or at least make it visible
+        // The first two columns are sticky (Time + Rituals = 70 + 100 = 170px)
+        const stickyOffset = 170;
+
+        const headerRect = todayHeader.getBoundingClientRect();
+        const wrapperRect = tableWrapper.getBoundingClientRect();
+
+        // Current scroll position
+        const currentScroll = tableWrapper.scrollLeft;
+
+        // Calculate where the element is relative to the *content* start
+        //offsetLeft gives distance from the parent table left edge
+        const elementLeft = todayHeader.offsetLeft;
+
+        // We want this element to be at 'stickyOffset' pixels from the left of the view
+        const targetScroll = elementLeft - stickyOffset;
+
+        tableWrapper.scrollTo({
+            left: Math.max(0, targetScroll),
+            behavior: 'smooth'
+        });
+    }
+}
+
+// Debounce resize to keep today visible
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        if (window.innerWidth < 1000) scrollToToday();
+    }, 200);
+});
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW failed', err));
+    });
+}
+
+// Initial run
+runUpdates();
+
+// Check every second (low CPU cost) for minute change
+setInterval(runUpdates, 1000);
