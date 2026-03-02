@@ -251,27 +251,23 @@ function highlightCurrentTime() {
         // Manage active-slot class for animations
         document.querySelectorAll('.active-slot').forEach(el => el.classList.remove('active-slot'));
 
+        const currentRowTime = parseFloat(closestRow.dataset.time);
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         const currentDayName = dayNames[now.getDay()];
 
-        // Add active-slot to EVERYTHING in the current row
-        closestRow.querySelectorAll('td').forEach(td => td.classList.add('active-slot'));
-
-        const currentRowTime = parseFloat(closestRow.dataset.time);
-
-        // Add active-slot to ALL cells in the Time column
+        // Add active-slot to ALL cells in the Time column (Full Day)
         document.querySelectorAll('.time-col').forEach(td => td.classList.add('active-slot'));
 
-        // Add active-slot to Rituals column cells ONLY for current and future times
+        // Add active-slot to ALL cells in the current Day column (Full Day as requested earlier)
+        document.querySelectorAll('.' + currentDayName).forEach(td => td.classList.add('active-slot'));
+
+        // Add active-slot to Rituals column for current/future times AND 2 hours before
         document.querySelectorAll('.rituals-col').forEach(td => {
             const rowTime = parseFloat(td.parentElement.dataset.time);
-            if (rowTime >= currentRowTime) {
+            if (rowTime >= currentRowTime - 2) {
                 td.classList.add('active-slot');
             }
         });
-
-        // Add active-slot to ALL cells in the current Day column
-        document.querySelectorAll('.' + currentDayName).forEach(td => td.classList.add('active-slot'));
 
         const timeCell = closestRow.querySelector('.time-col');
         if (timeCell) {
@@ -1725,15 +1721,27 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js')
             .then(reg => {
                 console.log('SW registered');
-                // Check if we are already controlled
-                if (!navigator.serviceWorker.controller) {
-                    return;
+
+                // Keep checking for updates every 10 minutes
+                setInterval(() => {
+                    reg.update();
+                    console.log('Checking for SW update...');
+                }, 10 * 60 * 1000);
+
+                // If a new worker is waiting, it means an update was found
+                if (reg.waiting) {
+                    window.location.reload();
                 }
 
-                // If a new worker is waiting, we can force update (though skipWaiting handle this usually)
-                if (reg.waiting) {
-                    // reg.waiting.postMessage({action: 'skipWaiting'}); // If we didn't have self.skipWaiting() in SW
-                }
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New version detected and installed, reload to activate
+                            window.location.reload();
+                        }
+                    });
+                });
             })
             .catch(err => console.log('SW failed', err));
 
