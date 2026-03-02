@@ -162,10 +162,24 @@ td:nth-child(n+3) {
     background: linear-gradient(90deg, rgba(0, 217, 255, 0.5), rgba(0, 217, 255, 0.25));
     z-index: 0;
     pointer-events: none;
-    transition: width 1s linear;
+    transition: width 1s linear, background-color 0.5s ease;
     border-radius: 0 4px 4px 0;
     overflow: hidden;
 }
+
+/* Progress Color Thresholds */
+.progress-yellow {
+    background: linear-gradient(90deg, rgba(255, 204, 0, 0.6), rgba(255, 204, 0, 0.3)) !important;
+}
+
+.progress-orange {
+    background: linear-gradient(90deg, rgba(255, 126, 0, 0.7), rgba(255, 126, 0, 0.4)) !important;
+}
+
+.progress-red {
+    background: linear-gradient(90deg, rgba(255, 68, 68, 0.8), rgba(255, 68, 68, 0.5)) !important;
+}
+
 
 .day-progress-fill::after {
     content: '';

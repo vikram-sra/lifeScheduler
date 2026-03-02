@@ -106,13 +106,19 @@ function highlightToday() {
 
                 // Scroll into view on first creation
                 if (window.innerWidth < 1000) setTimeout(scrollToToday, 100);
+
+                const pf = header.querySelector('.day-progress-fill');
+                if (pf) updateProgressColor(pf, dayProgress);
             } else {
                 // Update text values without full innerHTML replacement
                 const monthProgressText = header.querySelector('.month-progress');
                 if (monthProgressText) monthProgressText.textContent = dayProgress + '%';
 
                 const progressFill = header.querySelector('.day-progress-fill');
-                if (progressFill) progressFill.style.width = dayProgress + '%';
+                if (progressFill) {
+                    progressFill.style.width = dayProgress + '%';
+                    updateProgressColor(progressFill, dayProgress);
+                }
 
                 // Handle zzz visibility toggles separately
                 const contentEl = header.querySelector('.header-content');
@@ -294,6 +300,7 @@ function highlightCurrentTime() {
             }
 
             progressFill.style.width = progress + '%';
+            updateProgressColor(progressFill, progress);
             liveTimeSpan.textContent = formatTime(now);
         }
     }
@@ -308,6 +315,14 @@ function formatTime(date) {
     hours = hours ? hours : 12;
     const minutesStr = minutes < 10 ? '0' + minutes : minutes;
     return hours + ':' + minutesStr + ' ' + ampm;
+}
+
+// Utility to update progress colors
+function updateProgressColor(element, progress) {
+    element.classList.remove('progress-yellow', 'progress-orange', 'progress-red');
+    if (progress >= 90) element.classList.add('progress-red');
+    else if (progress >= 75) element.classList.add('progress-orange');
+    else if (progress >= 50) element.classList.add('progress-yellow');
 }
 
 // Initialize flaps for ALL cells - visibility controlled by current time
