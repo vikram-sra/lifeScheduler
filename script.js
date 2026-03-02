@@ -10,26 +10,26 @@ let isEditMode = false;
 
 // Activity definitions with icons and colors
 const ACTIVITIES = {
-    paint: { name: 'Paint', icon: '▣', class: 'activity-paint' },
-    gym: { name: 'GYM', icon: '▲', class: 'activity-gym' },
-    work: { name: 'Work', icon: '■', class: 'activity-work' },
-    meal: { name: 'Meal', icon: '◇', class: 'activity-meal' },
-    meditate: { name: 'Meditate', icon: '◉', class: 'activity-meditate' },
-    water: { name: 'Water', icon: '◈', class: 'activity-water' },
-    sleep: { name: 'Sleep', icon: '☆', class: 'activity-sleep' },
-    commute: { name: 'Commute', icon: '→', class: 'activity-commute' },
-    hike: { name: 'Hike', icon: '◆', class: 'activity-hike' },
-    clean: { name: 'Clean', icon: '○', class: 'activity-clean' },
-    wakeup: { name: 'Wake up', icon: '●', class: '' },
-    home: { name: 'Home Things', icon: '⌂', class: '' },
-    destim: { name: 'De-Stimulate', icon: '☾', class: '' },
-    plan: { name: 'The Plan', icon: '☐', class: '' },
-    finances: { name: 'Finances', icon: '$', class: '' },
-    foodprep: { name: 'Food Prep', icon: '◇', class: 'activity-meal' },
-    office: { name: 'Office', icon: '■', class: 'activity-work' },
-    workout: { name: 'Home Workout', icon: '▲', class: 'activity-gym' },
-    dinner: { name: 'Dinner', icon: '◇', class: 'activity-meal' },
-    custom: { name: 'Custom', icon: '●', class: '' }
+    paint: { name: 'Paint', icon: '🎨', class: 'activity-paint' },
+    gym: { name: 'GYM', icon: '💪', class: 'activity-gym' },
+    work: { name: 'Work', icon: '💻', class: 'activity-work' },
+    meal: { name: 'Meal', icon: '🍽️', class: 'activity-meal' },
+    meditate: { name: 'Meditate', icon: '🧘', class: 'activity-meditate' },
+    water: { name: 'Water', icon: '💧', class: 'activity-water' },
+    sleep: { name: 'Sleep', icon: '🌙', class: 'activity-sleep' },
+    commute: { name: 'Commute', icon: '🚗', class: 'activity-commute' },
+    hike: { name: 'Hike', icon: '⛰️', class: 'activity-hike' },
+    clean: { name: 'Clean', icon: '🧹', class: 'activity-clean' },
+    wakeup: { name: 'Wake up', icon: '☀️', class: '' },
+    home: { name: 'Home Things', icon: '🏠', class: '' },
+    destim: { name: 'De-Stimulate', icon: '🎧', class: '' },
+    plan: { name: 'The Plan', icon: '📝', class: '' },
+    finances: { name: 'Finances', icon: '💰', class: '' },
+    foodprep: { name: 'Food Prep', icon: '🍳', class: 'activity-meal' },
+    office: { name: 'Office', icon: '🏢', class: 'activity-work' },
+    workout: { name: 'Home Workout', icon: '🏋️', class: 'activity-gym' },
+    dinner: { name: 'Dinner', icon: '🍲', class: 'activity-meal' },
+    custom: { name: 'Custom', icon: '⭐', class: '' }
 };
 
 // Highlight today's column
@@ -346,7 +346,8 @@ function createEditToggle() {
     toggle.id = 'editToggle';
     toggle.className = 'edit-toggle';
     // Clean Pencil/Edit Icon SVG
-    toggle.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+    toggle.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span class="edit-text">EDIT MODE ON</span>`;
+
     toggle.title = 'Toggle Edit Mode';
     toggle.addEventListener('click', toggleEditMode);
 
@@ -370,8 +371,13 @@ function createSettingsPanel() {
     panel.className = 'settings-panel';
     panel.innerHTML = `
         <div class="settings-header">
-            <h3>⚙️ Settings</h3>
-            <button class="settings-close" id="settingsClose">×</button>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #00d9ff;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <h3 style="margin: 0; font-size: 18px; color: #fff;">Settings</h3>
+            </div>
+            <button class="settings-close" id="settingsClose" aria-label="Close settings">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
         </div>
         <div class="settings-content">
             <div class="settings-section">
@@ -397,6 +403,24 @@ function createSettingsPanel() {
                 <label>Wake up: <input type="time" id="wakeupTime" value="07:30"></label>
                 <label>Sleep: <input type="time" id="sleepTime" value="23:00"></label>
             </div>
+            
+            <div class="settings-section">
+                <h4>💼 Work Schedule</h4>
+                <div class="settings-input-row">
+                    <label>Start: <input type="time" id="workStart" value="09:00"></label>
+                    <label>End: <input type="time" id="workEnd" value="17:00"></label>
+                </div>
+                <div class="day-picker">
+                    <label><input type="checkbox" class="work-day" data-day="1" checked>M</label>
+                    <label><input type="checkbox" class="work-day" data-day="2" checked>T</label>
+                    <label><input type="checkbox" class="work-day" data-day="3" checked>W</label>
+                    <label><input type="checkbox" class="work-day" data-day="4" checked>T</label>
+                    <label><input type="checkbox" class="work-day" data-day="5" checked>F</label>
+                    <label><input type="checkbox" class="work-day" data-day="6">S</label>
+                    <label><input type="checkbox" class="work-day" data-day="0">S</label>
+                </div>
+            </div>
+
             <div class="settings-section">
                 <h4>Time Slots</h4>
                 <button class="settings-btn" id="addTimeSlot">+ Add Time Slot</button>
@@ -411,6 +435,7 @@ function createSettingsPanel() {
                 </div>
                 <button class="settings-btn danger" id="resetData">🗑️ Reset All</button>
             </div>
+            <button class="settings-btn" id="applyAllSettings" style="width: 100%; margin-top: 20px; padding: 15px; border-color: #00d9ff; color: #00d9ff; font-weight: bold; background: rgba(0, 217, 255, 0.1);">⚡ APPLY ALL CHANGES</button>
         </div>
     `;
     document.body.appendChild(panel);
@@ -485,6 +510,45 @@ function createSettingsPanel() {
     }
     notifToggle.addEventListener('change', (e) => toggleNotifications(e.target.checked));
 
+    // Work Schedule Settings
+    ['workStart', 'workEnd'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.value = localStorage.getItem(id) || el.value;
+            el.addEventListener('change', (e) => {
+                localStorage.setItem(id, e.target.value);
+                applyWorkScheduleLines();
+            });
+        }
+    });
+
+    document.querySelectorAll('.work-day').forEach(cb => {
+        const saved = localStorage.getItem(`workDay_${cb.dataset.day}`);
+        if (saved !== null) cb.checked = saved === 'true';
+        cb.addEventListener('change', (e) => {
+            localStorage.setItem(`workDay_${cb.dataset.day}`, e.target.checked);
+            applyWorkScheduleLines();
+        });
+    });
+
+    // Initial apply
+    setTimeout(applyWorkScheduleLines, 500);
+
+    const applyBtn = document.getElementById('applyAllSettings');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+            // Force save Wakeup/Sleep if they were changed
+            ['wakeupTime', 'sleepTime', 'workStart', 'workEnd'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) localStorage.setItem(id, el.value);
+            });
+
+            applyWorkScheduleLines();
+            applyBtn.innerText = '✨ SETTINGS APPLIED!';
+            setTimeout(() => applyBtn.innerText = '⚡ APPLY ALL CHANGES', 2000);
+        });
+    }
+
     // Stats
     document.getElementById('showAnalyticsBtn').addEventListener('click', showAnalytics);
 
@@ -511,37 +575,80 @@ function createActivityPicker() {
 
     // Handle activity selection (Event delegation)
     picker.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-activity]');
-        if (!btn) return;
-
-        const activityKey = btn.dataset.activity;
-        const targetCell = picker.targetCell;
-
-        if (activityKey === 'clear') {
-            updateCell(targetCell, null);
-        } else if (activityKey === 'custom') {
-            const customName = prompt('Enter custom activity name:');
-            if (customName) {
-                const icon = prompt('Enter an icon/emoji (optional):') || '●';
-                const newActivity = { name: customName, icon: icon, class: '' };
-
-                // Save to custom activities
-                saveCustomActivity(newActivity);
-
-                updateCell(targetCell, newActivity);
-            }
-        } else if (activityKey.startsWith('custom_')) {
-            // Load from custom activities
-            const savedCustom = getCustomActivities();
-            const index = parseInt(activityKey.replace('custom_', ''));
-            if (savedCustom[index]) {
-                updateCell(targetCell, savedCustom[index]);
-            }
-        } else {
-            updateCell(targetCell, ACTIVITIES[activityKey]);
+        const closeBtn = e.target.closest('.picker-close');
+        if (closeBtn) {
+            hideActivityPicker();
+            return;
         }
 
-        hideActivityPicker();
+        const saveBtn = e.target.closest('.picker-save');
+        if (saveBtn) {
+            const targetCell = picker.targetCell;
+            const linkInput = picker.querySelector('#pickerLink');
+            const customNameInput = picker.querySelector('#pickerCustomName');
+            const selectedBtn = picker.querySelector('.picker-item.selected, .picker-clear.selected');
+            const customName = customNameInput?.value.trim() || '';
+
+            if (!targetCell) return;
+
+            // Determine activity
+            if (selectedBtn && selectedBtn.dataset.activity === 'clear') {
+                updateCell(targetCell, null);
+            } else {
+                let activityToApply = null;
+
+                if (selectedBtn) {
+                    const key = selectedBtn.dataset.activity;
+                    if (key.startsWith('custom_')) {
+                        const savedCustom = getCustomActivities();
+                        const index = parseInt(key.replace('custom_', ''));
+                        activityToApply = savedCustom[index];
+                    } else {
+                        activityToApply = { ...ACTIVITIES[key] };
+                    }
+                }
+
+                // Custom name overrides
+                if (customName) {
+                    if (activityToApply) {
+                        activityToApply.name = customName;
+                    } else {
+                        activityToApply = { name: customName, icon: '⭐', class: '' };
+                        saveCustomActivity(activityToApply);
+                    }
+                }
+
+                if (activityToApply) {
+                    updateCell(targetCell, activityToApply);
+                }
+            }
+
+            if (linkInput) {
+                const finalUrl = linkInput.value.trim();
+                if (finalUrl) targetCell.dataset.url = finalUrl;
+                else delete targetCell.dataset.url;
+            }
+
+            saveSchedule();
+            hideActivityPicker();
+            return;
+        }
+
+        const btn = e.target.closest('.picker-item, .picker-clear');
+        if (!btn) return;
+
+        // Update custom name input with selected activity name
+        const customNameInput = picker.querySelector('#pickerCustomName');
+        const activityName = btn.querySelector('.picker-name')?.textContent || '';
+        if (customNameInput && activityName && btn.dataset.activity !== 'clear') {
+            customNameInput.value = activityName;
+        } else if (btn.dataset.activity === 'clear' && customNameInput) {
+            customNameInput.value = '';
+        }
+
+        // Handle normal selection toggle
+        picker.querySelectorAll('.picker-item, .picker-clear').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
     });
 
     // Close on outside click
@@ -556,24 +663,61 @@ function renderActivityPickerContent() {
     const picker = document.getElementById('activityPicker');
     if (!picker) return;
 
-    let html = '<div class="picker-grid">';
+    // Get current state of the cell
+    const currentCell = picker.targetCell;
+    const currentActivityName = currentCell?.textContent.replace(currentCell?.querySelector('.icon')?.textContent || '', '').replace(currentCell?.querySelector('.cell-flap')?.textContent || '', '').trim();
+
+    // Capture unsaved URL input so it's not lost on re-render (e.g. after adding a New Task)
+    const currentUrl = picker.querySelector('#pickerLink')?.value || currentCell?.dataset.url || '';
+
+    let displayTitle = 'Select Activity';
+    if (currentCell) {
+        const row = currentCell.closest('tr');
+        const table = row?.closest('table');
+        if (row && table) {
+            const timeText = row.querySelector('.time-col')?.innerText?.trim() || '';
+            const cellIndex = currentCell.cellIndex;
+            const headerCell = table.querySelector(`thead th:nth-child(${cellIndex + 1})`);
+            const header = headerCell?.innerText?.trim() || '';
+            if (header && timeText) {
+                const icon = currentCell?.dataset.icon || currentCell?.querySelector('.icon')?.textContent || '';
+                const activityDisplayName = currentActivityName ? `${icon} ${currentActivityName}` : 'New Task';
+                displayTitle = `${activityDisplayName} • ${header} @ ${timeText}`;
+            }
+        }
+    }
+
+    let html = `
+        <div class="picker-header">
+            <h4>${displayTitle}</h4>
+            <button class="picker-close" aria-label="Close picker">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="picker-scroll-area">
+            <div class="picker-section">
+                <h5>Quick Tasks</h5>
+                <div class="picker-grid">`;
+
     for (const [key, activity] of Object.entries(ACTIVITIES)) {
         if (key === 'custom') continue;
-        html += `<button class="picker-item ${activity.class}" data-activity="${key}">
+        const isSelected = currentActivityName === activity.name ? 'selected' : '';
+        html += `<button class="picker-item ${activity.class} ${isSelected}" data-activity="${key}">
             <span class="picker-icon">${activity.icon}</span>
             <span class="picker-name">${activity.name}</span>
         </button>`;
     }
-    html += '</div>';
+    html += '</div></div>';
 
     // Custom Section
     const customActivities = getCustomActivities();
     if (customActivities.length > 0) {
-        html += '<div class="palette-section">';
-        html += '<h4>My Palette</h4>';
+        html += '<div class="picker-section">';
+        html += '<h5>My Palette</h5>';
         html += '<div class="palette-grid">';
         customActivities.forEach((act, index) => {
-            html += `<button class="picker-item" data-activity="custom_${index}">
+            const isSelected = currentActivityName === act.name ? 'selected' : '';
+            html += `<button class="picker-item ${isSelected}" data-activity="custom_${index}">
                 <span class="picker-icon">${act.icon}</span>
                 <span class="picker-name">${act.name}</span>
             </button>`;
@@ -581,13 +725,27 @@ function renderActivityPickerContent() {
         html += '</div></div>';
     }
 
-    html += '<div class="picker-actions">';
-    html += '<button class="picker-clear" data-activity="clear">✕ Clear</button>';
-    html += '<button class="picker-custom" data-activity="custom">✎ New...</button>';
-    html += '</div>';
+    html += `
+            <div class="picker-section">
+                <h5>Link & Custom Actions</h5>
+                <div class="picker-link-container">
+                    <label for="pickerCustomName">🔧 Custom Activity Name</label>
+                    <input type="text" id="pickerCustomName" placeholder="Override or new name..." class="picker-input" value="${currentActivityName || ''}" style="margin-bottom: 12px;">
+                    
+                    <label for="pickerLink">🔗 Destination URL</label>
+                    <input type="text" id="pickerLink" placeholder="https://..." class="picker-input" value="${currentUrl}">
+                </div>
+            </div>
+        </div>
+        <div class="picker-footer">
+            <button class="picker-clear" data-activity="clear">🗑️ Clear Cell</button>
+            <button class="picker-save">💾 Save</button>
+        </div>
+    `;
 
     picker.innerHTML = html;
 }
+
 
 function getCustomActivities() {
     const stored = localStorage.getItem('customActivities');
@@ -733,29 +891,63 @@ function handleCellClick(e) {
 
 // Show activity picker near cell
 function showActivityPicker(cell) {
-    // Re-render to show updated custom activities
-    renderActivityPickerContent();
-
     const picker = document.getElementById('activityPicker');
     picker.targetCell = cell;
 
+    // Re-render to show updated custom activities and contextual header
+    renderActivityPickerContent();
+
+    // Momentarily show to measure dimensions
+    picker.style.visibility = 'hidden';
+    picker.style.display = 'flex';
+    picker.classList.add('visible');
+    const pickerWidth = picker.offsetWidth || 280;
+    const pickerHeight = picker.offsetHeight || 400;
+    picker.classList.remove('visible');
+    picker.style.visibility = '';
+    picker.style.display = '';
+
     const rect = cell.getBoundingClientRect();
-    const pickerWidth = 280;
-    const pickerHeight = 320;
+    let left, top;
 
-    // Position picker
-    let left = rect.left + rect.width / 2 - pickerWidth / 2;
-    let top = rect.bottom + 8;
+    // On mobile, center it. On desktop, position near cell.
+    if (window.innerWidth < 768) {
+        left = (window.innerWidth - pickerWidth) / 2;
+        top = (window.innerHeight - pickerHeight) / 2;
+    } else {
+        left = rect.left + rect.width / 2 - pickerWidth / 2;
+        top = rect.bottom + 8;
+    }
 
-    // Keep within viewport
-    if (left < 10) left = 10;
-    if (left + pickerWidth > window.innerWidth - 10) left = window.innerWidth - pickerWidth - 10;
-    if (top + pickerHeight > window.innerHeight - 10) {
-        top = rect.top - pickerHeight - 8;
+    // Keep within safe viewport bounds (10px padding)
+    const margin = 10;
+    if (left < margin) left = margin;
+    if (left + pickerWidth > window.innerWidth - margin) {
+        left = window.innerWidth - pickerWidth - margin;
+    }
+
+    if (top < margin) top = margin;
+    if (top + pickerHeight > window.innerHeight - margin) {
+        // If not enough space below, try above the cell
+        if (window.innerWidth >= 768) {
+            top = rect.top - pickerHeight - 8;
+        }
+        // Final clamp
+        if (top < margin) top = margin;
+        if (top + pickerHeight > window.innerHeight - margin) {
+            top = window.innerHeight - pickerHeight - margin;
+        }
     }
 
     picker.style.left = left + 'px';
     picker.style.top = top + 'px';
+
+    // Fill link input
+    const linkInput = picker.querySelector('#pickerLink');
+    if (linkInput) {
+        linkInput.value = cell.dataset.url || '';
+    }
+
     picker.classList.add('visible');
 }
 
@@ -784,11 +976,23 @@ function updateCell(cell, activity) {
     if (activity === null) {
         // Clear cell
         cell.innerHTML = flap ? flap.outerHTML : '';
+        delete cell.dataset.url;
     } else {
         // Set new activity
         if (activity.class) cell.classList.add(activity.class);
         const flapHtml = flap ? flap.outerHTML : '';
         cell.innerHTML = `<span class="icon">${activity.icon}</span>${activity.name}${flapHtml}`;
+
+        // Save link IF current picker is for this cell
+        const picker = document.getElementById('activityPicker');
+        if (picker && picker.targetCell === cell) {
+            const linkInput = picker.querySelector('#pickerLink');
+            if (linkInput && linkInput.value.trim()) {
+                cell.dataset.url = linkInput.value.trim();
+            } else {
+                delete cell.dataset.url;
+            }
+        }
     }
 
     // Save to localStorage
@@ -828,7 +1032,8 @@ function saveSchedule() {
             data.schedule[time][day] = {
                 icon,
                 text,
-                class: activityClass
+                class: activityClass,
+                url: cell.dataset.url || ''
             };
         });
     });
@@ -872,17 +1077,47 @@ function loadSchedule() {
                 const flapHtml = flap ? flap.outerHTML : '';
 
                 if (cellData.icon || cellData.text) {
-                    // Clean up text from accidentally saved repetitive times (e.g. "Wake up 7:30 AM 7:30 AM")
+                    // Clean up text
                     let cleanText = cellData.text || '';
-
-                    // Strip ALL trailing occurrences of time strings
                     cleanText = cleanText.replace(/(?:\s*\d{1,2}:\d{2}\s*(?:AM|PM))+$/gi, '').trim();
 
-                    cell.innerHTML = (cellData.icon ? `<span class="icon">${cellData.icon}</span>` : '') +
+                    // Migration: Upgrade old icons to emojis
+                    let currentIcon = cellData.icon || '';
+                    const oldToNew = {
+                        '▣': '🎨', '▲': '💪', '■': '💻', '◉': '🧘',
+                        '◈': '💧', '☆': '🌙', '→': '🚗', '◆': '⛰️',
+                        '○': '🧹', '●': '☀️', '⌂': '🏠', '☾': '🎧',
+                        '☐': '📝', '$': '💰'
+                    };
+
+                    if (oldToNew[currentIcon]) {
+                        currentIcon = oldToNew[currentIcon];
+                    }
+
+                    // Handle disambiguation for '◇' (Meal, Prep, Dinner)
+                    if (currentIcon === '◇') {
+                        if (cleanText.toLowerCase().includes('prep')) currentIcon = '🍳';
+                        else if (cleanText.toLowerCase().includes('dinner')) currentIcon = '🍲';
+                        else currentIcon = '🍽️';
+                    }
+                    // Handle Workout/Office
+                    if (currentIcon === '💪' && cleanText.toLowerCase().includes('workout')) currentIcon = '🏋️';
+                    if (currentIcon === '💻' && cleanText.toLowerCase().includes('office')) currentIcon = '🏢';
+
+                    cell.innerHTML = (currentIcon ? `<span class="icon">${currentIcon}</span>` : '') +
                         cleanText + flapHtml;
+
+                    if (cellData.url) {
+                        cell.dataset.url = cellData.url;
+                    } else {
+                        delete cell.dataset.url;
+                    }
                 }
             });
         }
+
+        // After migration/load, save it back to ensure emojis are permanent in localStorage
+        saveSchedule();
     } catch (e) {
         console.error('Failed to load schedule:', e);
     }
@@ -1275,6 +1510,7 @@ toggleFocusMode(true);
 
 // Load saved schedule
 loadSchedule();
+applyWorkScheduleLines();
 
 // Heartbeat interval: Consolidate all background updates into one loop
 // Main heartbeat loop
@@ -1345,6 +1581,7 @@ window.addEventListener('resize', () => {
 // Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
+        applyWorkScheduleLines();
         navigator.serviceWorker.register('./sw.js')
             .then(reg => {
                 console.log('SW registered');
@@ -1373,16 +1610,111 @@ if ('serviceWorker' in navigator) {
 // Initial run
 runUpdates();
 
+// Helper to ensure URL begins with http/https
+function ensureAbsoluteUrl(url) {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('//')) return 'https:' + url;
+    return 'https://' + url;
+}
+
 // Add global click listener for Paint activities outside of edit mode
 document.addEventListener('click', (e) => {
     if (isEditMode) return;
 
-    // Check if clicked element or its parent is a paint activity
+    // Check if clicked element or its parent is a cell
     const cell = e.target.closest('td');
-    if (cell && cell.classList.contains('activity-paint')) {
+    if (!cell) return;
+
+    // 1. Priority: Explicit data-url attribute
+    if (cell.dataset.url) {
+        window.location.href = ensureAbsoluteUrl(cell.dataset.url);
+        return;
+    }
+
+    // 2. Fallback: Paint activity default to paint_ideas.html
+    if (cell.classList.contains('activity-paint')) {
         window.location.href = 'paint_ideas.html';
     }
 });
 
 // Check every second (low CPU cost) for minute change
 setInterval(runUpdates, 1000);
+
+/**
+ * Apply work schedule boundary lines
+ */
+function applyWorkScheduleLines() {
+    // 1. Clear existing markers
+    document.querySelectorAll('.work-start-cell, .work-end-cell').forEach(c => {
+        c.classList.remove('work-start-cell', 'work-end-cell');
+    });
+
+    // 2. Get settings
+    const startStr = localStorage.getItem('workStart') || '09:00';
+    const endStr = localStorage.getItem('workEnd') || '17:00';
+    const startDecimal = timeToDecimal(startStr);
+    const endDecimal = timeToDecimal(endStr);
+
+    // Get active days from storage since input might not be in DOM yet
+    const activeDays = [];
+    [1, 2, 3, 4, 5, 6, 0].forEach(d => {
+        const saved = localStorage.getItem(`workDay_${d}`);
+        // Default to Mon-Fri if nothing saved
+        if (saved === 'true' || (saved === null && d >= 1 && d <= 5)) {
+            activeDays.push(d);
+        }
+    });
+
+    if (activeDays.length === 0) return;
+
+    // 3. Find target rows
+    const rows = Array.from(document.querySelectorAll('tbody tr[data-time]'));
+    if (rows.length === 0) return;
+
+    const startRow = rows.find(r => parseFloat(r.dataset.time) >= startDecimal);
+    const endRow = rows.find(r => parseFloat(r.dataset.time) >= endDecimal);
+
+    // 4. Helper for column index (Mon=2 in DOM, etc.)
+    const getColIndex = (day) => {
+        // Table: Time(0), Rituals(1), Mon(2), Tue(3), Wed(4), Thu(5), Fri(6), Sat(7), Sun(8)
+        // data-day: Sun=0, Mon=1...Sat=6
+        if (day === 0) return 9; // Last column
+        return day + 2;
+    };
+
+    // 5. Apply
+    if (startRow) {
+        // ALWAYS apply to Time (1) and Rituals (2)
+        [1, 2].forEach(colIdx => {
+            const cell = startRow.querySelector(`td:nth-child(${colIdx})`);
+            if (cell) cell.classList.add('work-start-cell');
+        });
+
+        activeDays.forEach(day => {
+            const cell = startRow.querySelector(`td:nth-child(${getColIndex(day)})`);
+            if (cell) cell.classList.add('work-start-cell');
+        });
+    }
+
+    if (endRow) {
+        // ALWAYS apply to Time (1) and Rituals (2)
+        [1, 2].forEach(colIdx => {
+            const cell = endRow.querySelector(`td:nth-child(${colIdx})`);
+            if (cell) cell.classList.add('work-end-cell');
+        });
+
+        activeDays.forEach(day => {
+            const cell = endRow.querySelector(`td:nth-child(${getColIndex(day)})`);
+            if (cell) cell.classList.add('work-end-cell');
+        });
+    }
+}
+
+/**
+ * Convert HH:mm to decimal (e.g. "09:30" -> 9.5)
+ */
+function timeToDecimal(t) {
+    const [h, m] = t.split(':').map(Number);
+    return h + (m / 60);
+}

@@ -10,9 +10,12 @@
             body {
                 font-family: 'Inter', sans-serif;
                 margin: 0;
-                padding: 40px;
+                padding: 40px 20px;
+                padding-top: calc(20px + env(safe-area-inset-top, 0px));
+                padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
                 color: #e0e0e0;
                 background: #121212;
+                -webkit-text-size-adjust: 100%;
             }
             .container {
                 max-width: 1200px;
@@ -80,17 +83,15 @@
                 border-color: #f48fb1;
             }
             input[type="checkbox"]:checked::after {
-                content: '✓';
-                color: #121212;
+                content: '✅';
                 font-size: 16px;
-                font-weight: bold;
             }
             input.prog-cb:checked {
                 background: #ffeb3b;
                 border-color: #ffeb3b;
             }
             input.prog-cb:checked::after {
-                content: '✎';
+                content: '✍️';
             }
             code {
                 background-color: #333;
@@ -124,12 +125,74 @@
             .back-btn:hover {
                 background: #444;
             }
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 20px 0;
+                border-radius: 8px;
+            }
+            @media screen and (max-width: 768px) {
+                body {
+                    padding: 10px;
+                    padding-top: 80px;
+                }
+                .back-btn {
+                    top: 10px;
+                    left: 10px;
+                    right: 10px;
+                    width: auto;
+                    border-radius: 8px;
+                    padding: 12px;
+                    text-align: center;
+                    background: rgba(30,30,30,0.95);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    font-size: 14px;
+                }
+                table {
+                    min-width: 800px;
+                }
+                th, td {
+                    padding: 10px;
+                    font-size: 12px;
+                }
+                h1 { font-size: 22px; }
+            }
+            /* Cleaned Mobile Styles */
+            @media screen and (max-width: 768px) {
+                body {
+                    padding: 8px;
+                    padding-top: calc(70px + env(safe-area-inset-top, 0px));
+                }
+                .back-btn {
+                    top: 10px;
+                    left: 10px;
+                    right: 10px;
+                    width: auto;
+                    border-radius: 8px;
+                    padding: 12px;
+                    text-align: center;
+                    background: rgba(30,30,30,0.95);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255,255,255,0.1);
+                }
+                table {
+                    min-width: 850px; /* Force minimum width to maintain table structure */
+                    font-size: 11px;
+                }
+                table th, table td {
+                    padding: 8px;
+                }
+            }
         </style>
     </head>
     <body>
-        <button class="back-btn" onclick="window.location.href='index.html'">← Back to Schedule</button>
+        <button class="back-btn" onclick="window.location.href='index.html'">⏮️ Back to Schedule</button>
         <div class="container">
-            <h1>🎨 Painting Ideas (Extracted till Feb 2026)</h1>
+            <div class="table-container">
+                <h1>🎨 Painting Ideas (Extracted till Feb 2026)</h1>
 <p>Extracted strictly from your Google Keep <code>V_Art Inspiration</code> tag.</p>
 <h2>✨ God</h2>
 <table>
@@ -1022,6 +1085,7 @@
 </tr>
 </tbody>
 </table>
+            </div>
         </div>
         
         <script>
