@@ -255,17 +255,13 @@ function highlightCurrentTime() {
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         const currentDayName = dayNames[now.getDay()];
 
-        // Add active-slot to ALL cells in the Time column (Full Day)
-        document.querySelectorAll('.time-col').forEach(td => td.classList.add('active-slot'));
-
-        // Add active-slot to ALL cells in the current Day column (Full Day as requested earlier)
-        document.querySelectorAll('.' + currentDayName).forEach(td => td.classList.add('active-slot'));
-
-        // Add active-slot to Rituals column for current/future times AND 2 hours before
-        document.querySelectorAll('.rituals-col').forEach(td => {
-            const rowTime = parseFloat(td.parentElement.dataset.time);
-            if (rowTime >= currentRowTime - 2) {
-                td.classList.add('active-slot');
+        // Add active-slot to cells within a 2-hour window of the current time
+        rows.forEach(row => {
+            const rowTime = parseFloat(row.dataset.time);
+            // Check if row is within ±1 hour of current time (2-hour window)
+            if (rowTime >= currentHour - 1 && rowTime <= currentHour + 1) {
+                const targetCells = row.querySelectorAll('.time-col, .rituals-col, .' + currentDayName);
+                targetCells.forEach(td => td.classList.add('active-slot'));
             }
         });
 
