@@ -1444,6 +1444,12 @@ td:hover {
    NEW FEATURES STYLES
    ============================================ */
 
+/* PAST TIME FADING */
+.past-slot {
+    opacity: 0.8;
+    transition: opacity 0.5s ease;
+}
+
 /* FOCUS MODE */
 /* Updated: Dim inactive DAYS (columns) instead of rows */
 body.focus-mode td,

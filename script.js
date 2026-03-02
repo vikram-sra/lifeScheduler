@@ -255,16 +255,23 @@ function highlightCurrentTime() {
         // Manage highlights
         document.querySelectorAll('.active-slot').forEach(el => el.classList.remove('active-slot'));
         document.querySelectorAll('.current-active-cell').forEach(el => el.classList.remove('current-active-cell'));
+        document.querySelectorAll('.past-slot').forEach(el => el.classList.remove('past-slot'));
 
         const currentRowTime = parseFloat(closestRow.dataset.time);
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         const currentDayName = dayNames[now.getDay()];
 
-        // Add active-slot to cells within a 2-hour window of the current time, and ALWAYS the closest row
+        // Add active-slot to cells within a 4-hour window of the current time, and ALWAYS the closest row
         rows.forEach(row => {
             const rowTime = parseFloat(row.dataset.time);
-            // Check if row is within ±1 hour of current time (2-hour window) OR is the active row
-            if (row === closestRow || (rowTime >= currentHour - 1 && rowTime <= currentHour + 1)) {
+
+            // Fade logic: rows that are in the past
+            if (rowTime < currentRowTime) {
+                row.classList.add('past-slot');
+            }
+
+            // Check if row is within ±2 hours of current time (4-hour window) OR is the active row
+            if (row === closestRow || (rowTime >= currentHour - 2 && rowTime <= currentHour + 2)) {
                 const targetCells = row.querySelectorAll('.time-col, .rituals-col, .' + currentDayName);
                 targetCells.forEach(td => td.classList.add('active-slot'));
 
