@@ -1713,6 +1713,7 @@ function runUpdates() {
             updateHeaderClocks();
             highlightToday();
             updateFlapsVisibility();
+            applyWorkScheduleLines();
         });
     }
 }
@@ -1837,8 +1838,8 @@ setInterval(runUpdates, 1000);
  */
 function applyWorkScheduleLines() {
     // 1. Clear existing markers
-    document.querySelectorAll('.work-start-cell, .work-end-cell').forEach(c => {
-        c.classList.remove('work-start-cell', 'work-end-cell');
+    document.querySelectorAll('.work-start-cell, .work-end-cell, .work-schedule-row').forEach(c => {
+        c.classList.remove('work-start-cell', 'work-end-cell', 'work-schedule-row');
     });
 
     // 2. Get settings
@@ -1900,6 +1901,14 @@ function applyWorkScheduleLines() {
             if (cell) cell.classList.add('work-end-cell');
         });
     }
+
+    // 6. Tag all rows in range for thicker horizontal lines
+    rows.forEach(row => {
+        const rowTime = parseFloat(row.dataset.time);
+        if (rowTime >= startDecimal && rowTime < endDecimal) {
+            row.classList.add('work-schedule-row');
+        }
+    });
 }
 
 /**

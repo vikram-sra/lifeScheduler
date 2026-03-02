@@ -1734,26 +1734,36 @@ input:checked+.slider:before {
 .work-start-cell::before {
     content: '';
     position: absolute;
-    top: -2px;
+    top: -4px;
+    /* Centered for 9px */
     left: 0;
     right: 0;
-    height: 3px;
+    height: 9px;
+    /* 3x of 3px */
     background: #ffcc00;
-    box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
     z-index: 5;
 }
 
 .work-end-cell::before {
     content: '';
     position: absolute;
-    top: -2px;
+    top: -4px;
+    /* Centered for 9px */
     left: 0;
     right: 0;
-    height: 3px;
+    height: 9px;
+    /* 3x of 3px */
     background: #ff4757;
-    box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.6);
     z-index: 5;
 }
+
+/* Internal Workday Lines 3x thicker (3px) */
+tr.work-schedule-row td {
+    border-bottom: 3px solid #334155 !important;
+}
+
 
 /* SETTINGS DAY PICKER */
 .day-picker {
