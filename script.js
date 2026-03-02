@@ -254,11 +254,11 @@ function highlightCurrentTime() {
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         const currentDayName = dayNames[now.getDay()];
 
-        // Add active-slot to cells within a 2-hour window of the current time
+        // Add active-slot to cells within a 2-hour window of the current time, and ALWAYS the closest row
         rows.forEach(row => {
             const rowTime = parseFloat(row.dataset.time);
-            // Check if row is within ±1 hour of current time (2-hour window)
-            if (rowTime >= currentHour - 1 && rowTime <= currentHour + 1) {
+            // Check if row is within ±1 hour of current time (2-hour window) OR is the active row
+            if (row === closestRow || (rowTime >= currentHour - 1 && rowTime <= currentHour + 1)) {
                 const targetCells = row.querySelectorAll('.time-col, .rituals-col, .' + currentDayName);
                 targetCells.forEach(td => td.classList.add('active-slot'));
 
