@@ -71,18 +71,20 @@ Open `index.html` in any browser or add to your phone's homescreen for a native 
 | Water | Blue | `#74b9ff` |
 
 ### Activity Classes
-```css
-.activity-paint    /* Yellow glow - priority */
-.activity-gym      /* Red glow - priority */
-.activity-work     /* Teal text */
-.activity-meal     /* Mint text */
-.activity-sleep    /* Purple text */
-.activity-meditate /* Pink text */
-.activity-water    /* Blue text - bold */
-.activity-commute  /* Yellow text */
-.activity-hike     /* Green text */
-.activity-clean    /* Cyan text */
-```
+| Class | Primary Activity | Notes |
+|-------|------------------|-------|
+| `.activity-paint` | Paint | Golden pulsing glow |
+| `.activity-gym` | Gym, Workout | Red pulsing glow + SVG animation |
+| `.activity-work` | Work, Office | Hardware-themed SVG animation |
+| `.activity-meal` | Meal, Food Prep, Dinner | Mint theme |
+| `.activity-sleep` | Sleep | Purple theme |
+| `.activity-meditate` | Meditate | Pink theme |
+| `.activity-water` | Water | Blue theme |
+| `.activity-commute` | Commute, Bus, Car | Yellow theme |
+| `.activity-hike` | Hike | Green theme + SVG animation |
+| `.activity-clean` | Clean | Cyan theme |
+| `.activity-duar` | Duar | Premium custom animation |
+| `.activity-arrow` | ↑ (Continuity) | Upward drifting SVG animation |
 
 ## 🏗️ File Structure
 
@@ -142,9 +144,10 @@ The app includes 20+ predefined activities with icons and color classes:
 ACTIVITIES = {
     paint, gym, work, meal, meditate, water, sleep, commute, 
     hike, clean, wakeup, home, destim, plan, finances, 
-    foodprep, office, workout, dinner, custom
+    foodprep, office, workout, dinner, duar, custom
 }
 ```
+*Note: Some activities (Gym, Work, Hike, Duar, and Arrow) trigger premium animated SVG backgrounds.*
 
 ### localStorage Persistence
 - **Auto-Save** - Schedule changes are automatically saved to browser localStorage
@@ -286,15 +289,15 @@ const SLEEP_HOUR = 23;    // Change to desired sleep time (e.g., 22 for 10:00 PM
 ### Activity Icons Reference
 | Icon | Meaning | Example Usage |
 |------|---------|---------------|
-| `◈` | Hydration | Water |
-| `◉` | Mindfulness | Meditate |
-| `▲` | Fitness | GYM |
-| `▣` | Creative | Paint |
-| `■` | Productivity | Work |
-| `◇` | Nutrition | Meal |
-| `◆` | Outdoor | Hike |
-| `○` | Maintenance | Clean |
-| `●` | General | Wake up, misc |
+| `🎨` | Creative | Paint |
+| `🌙` | Rest | Sleep |
+| `🧹` | Maintenance | Clean |
+| `🏠` | Personal | Home Things |
+| `🎧` | Focus | De-Stimulate |
+| `📝` | Planning | The Plan |
+| `⭐` | Priority | Custom |
+| `↑` | Continuity | (Auto-detected) |
+| `▲` | Fitness | Gym (Legacy Ref) |
 
 ### Changing Animation Speed
 All animations use CSS `animation` property in `style.css`:
