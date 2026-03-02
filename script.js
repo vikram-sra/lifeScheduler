@@ -141,11 +141,9 @@ function highlightToday() {
     const dayClasses = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const todayClass = dayClasses[today];
 
-    if (window.lastTodayClass !== todayClass) {
-        document.querySelectorAll(`.today`).forEach(cell => cell.classList.remove('today'));
-        document.querySelectorAll(`td.${todayClass}`).forEach(cell => cell.classList.add('today'));
-        window.lastTodayClass = todayClass;
-    }
+    document.querySelectorAll(`.today`).forEach(cell => cell.classList.remove('today'));
+    document.querySelectorAll(`td.${todayClass}`).forEach(cell => cell.classList.add('today'));
+    window.lastTodayClass = todayClass;
 }
 
 // Separate clock update for better CPU efficiency
@@ -248,8 +246,9 @@ function highlightCurrentTime() {
         closestRow.classList.add('current-time-row');
         window.lastActiveRow = closestRow;
 
-        // Manage active-slot class for animations
+        // Manage highlights
         document.querySelectorAll('.active-slot').forEach(el => el.classList.remove('active-slot'));
+        document.querySelectorAll('.current-active-cell').forEach(el => el.classList.remove('current-active-cell'));
 
         const currentRowTime = parseFloat(closestRow.dataset.time);
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -262,6 +261,12 @@ function highlightCurrentTime() {
             if (rowTime >= currentHour - 1 && rowTime <= currentHour + 1) {
                 const targetCells = row.querySelectorAll('.time-col, .rituals-col, .' + currentDayName);
                 targetCells.forEach(td => td.classList.add('active-slot'));
+
+                // Specifically mark the single cell that is active NOW
+                if (row === closestRow) {
+                    const currentCell = row.querySelector('.' + currentDayName);
+                    if (currentCell) currentCell.classList.add('current-active-cell');
+                }
             }
         });
 

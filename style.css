@@ -256,6 +256,8 @@ td:nth-child(n+3) {
     height: 3px;
     background: linear-gradient(90deg, #00d9ff, #ff6b6b, #00d9ff);
     animation: pulse 4s ease-in-out infinite;
+    will-change: opacity;
+    transform: translateZ(0);
 }
 
 @keyframes pulse {
@@ -316,6 +318,8 @@ td:nth-child(n+3) {
     bottom: 0;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     animation: progressShimmer 4s ease-in-out infinite;
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 @keyframes progressShimmer {
@@ -383,6 +387,8 @@ td:nth-child(n+3) {
     border: 1px solid rgba(255, 230, 109, 0.4) !important;
     text-shadow: 0 0 8px rgba(255, 230, 109, 0.5);
     animation: paintGlow 5s ease-in-out infinite;
+    will-change: box-shadow;
+    transform: translateZ(0);
 }
 
 @keyframes paintGlow {
@@ -434,6 +440,9 @@ td:nth-child(n+3) {
     box-shadow: inset 0 0 20px rgba(255, 71, 87, 0.3), 0 0 10px rgba(255, 71, 87, 0.2);
     border: 1px solid rgba(255, 71, 87, 0.6) !important;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(255, 71, 87, 0.8);
+    animation: gymGlow 5s infinite;
+    will-change: box-shadow;
+    transform: translateZ(0);
 }
 
 .activity-meal,
@@ -471,7 +480,10 @@ td {
     overflow: hidden;
     white-space: normal;
     word-wrap: break-word;
-    transition: all 0.2s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+    will-change: transform, background, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     vertical-align: middle;
     position: relative;
     perspective: 1000px;
@@ -491,6 +503,10 @@ td {
     z-index: 20;
     transform-origin: top;
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    transform: translateZ(0);
+    /* Force GPU acceleration */
+    backface-visibility: hidden;
     border: 1px solid #1a1a2e;
     cursor: pointer;
     pointer-events: auto;
@@ -682,6 +698,8 @@ td.active-slot.activity-wakeup {
     opacity: 0.7;
     margin-left: 5px;
     animation: zzzz 4s infinite ease-in-out;
+    will-change: transform, opacity;
+    transform: translateZ(0);
     vertical-align: super;
 }
 
@@ -1394,7 +1412,8 @@ td:hover {
 /* Updated: Dim inactive DAYS (columns) instead of rows */
 body.focus-mode td,
 body.focus-mode th {
-    transition: opacity 0.5s ease, filter 0.5s ease;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity;
 }
 
 /* Dim all cells that are NOT:
@@ -1410,12 +1429,14 @@ body.focus-mode th:not(:nth-child(1)):not(:nth-child(2)):not(.today-header) {
     pointer-events: none;
 }
 
+
 /* Ensure active day pops */
 body.focus-mode .today,
 body.focus-mode .today-header {
     opacity: 1;
     filter: none;
     z-index: 5;
+
     /* Slight elevation */
     box-shadow: 0 0 15px rgba(0, 217, 255, 0.1);
 }
@@ -1426,7 +1447,7 @@ body.focus-mode .time-col,
 body.focus-mode .rituals-col,
 body.focus-mode th:nth-child(1),
 body.focus-mode th:nth-child(2) {
-    opacity: 0.8;
+    opacity: 1;
     filter: none;
 }
 
@@ -1801,4 +1822,38 @@ td.active-slot.activity-car {
 
 td.active-slot.activity-hike {
     background-image: url('svgs/hike-bg.svg') !important;
+}
+
+/* NEW: Active Cell Glow Effect */
+.current-active-cell {
+    position: relative;
+    z-index: 10;
+    box-shadow:
+        inset 0 0 20px rgba(0, 217, 255, 0.4),
+        0 0 15px rgba(0, 217, 255, 0.4),
+        0 0 30px rgba(0, 217, 255, 0.2) !important;
+    border: 2px solid rgba(0, 217, 255, 0.8) !important;
+    animation: activeGlow 3s ease-in-out infinite;
+    will-change: box-shadow;
+    transform: translateZ(0);
+}
+
+@keyframes activeGlow {
+
+    0%,
+    100% {
+        box-shadow:
+            inset 0 0 20px rgba(0, 217, 255, 0.4),
+            0 0 15px rgba(0, 217, 255, 0.3),
+            0 0 30px rgba(0, 217, 255, 0.1) !important;
+        border-color: rgba(0, 217, 255, 0.6);
+    }
+
+    50% {
+        box-shadow:
+            inset 0 0 30px rgba(0, 217, 255, 0.6),
+            0 0 25px rgba(0, 217, 255, 0.5),
+            0 0 50px rgba(0, 217, 255, 0.3) !important;
+        border-color: rgba(0, 217, 255, 1);
+    }
 }
