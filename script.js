@@ -1373,5 +1373,16 @@ if ('serviceWorker' in navigator) {
 // Initial run
 runUpdates();
 
+// Add global click listener for Paint activities outside of edit mode
+document.addEventListener('click', (e) => {
+    if (isEditMode) return;
+
+    // Check if clicked element or its parent is a paint activity
+    const cell = e.target.closest('td');
+    if (cell && cell.classList.contains('activity-paint')) {
+        window.location.href = 'paint_ideas.html';
+    }
+});
+
 // Check every second (low CPU cost) for minute change
 setInterval(runUpdates, 1000);
