@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+    <defs>
+        <!-- Very happy and appetizing warm gradient -->
+        <linearGradient id="bg-meals-happy" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FF512F" />
+            <stop offset="100%" stop-color="#F09819" />
+        </linearGradient>
+        
+        <path id="sparkle" d="M 0,-6 Q 0,0 6,0 Q 0,0 0,6 Q 0,0 -6,0 Q 0,0 0,-6 Z" fill="#FFEAA7" />
+        
+        <!-- Food Icons -->
+        <path id="chicken" d="M -15,0 C -20,-10 -5,-15 0,-10 C 5,-15 20,-10 15,0 C 25,5 25,15 15,20 C 5,25 -5,25 -15,20 C -25,15 -25,5 -15,0 Z" fill="#8d6e63" />
+        <ellipse id="chickenBone" cx="-20" cy="15" rx="6" ry="3" fill="#eeeeee" transform="rotate(30 -20 15)" />
+        
+        <g id="fullChicken">
+            <use href="#chicken" />
+            <use href="#chickenBone" />
+            <path d="M -5,0 C -2,-5 2,-5 5,0 M -5,10 C -2,15 2,15 5,10" fill="none" stroke="#5d4037" stroke-width="1.5" stroke-linecap="round" />
+        </g>
+        
+        <path id="saladLeaf" d="M 0,0 C 10,-15 20,-5 25,10 C 15,20 0,20 -10,10 C -15,0 -10,-10 0,0 Z" fill="#4caf50" />
+        <g id="salad">
+            <use href="#saladLeaf" />
+            <use href="#saladLeaf" transform="rotate(45) scale(0.9)" />
+            <use href="#saladLeaf" transform="rotate(-60) scale(0.8) translate(-10, 5)" />
+            <circle cx="5" cy="5" r="4" fill="#e53935" />
+            <circle cx="-5" cy="12" r="3" fill="#e53935" />
+            <circle cx="15" cy="-2" r="3.5" fill="#e53935" />
+        </g>
+        
+        <g id="bread">
+            <path d="M -15,10 C -15,-5 15,-5 15,10 L 15,20 C 15,25 -15,25 -15,20 Z" fill="#ffb74d" stroke="#f57c00" stroke-width="2" />
+            <path d="M -5,5 L 5,5 M -5,10 L 5,10" stroke="#f57c00" stroke-width="1.5" stroke-linecap="round" />
+        </g>
+        
+        <g id="fruit">
+            <!-- Orange -->
+            <circle cx="0" cy="0" r="12" fill="#ffa726" />
+            <circle cx="-4" cy="-4" r="2" fill="#fff3e0" opacity="0.4" />
+            <!-- Stem/Leaf -->
+            <path d="M 0,-12 Q 5,-18 10,-15 Q 5,-10 0,-12 Z" fill="#66bb6a" />
+            <path d="M 0,-12 Q -2,-16 0,-20" fill="none" stroke="#8d6e63" stroke-width="1.5" stroke-linecap="round" />
+        </g>
+        
+        <g id="rice">
+            <path d="M -10,10 C -20,10 -20,25 -10,25 L 10,25 C 20,25 20,10 10,10 Z" fill="#f5f5f5" />
+            <path d="M -10,12 C 0,-5 20,15 10,12" fill="none" stroke="#e0e0e0" stroke-width="2" stroke-linecap="round" />
+        </g>
+        
+        <g id="roti">
+            <ellipse cx="0" cy="0" rx="20" ry="10" fill="#ffe082" />
+            <circle cx="-5" cy="-2" r="1.5" fill="#a1887f" opacity="0.6"/>
+            <circle cx="8" cy="3" r="1" fill="#a1887f" opacity="0.6"/>
+            <circle cx="2" cy="5" r="2" fill="#a1887f" opacity="0.6"/>
+            <circle cx="-10" cy="4" r="1.5" fill="#a1887f" opacity="0.6"/>
+        </g>
+        
+        <!-- Individual Food Items with Their Own Embedded Animations -->
+        <g id="chickenAnim">
+            <use href="#fullChicken">
+                <animateTransform attributeName="transform" type="rotate" values="0; 360" dur="15s" repeatCount="indefinite" />
+            </use>
+        </g>
+        
+        <g id="chickenAnim2">
+            <use href="#fullChicken">
+                <animateTransform attributeName="transform" type="rotate" values="360; 0" dur="18s" repeatCount="indefinite" />
+            </use>
+        </g>
+
+        <g id="saladAnim">
+            <use href="#salad">
+                <animateTransform attributeName="transform" type="rotate" values="-20; 20; -20" dur="8s" repeatCount="indefinite" />
+            </use>
+        </g>
+        
+        <g id="saladAnim2">
+            <use href="#salad">
+                <animateTransform attributeName="transform" type="rotate" values="10; -30; 10" dur="10s" repeatCount="indefinite" />
+            </use>
+        </g>
+        
+        <g id="breadAnim">
+            <use href="#bread">
+                <animateTransform attributeName="transform" type="rotate" values="0; 30; 0" dur="7s" repeatCount="indefinite" />
+            </use>
+        </g>
+        
+        <g id="fruitAnim">
+            <use href="#fruit">
+                 <animateTransform attributeName="transform" type="rotate" values="0; -360" dur="12s" repeatCount="indefinite" />
+            </use>
+        </g>
+        
+        <g id="fruitAnim2">
+            <use href="#fruit">
+                 <animateTransform attributeName="transform" type="rotate" values="0; 360" dur="14s" repeatCount="indefinite" />
+            </use>
+        </g>
+
+        <g id="rotiAnim">
+            <use href="#roti">
+                <animateTransform attributeName="transform" type="rotate" values="-15; 15; -15" dur="6s" repeatCount="indefinite" />
+            </use>
+        </g>
+        
+    </defs>
+    
+    <!-- Warm appetizing background -->
+    <rect width="300" height="120" fill="url(#bg-meals-happy)" />
+    
+    <!-- Soft background sunburst / abstract dots -->
+    <g fill="#ffffff" opacity="0.1">
+        <circle cx="30" cy="20" r="40" />
+        <circle cx="280" cy="110" r="60" />
+        <circle cx="240" cy="20" r="10" />
+        <circle cx="80" cy="100" r="15" />
+    </g>
+
+    <!-- Floating Food Items -->
+    <g opacity="0.8">
+        
+        <!-- Chicken -->
+        <g transform="scale(0.8)">
+            <animateTransform attributeName="transform" type="translate" values="-20,30; 350,-10" dur="20s" repeatCount="indefinite" />
+            <use href="#chickenAnim" />
+        </g>
+        
+        <g transform="scale(0.6)">
+            <animateTransform attributeName="transform" type="translate" values="400,80; -50,60" dur="25s" repeatCount="indefinite" begin="-5s" />
+            <use href="#chickenAnim2" />
+        </g>
+
+        <!-- Salad -->
+        <g transform="scale(0.8)">
+            <animateTransform attributeName="transform" type="translate" values="120,200; 120,-50" dur="16s" repeatCount="indefinite" />
+            <use href="#saladAnim" />
+        </g>
+        
+        <g transform="scale(0.7)">
+            <animateTransform attributeName="transform" type="translate" values="-50,0; 450,150" dur="22s" repeatCount="indefinite" begin="-10s" />
+            <use href="#saladAnim2" />
+        </g>
+        
+        <!-- Bread -->
+        <g transform="scale(0.8)">
+            <animateTransform attributeName="transform" type="translate" values="70,250; 30,-50" dur="18s" repeatCount="indefinite" begin="-3s" />
+            <use href="#breadAnim" />
+        </g>
+        
+        <!-- Fruit -->
+        <g transform="scale(0.9)">
+            <animateTransform attributeName="transform" type="translate" values="400,-10; -50,100" dur="19s" repeatCount="indefinite" begin="-8s" />
+            <use href="#fruitAnim" />
+        </g>
+        
+        <g transform="scale(0.6)">
+             <animateTransform attributeName="transform" type="translate" values="-50,180; 500,-50" dur="24s" repeatCount="indefinite" begin="-12s" />
+             <use href="#fruitAnim2" />
+        </g>
+
+        <!-- Roti -->
+        <g transform="scale(0.9)">
+            <animateTransform attributeName="transform" type="translate" values="260,200; 240,-50" dur="15s" repeatCount="indefinite" begin="-4s" />
+            <use href="#rotiAnim" />
+        </g>
+        
+        <g transform="scale(0.7)">
+            <animateTransform attributeName="transform" type="translate" values="400,20; -50,80" dur="21s" repeatCount="indefinite" begin="-7s" />
+            <use href="#rotiAnim" />
+        </g>
+        
+        <g transform="scale(0.8)">
+            <animateTransform attributeName="transform" type="translate" values="-40,150; 400,-40" dur="26s" repeatCount="indefinite" begin="-2s" />
+            <use href="#rice">
+                 <animateTransform attributeName="transform" type="translate" values="0,5; 0,-5; 0,5" dur="3s" repeatCount="indefinite" />
+            </use>
+        </g>
+
+    </g>
+    
+    <!-- Happy floating sparkles -->
+    <g>
+        <g>
+            <animateTransform attributeName="transform" type="translate" values="50,40; 50,20" dur="3s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0; 1; 0" dur="3s" repeatCount="indefinite" />
+            <use href="#sparkle">
+                 <animateTransform attributeName="transform" type="scale" values="0.5; 1; 0.5" dur="3s" repeatCount="indefinite"/>
+            </use>
+        </g>
+        
+        <g>
+            <animateTransform attributeName="transform" type="translate" values="250,80; 250,50" dur="4s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0; 0.8; 0" dur="4s" repeatCount="indefinite" />
+            <use href="#sparkle">
+                 <animateTransform attributeName="transform" type="scale" values="0.7; 1.2; 0.7" dur="4s" repeatCount="indefinite" />
+            </use>
+        </g>
+        
+        <g>
+            <animateTransform attributeName="transform" type="translate" values="150,50; 150,25" dur="3.5s" repeatCount="indefinite" begin="1s" />
+            <animate attributeName="opacity" values="0; 1; 0" dur="3.5s" repeatCount="indefinite" begin="1s" />
+            <use href="#sparkle">
+                 <animateTransform attributeName="transform" type="scale" values="0.6; 1; 0.6" dur="3.5s" repeatCount="indefinite" begin="1s" />
+            </use>
+        </g>
+    </g>
+</svg>

@@ -1,6 +1,6 @@
 // Schedule configuration
-const WAKEUP_HOUR = 7.5; // 7:30 AM
-const SLEEP_HOUR = 23;   // 11:00 PM
+let WAKEUP_HOUR = 7.5; // 7:30 AM
+let SLEEP_HOUR = 23;   // 11:00 PM
 
 // Storage key for localStorage
 const STORAGE_KEY = 'lifeScheduler';
@@ -11,24 +11,25 @@ let isEditMode = false;
 // Activity definitions with icons and colors
 const ACTIVITIES = {
     paint: { name: 'Paint', icon: '🎨', class: 'activity-paint' },
-    gym: { name: 'GYM', icon: '💪', class: 'activity-gym' },
-    work: { name: 'Work', icon: '💻', class: 'activity-work' },
-    meal: { name: 'Meal', icon: '🍽️', class: 'activity-meal' },
-    meditate: { name: 'Meditate', icon: '🧘', class: 'activity-meditate' },
-    water: { name: 'Water', icon: '💧', class: 'activity-water' },
+    gym: { name: 'GYM', icon: '', class: 'activity-gym' },
+    work: { name: 'Work', icon: '', class: 'activity-work' },
+    meal: { name: 'Meal', icon: '', class: 'activity-meal' },
+    meditate: { name: 'Meditate', icon: '', class: 'activity-meditate' },
+    water: { name: 'Water', icon: '', class: 'activity-water' },
     sleep: { name: 'Sleep', icon: '🌙', class: 'activity-sleep' },
-    commute: { name: 'Commute', icon: '🚗', class: 'activity-commute' },
-    hike: { name: 'Hike', icon: '⛰️', class: 'activity-hike' },
+    commute: { name: 'Commute', icon: '', class: 'activity-commute' },
+    hike: { name: 'Hike', icon: '', class: 'activity-hike' },
     clean: { name: 'Clean', icon: '🧹', class: 'activity-clean' },
-    wakeup: { name: 'Wake up', icon: '☀️', class: '' },
+    wakeup: { name: 'Wake up', icon: '', class: 'activity-wakeup' },
     home: { name: 'Home Things', icon: '🏠', class: '' },
     destim: { name: 'De-Stimulate', icon: '🎧', class: '' },
     plan: { name: 'The Plan', icon: '📝', class: '' },
-    finances: { name: 'Finances', icon: '💰', class: '' },
-    foodprep: { name: 'Food Prep', icon: '🍳', class: 'activity-meal' },
-    office: { name: 'Office', icon: '🏢', class: 'activity-work' },
-    workout: { name: 'Home Workout', icon: '🏋️', class: 'activity-gym' },
-    dinner: { name: 'Dinner', icon: '🍲', class: 'activity-meal' },
+    finances: { name: 'Finances', icon: '', class: 'activity-finances' },
+    foodprep: { name: 'Food Prep', icon: '', class: 'activity-meal' },
+    office: { name: 'Office', icon: '', class: 'activity-work' },
+    workout: { name: 'Home Workout', icon: '', class: 'activity-gym' },
+    dinner: { name: 'Dinner', icon: '', class: 'activity-meal' },
+    duar: { name: 'Duar', icon: '', class: 'activity-duar' },
     custom: { name: 'Custom', icon: '⭐', class: '' }
 };
 
@@ -47,15 +48,24 @@ function highlightToday() {
     const awakeHours = SLEEP_HOUR - WAKEUP_HOUR; // Total awake hours in a day
     let dayProgress = 0;
 
-    if (currentHourDecimal < WAKEUP_HOUR) {
-        // Before wakeup - 0%
-        dayProgress = 0;
-    } else if (currentHourDecimal >= SLEEP_HOUR) {
-        // After sleep time - 100%
+    let isSleepTime = false;
+    if (SLEEP_HOUR >= WAKEUP_HOUR) {
+        isSleepTime = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+    } else {
+        isSleepTime = currentHourDecimal >= SLEEP_HOUR && currentHourDecimal < WAKEUP_HOUR;
+    }
+
+    if (currentHourDecimal === WAKEUP_HOUR && currentHourDecimal === SLEEP_HOUR) {
+        alert("Warning: Wake up and Sleep time cannot be identical. Please adjust your settings.");
+    }
+
+    if (isSleepTime) {
+        // During sleep time - 100% (or 0% depending on interpretation, but 100% matches previous logic)
         dayProgress = 100;
     } else {
         // During awake hours - calculate percentage
-        const hoursAwake = currentHourDecimal - WAKEUP_HOUR;
+        let hoursAwake = currentHourDecimal - WAKEUP_HOUR;
+        if (hoursAwake < 0) hoursAwake += 24;
         dayProgress = Math.round((hoursAwake / awakeHours) * 100);
     }
 
@@ -68,7 +78,12 @@ function highlightToday() {
     const dateStr = monthNames[currentMonth] + ' ' + currentDate;
 
     // Check if currently in sleep hours (for zzz animation)
-    const isSleepTime = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+    let isSleepTimeLocal = false;
+    if (SLEEP_HOUR >= WAKEUP_HOUR) {
+        isSleepTimeLocal = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+    } else {
+        isSleepTimeLocal = currentHourDecimal >= SLEEP_HOUR && currentHourDecimal < WAKEUP_HOUR;
+    }
 
     // Use static cache for headers and cells to reduce DOM lookups
     if (!window.headerElements) window.headerElements = document.querySelectorAll('th[data-day]');
@@ -102,12 +117,12 @@ function highlightToday() {
                 // Handle zzz visibility toggles separately
                 const contentEl = header.querySelector('.header-content');
                 const existingZzz = header.querySelector('.zzz-header');
-                if (isSleepTime && !existingZzz && contentEl) {
+                if (isSleepTimeLocal && !existingZzz && contentEl) {
                     const zzzSpan = document.createElement('span');
                     zzzSpan.className = 'zzz-header';
                     zzzSpan.textContent = 'zzz';
                     contentEl.appendChild(zzzSpan);
-                } else if (!isSleepTime && existingZzz) {
+                } else if (!isSleepTimeLocal && existingZzz) {
                     existingZzz.remove();
                 }
             }
@@ -147,15 +162,20 @@ function updateFlapsVisibility() {
     const currentHourDecimal = now.getHours() + now.getMinutes() / 60;
 
     // Check if currently in sleep hours
-    const isSleepTime = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+    let isSleepTime = false;
+    if (SLEEP_HOUR >= WAKEUP_HOUR) {
+        isSleepTime = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+    } else {
+        isSleepTime = currentHourDecimal >= SLEEP_HOUR && currentHourDecimal < WAKEUP_HOUR;
+    }
 
     const flaps = document.querySelectorAll('.cell-flap');
     flaps.forEach(flap => {
-        if (isSleepTime) {
-            // During sleep hours - close all flaps
+        if (isSleepTime && !isEditMode) {
+            // During sleep hours and NOT editing - close all flaps
             flap.classList.remove('open');
         } else {
-            // During awake hours - open all flaps (make everything visible)
+            // During awake hours (or actively editing) - open all flaps
             flap.classList.add('open');
         }
     });
@@ -227,6 +247,31 @@ function highlightCurrentTime() {
     if (closestRow && closestDiff < 2) {
         closestRow.classList.add('current-time-row');
         window.lastActiveRow = closestRow;
+
+        // Manage active-slot class for animations
+        document.querySelectorAll('.active-slot').forEach(el => el.classList.remove('active-slot'));
+
+        const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const currentDayName = dayNames[now.getDay()];
+
+        // Add active-slot to EVERYTHING in the current row
+        closestRow.querySelectorAll('td').forEach(td => td.classList.add('active-slot'));
+
+        const currentRowTime = parseFloat(closestRow.dataset.time);
+
+        // Add active-slot to ALL cells in the Time column
+        document.querySelectorAll('.time-col').forEach(td => td.classList.add('active-slot'));
+
+        // Add active-slot to Rituals column cells ONLY for current and future times
+        document.querySelectorAll('.rituals-col').forEach(td => {
+            const rowTime = parseFloat(td.parentElement.dataset.time);
+            if (rowTime >= currentRowTime) {
+                td.classList.add('active-slot');
+            }
+        });
+
+        // Add active-slot to ALL cells in the current Day column
+        document.querySelectorAll('.' + currentDayName).forEach(td => td.classList.add('active-slot'));
 
         const timeCell = closestRow.querySelector('.time-col');
         if (timeCell) {
@@ -317,7 +362,12 @@ function initializeFlaps() {
         // During awake hours, flaps should stay open
         const now = new Date();
         const currentHourDecimal = now.getHours() + now.getMinutes() / 60;
-        const isSleepTime = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+        let isSleepTime = false;
+        if (SLEEP_HOUR >= WAKEUP_HOUR) {
+            isSleepTime = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+        } else {
+            isSleepTime = currentHourDecimal >= SLEEP_HOUR && currentHourDecimal < WAKEUP_HOUR;
+        }
 
         if (isSleepTime) {
             // Only close during sleep hours
@@ -542,6 +592,27 @@ function createSettingsPanel() {
                 const el = document.getElementById(id);
                 if (el) localStorage.setItem(id, el.value);
             });
+
+            // Update global vars
+            const wakeEl = document.getElementById('wakeupTime');
+            if (wakeEl && wakeEl.value) {
+                const [h, m] = wakeEl.value.split(':').map(Number);
+                WAKEUP_HOUR = h + (m / 60);
+            }
+            const sleepEl = document.getElementById('sleepTime');
+            if (sleepEl && sleepEl.value) {
+                const [h, m] = sleepEl.value.split(':').map(Number);
+                SLEEP_HOUR = h + (m / 60);
+            }
+
+            if (WAKEUP_HOUR === SLEEP_HOUR) {
+                alert("Wake and Sleep times cannot be the same!");
+            }
+
+            // Manually re-trigger calculations
+            highlightToday();
+            highlightCurrentTime();
+            updateFlapsVisibility();
 
             applyWorkScheduleLines();
             applyBtn.innerText = '✨ SETTINGS APPLIED!';
@@ -773,6 +844,7 @@ function toggleEditMode() {
         disableCellEditing();
         hideActivityPicker();
     }
+    updateFlapsVisibility();
 }
 
 // Enable cell editing
@@ -1050,6 +1122,15 @@ function loadSchedule() {
         const data = JSON.parse(saved);
         if (!data.schedule) return;
 
+        // Force migrate Sunday Hike block
+        if (!data.migrated_hike_v2 && data.schedule['12'] && data.schedule['13'] && data.schedule['14']) {
+            data.schedule['12'].sunday = { text: 'Hike', icon: '', class: 'activity-hike' };
+            data.schedule['13'].sunday = { text: 'Hike', icon: '', class: 'activity-hike' };
+            data.schedule['14'].sunday = { text: 'Hike', icon: '', class: 'activity-hike' };
+            data.migrated_hike_v2 = true;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
         for (const [time, days] of Object.entries(data.schedule)) {
             const row = document.querySelector(`tr[data-time="${time}"]`);
             if (!row) continue;
@@ -1100,9 +1181,51 @@ function loadSchedule() {
                         else if (cleanText.toLowerCase().includes('dinner')) currentIcon = '🍲';
                         else currentIcon = '🍽️';
                     }
-                    // Handle Workout/Office
-                    if (currentIcon === '💪' && cleanText.toLowerCase().includes('workout')) currentIcon = '🏋️';
-                    if (currentIcon === '💻' && cleanText.toLowerCase().includes('office')) currentIcon = '🏢';
+                    // Handle Workout
+                    if (currentIcon === '💪' && cleanText.toLowerCase().includes('workout')) currentIcon = '';
+
+                    if (cleanText.toLowerCase() === 'gym' || currentIcon === '💪' || currentIcon === '🏋️') {
+                        currentIcon = '';
+                    }
+                    if (cleanText.toLowerCase() === 'water' || currentIcon === '💧') {
+                        currentIcon = '';
+                    }
+                    if (cleanText.toLowerCase() === 'meditate' || currentIcon === '🧘') {
+                        currentIcon = '';
+                    }
+                    if (cleanText.toLowerCase() === 'work' || currentIcon === '💻') {
+                        currentIcon = '';
+                    }
+                    if (cleanText.toLowerCase().includes('meal') || cleanText.toLowerCase().includes('prep') || cleanText.toLowerCase().includes('dinner') || currentIcon === '🍽️' || currentIcon === '🍳' || currentIcon === '🍲') {
+                        currentIcon = '';
+                    }
+                    if (cleanText.toLowerCase().includes('wake') || currentIcon === '☀️') {
+                        currentIcon = '';
+                        cell.classList.add('activity-wakeup');
+                        cellData.class = 'activity-wakeup';
+                    }
+                    if (cleanText.toLowerCase().includes('office') || cleanText.toLowerCase().includes('commute') || currentIcon === '🏢' || currentIcon === '🚗') {
+                        currentIcon = '';
+                        if (day === 'tuesday') {
+                            cell.classList.add('activity-bus');
+                            cellData.class = 'activity-bus';
+                        } else if (day === 'thursday') {
+                            cell.classList.add('activity-car');
+                            cellData.class = 'activity-car';
+                        }
+                    }
+
+                    // Migrate Duar and Hike explicitly
+                    if (cleanText.toLowerCase() === 'duar' && !cellData.class) {
+                        currentIcon = '';
+                        cell.classList.add('activity-duar');
+                        cellData.class = 'activity-duar';
+                    }
+                    if (cleanText.toLowerCase() === 'hike' && !cellData.class) {
+                        currentIcon = '';
+                        cell.classList.add('activity-hike');
+                        cellData.class = 'activity-hike';
+                    }
 
                     cell.innerHTML = (currentIcon ? `<span class="icon">${currentIcon}</span>` : '') +
                         cleanText + flapHtml;
@@ -1495,9 +1618,7 @@ function checkNotifications() {
 // INITIALIZATION
 // ============================================
 
-// Initialize
-highlightToday();
-highlightCurrentTime();
+// Initialize base setup
 initializeFlaps();
 
 // Create editing UI
@@ -1508,9 +1629,28 @@ createSettingsPanel();
 // Default Focus Mode ON
 toggleFocusMode(true);
 
+function loadGlobalSettings() {
+    const wakeSaved = localStorage.getItem('wakeupTime');
+    if (wakeSaved) {
+        const [h, m] = wakeSaved.split(':').map(Number);
+        WAKEUP_HOUR = h + (m / 60);
+    }
+    const sleepSaved = localStorage.getItem('sleepTime');
+    if (sleepSaved) {
+        const [h, m] = sleepSaved.split(':').map(Number);
+        SLEEP_HOUR = h + (m / 60);
+    }
+}
+
 // Load saved schedule
 loadSchedule();
+loadGlobalSettings();
 applyWorkScheduleLines();
+
+// Initial calculation updates based on settings
+highlightToday();
+highlightCurrentTime();
+updateFlapsVisibility();
 
 // Heartbeat interval: Consolidate all background updates into one loop
 // Main heartbeat loop

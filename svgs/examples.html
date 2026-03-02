@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Calendar Blocks - Dual Theme</title>
+    <style>
+        :root {
+            --bg-body: #0f111a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            background-color: var(--bg-body);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-main);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .category-row {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .category-header {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .theme-col {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .theme-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .table-cell-mockup {
+            width: 100%;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            resize: both;
+            min-height: 80px;
+            min-width: 150px;
+            border: 1px solid transparent;
+        }
+
+        /* Make the light mode boundary visible against dark background */
+        .light-mode-box {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        svg {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Calendar Event Animations</h1>
+        <p style="color: var(--text-muted); font-size: 15px;">Dark Mode vs Light Mode · Drag block corners to test
+            responsiveness</p>
+    </div>
+
+    <div class="container" id="dashboard">
+        <!-- Javascript will inject the rows here -->
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SVG TEMPLATES (Variables injected via JS)  -->
+    <!-- ========================================== -->
+
+    <!-- 1. GYM -->
+    <template id="tpl-gym">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-gym-{{id}}" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-gym-{{id}})" />
+            <g fill="{{primary}}">
+                <animateTransform attributeName="transform" type="translate" values="0,0; 0,-15; 0,0"
+                    keyTimes="0; 0.5; 1" dur="2s" repeatCount="indefinite" />
+                <rect x="110" y="55" width="80" height="10" rx="3" />
+                <rect x="90" y="40" width="15" height="40" rx="4" />
+                <rect x="75" y="45" width="12" height="30" rx="3" />
+                <rect x="195" y="40" width="15" height="40" rx="4" />
+                <rect x="213" y="45" width="12" height="30" rx="3" />
+            </g>
+            <g stroke="{{secondary}}" stroke-width="2" opacity="0.5" stroke-linecap="round">
+                <line x1="150" y1="100" x2="150" y2="100">
+                    <animate attributeName="y2" values="100; 120; 100" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.1; 0.6; 0.1" dur="2s" repeatCount="indefinite" />
+                </line>
+                <line x1="120" y1="95" x2="120" y2="95">
+                    <animate attributeName="y2" values="95; 115; 95" dur="2s" repeatCount="indefinite" begin="0.2s" />
+                    <animate attributeName="opacity" values="0.1; 0.6; 0.1" dur="2s" repeatCount="indefinite"
+                        begin="0.2s" />
+                </line>
+                <line x1="180" y1="95" x2="180" y2="95">
+                    <animate attributeName="y2" values="95; 115; 95" dur="2s" repeatCount="indefinite" begin="0.4s" />
+                    <animate attributeName="opacity" values="0.1; 0.6; 0.1" dur="2s" repeatCount="indefinite"
+                        begin="0.4s" />
+                </line>
+            </g>
+        </svg>
+    </template>
+
+    <!-- 2. PAINT -->
+    <template id="tpl-paint">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-paint-{{id}}" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-paint-{{id}})" />
+            <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M -50,60 C 50,-20 150,140 350,60" stroke="{{c1}}" stroke-width="15" opacity="0.8"
+                    stroke-dasharray="400" stroke-dashoffset="400">
+                    <animate attributeName="stroke-dashoffset" values="400; 0; -400" dur="4s"
+                        repeatCount="indefinite" />
+                </path>
+                <path d="M -50,70 C 70,0 130,120 350,70" stroke="{{c2}}" stroke-width="12" opacity="0.9"
+                    stroke-dasharray="400" stroke-dashoffset="400">
+                    <animate attributeName="stroke-dashoffset" values="400; 0; -400" dur="4.5s" repeatCount="indefinite"
+                        begin="0.5s" />
+                </path>
+                <path d="M -50,80 C 90,20 110,100 350,80" stroke="{{c3}}" stroke-width="10" stroke-dasharray="400"
+                    stroke-dashoffset="400">
+                    <animate attributeName="stroke-dashoffset" values="400; 0; -400" dur="5s" repeatCount="indefinite"
+                        begin="1s" />
+                </path>
+            </g>
+            <circle cx="250" cy="80" r="4" fill="{{c1}}">
+                <animateTransform attributeName="transform" type="translate" values="0,0; 0,10; 0,0" dur="2.5s"
+                    repeatCount="indefinite" />
+            </circle>
+            <polygon points="150,20 155,30 145,30" fill="{{c2}}">
+                <animateTransform attributeName="transform" type="rotate" values="0 150 25; 360 150 25" dur="4s"
+                    repeatCount="indefinite" />
+            </polygon>
+        </svg>
+    </template>
+
+    <!-- 3. MEALS -->
+    <template id="tpl-meals">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-meals-{{id}}" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-meals-{{id}})" />
+            <g transform="translate(150, 80)">
+                <path d="M -40,-10 L 40,-10 C 40,20 25,30 0,30 C -25,30 -40,20 -40,-10 Z" fill="{{pot}}" />
+                <rect x="-45" y="-15" width="90" height="6" rx="3" fill="{{steam}}" />
+            </g>
+            <g fill="{{bubble}}">
+                <circle cx="130" cy="65" r="3">
+                    <animate attributeName="cy" values="65; 50" dur="1.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="1; 0" dur="1.5s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="165" cy="65" r="4">
+                    <animate attributeName="cy" values="65; 45" dur="2s" repeatCount="indefinite" begin="0.5s" />
+                    <animate attributeName="opacity" values="1; 0" dur="2s" repeatCount="indefinite" begin="0.5s" />
+                </circle>
+            </g>
+            <path d="M 135,45 Q 125,25 145,5" fill="none" stroke="{{steam}}" stroke-width="3" stroke-linecap="round"
+                opacity="0.6">
+                <animate attributeName="d"
+                    values="M 135,45 Q 125,25 145,5; M 135,45 Q 145,25 125,5; M 135,45 Q 125,25 145,5" dur="3s"
+                    repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.2; 0.8; 0.2" dur="3s" repeatCount="indefinite" />
+            </path>
+            <path d="M 160,50 Q 170,30 150,10" fill="none" stroke="{{steam}}" stroke-width="3" stroke-linecap="round"
+                opacity="0.6">
+                <animate attributeName="d"
+                    values="M 160,50 Q 170,30 150,10; M 160,50 Q 150,30 170,10; M 160,50 Q 170,30 150,10" dur="4s"
+                    repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.2; 0.8; 0.2" dur="4s" repeatCount="indefinite" begin="1s" />
+            </path>
+        </svg>
+    </template>
+
+    <!-- 4. WORK -->
+    <template id="tpl-work">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-work-{{id}}" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-work-{{id}})" />
+            <rect x="70" y="20" width="160" height="80" rx="6" fill="{{window}}" stroke="{{header}}" stroke-width="2" />
+            <rect x="70" y="20" width="160" height="15" fill="{{header}}" />
+            <circle cx="80" cy="27.5" r="3" fill="#ef4444" />
+            <circle cx="90" cy="27.5" r="3" fill="#eab308" />
+            <circle cx="100" cy="27.5" r="3" fill="#22c55e" />
+            <g fill="{{text}}">
+                <rect x="80" y="45" width="0" height="4" rx="2">
+                    <animate attributeName="width" values="0; 60; 60; 60; 0" keyTimes="0; 0.1; 0.8; 0.9; 1" dur="6s"
+                        repeatCount="indefinite" />
+                </rect>
+                <rect x="80" y="55" width="0" height="4" rx="2">
+                    <animate attributeName="width" values="0; 0; 40; 40; 0" keyTimes="0; 0.1; 0.2; 0.9; 1" dur="6s"
+                        repeatCount="indefinite" />
+                </rect>
+                <rect x="95" y="65" width="0" height="4" rx="2">
+                    <animate attributeName="width" values="0; 0; 0; 80; 80; 0" keyTimes="0; 0.2; 0.35; 0.9; 1" dur="6s"
+                        repeatCount="indefinite" />
+                </rect>
+                <rect x="95" y="75" width="0" height="4" rx="2">
+                    <animate attributeName="width" values="0; 0; 0; 0; 50; 0" keyTimes="0; 0.35; 0.45; 0.9; 1" dur="6s"
+                        repeatCount="indefinite" />
+                </rect>
+                <rect x="80" y="85" width="6" height="4">
+                    <animate attributeName="opacity" values="1; 0; 1" dur="0.8s" repeatCount="indefinite" />
+                    <animate attributeName="x" values="80; 80; 80; 80; 80" keyTimes="0; 0.1; 0.35; 0.45; 1" dur="6s"
+                        repeatCount="indefinite" />
+                </rect>
+            </g>
+        </svg>
+    </template>
+
+    <!-- 5. MEDITATE -->
+    <template id="tpl-meditate">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-med-{{id}}" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-med-{{id}})" />
+            <g transform="translate(150, 60)" fill="none" stroke-width="2">
+                <circle cx="0" cy="0" r="10" stroke="{{ring1}}" opacity="0.4">
+                    <animate attributeName="r" values="10; 45; 45; 10; 10" keyTimes="0; 0.4; 0.5; 0.9; 1" dur="8s"
+                        repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.2; 0.8; 0.8; 0.2; 0.2" keyTimes="0; 0.4; 0.5; 0.9; 1"
+                        dur="8s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="0" cy="0" r="10" stroke="{{ring2}}" opacity="0.6">
+                    <animate attributeName="r" values="10; 35; 35; 10; 10" keyTimes="0; 0.4; 0.5; 0.9; 1" dur="8s"
+                        repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.4; 1; 1; 0.4; 0.4" keyTimes="0; 0.4; 0.5; 0.9; 1"
+                        dur="8s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="0" cy="0" r="10" stroke="{{ring3}}" opacity="0.9">
+                    <animate attributeName="r" values="10; 25; 25; 10; 10" keyTimes="0; 0.4; 0.5; 0.9; 1" dur="8s"
+                        repeatCount="indefinite" />
+                </circle>
+                <circle cx="0" cy="0" r="5" fill="{{ring1}}">
+                    <animate attributeName="opacity" values="0.5; 1; 0.5" dur="8s" repeatCount="indefinite" />
+                </circle>
+            </g>
+        </svg>
+    </template>
+
+    <!-- 6. COMMUTE CAR -->
+    <template id="tpl-car">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-car-{{id}}" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-car-{{id}})" />
+            <g fill="{{city}}" opacity="0.5">
+                <animateTransform attributeName="transform" type="translate" values="0,0; -100,0" dur="8s"
+                    repeatCount="indefinite" />
+                <rect x="0" y="50" width="30" height="60" />
+                <rect x="40" y="40" width="40" height="70" />
+                <rect x="90" y="60" width="20" height="50" />
+                <rect x="120" y="30" width="35" height="80" />
+                <rect x="170" y="70" width="40" height="40" />
+                <rect x="220" y="45" width="25" height="65" />
+                <rect x="260" y="35" width="40" height="75" />
+                <rect x="310" y="50" width="30" height="60" />
+                <rect x="350" y="40" width="40" height="70" />
+                <rect x="400" y="60" width="20" height="50" />
+            </g>
+            <rect x="0" y="90" width="300" height="30" fill="{{road}}" />
+            <line x1="0" y1="105" x2="300" y2="105" stroke="{{bg2}}" stroke-width="2" stroke-dasharray="20 15">
+                <animate attributeName="stroke-dashoffset" values="35; 0" dur="0.4s" repeatCount="indefinite" />
+            </line>
+            <g transform="translate(130, 75)">
+                <animateTransform attributeName="transform" type="translate" values="130,75; 130,76; 130,75" dur="0.2s"
+                    repeatCount="indefinite" />
+                <path d="M 5,20 L 10,10 L 25,10 L 35,20 L 40,20 Q 45,20 45,25 L 45,30 L 0,30 L 0,25 Q 0,20 5,20 Z"
+                    fill="{{car}}" />
+                <path d="M 12,12 L 23,12 L 31,19 L 8,19 Z" fill="{{bg2}}" />
+                <rect x="21" y="12" width="2" height="7" fill="{{car}}" />
+                <circle cx="10" cy="30" r="4" fill="#000" />
+                <circle cx="35" cy="30" r="4" fill="#000" />
+            </g>
+        </svg>
+    </template>
+
+    <!-- 7. COMMUTE BUS -->
+    <template id="tpl-bus">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-bus-{{id}}" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-bus-{{id}})" />
+            <g fill="{{road}}" opacity="0.3">
+                <animateTransform attributeName="transform" type="translate" values="0,0; -150,0" dur="5s"
+                    repeatCount="indefinite" />
+                <circle cx="50" cy="70" r="20" />
+                <circle cx="80" cy="80" r="25" />
+                <circle cx="200" cy="60" r="30" />
+                <circle cx="240" cy="75" r="20" />
+                <circle cx="350" cy="70" r="20" />
+                <circle cx="380" cy="80" r="25" />
+            </g>
+            <rect x="0" y="90" width="300" height="30" fill="{{road}}" />
+            <line x1="0" y1="105" x2="300" y2="105" stroke="{{bg2}}" stroke-width="2" stroke-dasharray="30 20">
+                <animate attributeName="stroke-dashoffset" values="50; 0" dur="0.6s" repeatCount="indefinite" />
+            </line>
+            <g transform="translate(100, 50)">
+                <animateTransform attributeName="transform" type="translate" values="100,50; 100,51; 100,50" dur="0.3s"
+                    repeatCount="indefinite" />
+                <rect x="0" y="0" width="100" height="40" rx="4" fill="{{bus}}" />
+                <rect x="5" y="5" width="15" height="15" rx="2" fill="{{window}}" />
+                <rect x="25" y="5" width="20" height="15" rx="2" fill="{{window}}" />
+                <rect x="50" y="5" width="20" height="15" rx="2" fill="{{window}}" />
+                <rect x="75" y="5" width="20" height="15" rx="2" fill="{{window}}" />
+                <circle cx="20" cy="40" r="6" fill="#000" />
+                <circle cx="80" cy="40" r="6" fill="#000" />
+                <rect x="0" y="25" width="100" height="4" fill="{{window}}" opacity="0.3" />
+            </g>
+        </svg>
+    </template>
+
+    <!-- 8. WATER / HYDRATION -->
+    <template id="tpl-water">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-water-{{id}}" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+                <clipPath id="drop-clip-{{id}}">
+                    <path
+                        d="M150,20 C150,20 120,60 120,80 C120,100 135,110 150,110 C165,110 180,100 180,80 C180,60 150,20 150,20 Z" />
+                </clipPath>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-water-{{id}})" />
+
+            <g fill="{{drop}}" opacity="0.6">
+                <circle cx="100" cy="100" r="3">
+                    <animate attributeName="cy" values="120; -10" dur="4s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="200" cy="80" r="4">
+                    <animate attributeName="cy" values="120; -10" dur="5s" repeatCount="indefinite" begin="1s" />
+                </circle>
+                <circle cx="250" cy="110" r="2">
+                    <animate attributeName="cy" values="120; -10" dur="3s" repeatCount="indefinite" begin="2s" />
+                </circle>
+                <circle cx="50" cy="90" r="2.5">
+                    <animate attributeName="cy" values="120; -10" dur="4.5s" repeatCount="indefinite" begin="0.5s" />
+                </circle>
+            </g>
+
+            <path
+                d="M150,20 C150,20 120,60 120,80 C120,100 135,110 150,110 C165,110 180,100 180,80 C180,60 150,20 150,20 Z"
+                fill="none" stroke="{{waterLight}}" stroke-width="3" />
+            <g clip-path="url(#drop-clip-{{id}})">
+                <rect x="0" y="0" width="300" height="120" fill="{{waterDark}}" opacity="0.3" />
+                <path d="M 100,70 Q 125,50 150,70 T 200,70 L 200,120 L 100,120 Z" fill="{{waterLight}}">
+                    <animate attributeName="d"
+                        values="M 100,70 Q 125,50 150,70 T 200,70 L 200,120 L 100,120 Z; M 100,70 Q 125,90 150,70 T 200,70 L 200,120 L 100,120 Z; M 100,70 Q 125,50 150,70 T 200,70 L 200,120 L 100,120 Z"
+                        dur="2s" repeatCount="indefinite" />
+                    <animateTransform attributeName="transform" type="translate" values="0,40; 0,-5; 0,40" dur="6s"
+                        repeatCount="indefinite" />
+                </path>
+            </g>
+        </svg>
+    </template>
+
+    <!-- 9. HIKE / NATURE -->
+    <template id="tpl-hike">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-hike-{{id}}" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-hike-{{id}})" />
+            <circle cx="220" cy="40" r="16" fill="{{sun}}">
+                <animateTransform attributeName="transform" type="translate" values="0,0; 0,10; 0,0" dur="6s"
+                    repeatCount="indefinite" />
+            </circle>
+            <path d="M -50,120 L 80,30 L 200,120 Z" fill="{{mountainBack}}">
+                <animateTransform attributeName="transform" type="translate" values="0,0; -40,0; 0,0" dur="15s"
+                    repeatCount="indefinite" />
+            </path>
+            <path d="M 50,120 L 150,50 L 280,120 Z" fill="{{mountainBack}}">
+                <animateTransform attributeName="transform" type="translate" values="0,0; -30,0; 0,0" dur="12s"
+                    repeatCount="indefinite" />
+            </path>
+            <path d="M -20,120 L 60,70 L 140,120 L 220,60 L 320,120 Z" fill="{{mountainFront}}">
+                <animateTransform attributeName="transform" type="translate" values="0,0; -80,0" dur="10s"
+                    repeatCount="indefinite" />
+            </path>
+            <path d="M 60,120 L 140,70 L 220,120 L 300,60 L 380,120 Z" fill="{{mountainFront}}">
+                <animateTransform attributeName="transform" type="translate" values="80,0; 0,0" dur="10s"
+                    repeatCount="indefinite" />
+            </path>
+        </svg>
+    </template>
+
+    <!-- 10. SLEEP -->
+    <template id="tpl-sleep">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-sleep-{{id}}" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-sleep-{{id}})" />
+            <g fill="{{stars}}" opacity="0.6">
+                <circle cx="40" cy="30" r="1">
+                    <animate attributeName="opacity" values="0.2; 1; 0.2" dur="3s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="100" cy="20" r="1.5">
+                    <animate attributeName="opacity" values="0.1; 0.8; 0.1" dur="4s" repeatCount="indefinite"
+                        begin="1s" />
+                </circle>
+                <circle cx="260" cy="40" r="1">
+                    <animate attributeName="opacity" values="0.3; 1; 0.3" dur="2.5s" repeatCount="indefinite"
+                        begin="0.5s" />
+                </circle>
+                <circle cx="200" cy="80" r="1.5">
+                    <animate attributeName="opacity" values="0.2; 0.9; 0.2" dur="5s" repeatCount="indefinite"
+                        begin="2s" />
+                </circle>
+            </g>
+            <g>
+                <animateTransform attributeName="transform" type="translate" values="0,0; 0,5; 0,0" dur="6s"
+                    repeatCount="indefinite" />
+                <path d="M 120,40 C 135,40 145,55 140,70 C 155,55 150,35 130,30 C 120,28 115,30 120,40 Z"
+                    fill="{{moon}}" transform="scale(1.3) translate(-10, -10)" />
+            </g>
+            <g fill="{{text}}" font-family="sans-serif" font-weight="bold" font-style="italic">
+                <text x="170" y="60" font-size="14" opacity="0">Z
+                    <animateTransform attributeName="transform" type="translate" values="0,0; 5,-15" dur="3s"
+                        repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0; 0.8; 0" dur="3s" repeatCount="indefinite" />
+                </text>
+                <text x="185" y="45" font-size="10" opacity="0">Z
+                    <animateTransform attributeName="transform" type="translate" values="0,0; 8,-12" dur="3s"
+                        repeatCount="indefinite" begin="1s" />
+                    <animate attributeName="opacity" values="0; 0.8; 0" dur="3s" repeatCount="indefinite" begin="1s" />
+                </text>
+                <text x="200" y="35" font-size="8" opacity="0">Z
+                    <animateTransform attributeName="transform" type="translate" values="0,0; 10,-10" dur="3s"
+                        repeatCount="indefinite" begin="2s" />
+                    <animate attributeName="opacity" values="0; 0.8; 0" dur="3s" repeatCount="indefinite" begin="2s" />
+                </text>
+            </g>
+        </svg>
+    </template>
+
+    <!-- 11. PLAN / TODO -->
+    <template id="tpl-plan">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="bg-plan-{{id}}" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="{{bg1}}" />
+                    <stop offset="100%" stop-color="{{bg2}}" />
+                </linearGradient>
+            </defs>
+            <rect width="300" height="120" fill="url(#bg-plan-{{id}})" />
+
+            <rect x="110" y="20" width="80" height="80" rx="4" fill="{{paper}}" />
+
+            <!-- Item 1 -->
+            <rect x="120" y="35" width="8" height="8" rx="2" fill="none" stroke="{{line}}" stroke-width="1.5" />
+            <path d="M 121,39 L 123,41 L 127,36" fill="none" stroke="{{check}}" stroke-width="2" stroke-linecap="round"
+                stroke-dasharray="10" stroke-dashoffset="10">
+                <animate attributeName="stroke-dashoffset" values="10; 0; 0; 0; 10" keyTimes="0; 0.1; 0.8; 0.9; 1"
+                    dur="5s" repeatCount="indefinite" />
+            </path>
+            <rect x="135" y="37" width="45" height="4" rx="2" fill="{{line}}" />
+
+            <!-- Item 2 -->
+            <rect x="120" y="55" width="8" height="8" rx="2" fill="none" stroke="{{line}}" stroke-width="1.5" />
+            <path d="M 121,59 L 123,61 L 127,56" fill="none" stroke="{{check}}" stroke-width="2" stroke-linecap="round"
+                stroke-dasharray="10" stroke-dashoffset="10">
+                <animate attributeName="stroke-dashoffset" values="10; 10; 0; 0; 10" keyTimes="0; 0.2; 0.3; 0.8; 1"
+                    dur="5s" repeatCount="indefinite" />
+            </path>
+            <rect x="135" y="57" width="35" height="4" rx="2" fill="{{line}}" />
+
+            <!-- Item 3 -->
+            <rect x="120" y="75" width="8" height="8" rx="2" fill="none" stroke="{{line}}" stroke-width="1.5" />
+            <path d="M 121,79 L 123,81 L 127,76" fill="none" stroke="{{check}}" stroke-width="2" stroke-linecap="round"
+                stroke-dasharray="10" stroke-dashoffset="10">
+                <animate attributeName="stroke-dashoffset" values="10; 10; 0; 0; 10" keyTimes="0; 0.4; 0.5; 0.8; 1"
+                    dur="5s" repeatCount="indefinite" />
+            </path>
+            <rect x="135" y="77" width="40" height="4" rx="2" fill="{{line}}" />
+
+            <!-- Floating Pencil -->
+            <g fill="{{pen}}">
+                <animateTransform attributeName="transform" type="translate"
+                    values="30,-10; 30,-10; 30,10; 30,10; 30,30; 30,30; 45,60; 30,-10"
+                    keyTimes="0; 0.1; 0.2; 0.3; 0.4; 0.5; 0.9; 1" dur="5s" repeatCount="indefinite" />
+                <path d="M 100,45 L 105,40 L 115,50 L 110,55 Z" />
+                <polygon points="100,45 110,55 95,60" fill="{{bg1}}" />
+            </g>
+        </svg>
+    </template>
+
+
+    <!-- ========================================== -->
+    <!-- RENDER LOGIC                               -->
+    <!-- ========================================== -->
+    <script>
+        const themes = {
+            gym: {
+                title: 'Gym / Workout',
+                dark: { bg1: '#3f1319', bg2: '#1a080a', primary: '#f87171', secondary: '#fca5a5' },
+                light: { bg1: '#fee2e2', bg2: '#fecaca', primary: '#ef4444', secondary: '#b91c1c' }
+            },
+            paint: {
+                title: 'Paint / Creative',
+                dark: { bg1: '#332a10', bg2: '#141005', c1: '#fcd34d', c2: '#fb923c', c3: '#f43f5e' },
+                light: { bg1: '#fef3c7', bg2: '#fde68a', c1: '#eab308', c2: '#f97316', c3: '#e11d48' }
+            },
+            meals: {
+                title: 'Meals / Food Prep',
+                dark: { bg1: '#0f2b2b', bg2: '#051010', pot: '#2dd4bf', steam: '#ccfbf1', bubble: '#99f6e4' },
+                light: { bg1: '#ccfbf1', bg2: '#99f6e4', pot: '#0d9488', steam: '#115e59', bubble: '#14b8a6' }
+            },
+            work: {
+                title: 'Work / Office',
+                dark: { bg1: '#0f172a', bg2: '#020617', window: '#000000', text: '#38bdf8', header: '#1e293b' },
+                light: { bg1: '#e0f2fe', bg2: '#bae6fd', window: '#ffffff', text: '#0284c7', header: '#f1f5f9' }
+            },
+            meditate: {
+                title: 'Meditate / Yoga',
+                dark: { bg1: '#2a103c', bg2: '#11051a', ring1: '#d8b4fe', ring2: '#c084fc', ring3: '#a855f7' },
+                light: { bg1: '#f3e8ff', bg2: '#e9d5ff', ring1: '#c084fc', ring2: '#a855f7', ring3: '#7e22ce' }
+            },
+            car: {
+                title: 'Commute (Car)',
+                dark: { bg1: '#1e1b4b', bg2: '#0f172a', car: '#ef4444', road: '#334155', city: '#312e81' },
+                light: { bg1: '#f1f5f9', bg2: '#cbd5e1', car: '#dc2626', road: '#94a3b8', city: '#94a3b8' }
+            },
+            bus: {
+                title: 'Commute (Bus)',
+                dark: { bg1: '#172554', bg2: '#020617', bus: '#3b82f6', road: '#1e293b', window: '#bfdbfe' },
+                light: { bg1: '#dbeafe', bg2: '#bfdbfe', bus: '#2563eb', road: '#94a3b8', window: '#eff6ff' }
+            },
+            water: {
+                title: 'Water / Hydrate',
+                dark: { bg1: '#082f49', bg2: '#041c2c', waterDark: '#0284c7', waterLight: '#38bdf8', drop: '#7dd3fc' },
+                light: { bg1: '#e0f2fe', bg2: '#bae6fd', waterDark: '#0369a1', waterLight: '#0ea5e9', drop: '#38bdf8' }
+            },
+            hike: {
+                title: 'Hike / Nature',
+                dark: { bg1: '#064e3b', bg2: '#022c22', mountainFront: '#047857', mountainBack: '#065f46', sun: '#fde047' },
+                light: { bg1: '#dcfce7', bg2: '#bbf7d0', mountainFront: '#4ade80', mountainBack: '#86efac', sun: '#f59e0b' }
+            },
+            sleep: {
+                title: 'Sleep / Rest',
+                dark: { bg1: '#0b0f19', bg2: '#02040a', moon: '#fef08a', stars: '#ffffff', text: '#818cf8' },
+                light: { bg1: '#f8fafc', bg2: '#e2e8f0', moon: '#a5b4fc', stars: '#94a3b8', text: '#6366f1' }
+            },
+            plan: {
+                title: 'Plan / Checklist',
+                dark: { bg1: '#27272a', bg2: '#18181b', paper: '#3f3f46', check: '#34d399', line: '#a1a1aa', pen: '#f87171' },
+                light: { bg1: '#f4f4f5', bg2: '#e4e4e7', paper: '#ffffff', check: '#059669', line: '#a1a1aa', pen: '#ef4444' }
+            }
+        };
+
+        const dashboard = document.getElementById('dashboard');
+
+        // Render function replaces {{variable}} with hardcoded colors from the JS theme dictionary
+        Object.keys(themes).forEach(key => {
+            const data = themes[key];
+            const tpl = document.getElementById(`tpl-${key}`).innerHTML;
+
+            // Build Dark Mode SVG
+            let darkSvg = tpl.replace(/{{id}}/g, `${key}-dark`);
+            Object.keys(data.dark).forEach(v => {
+                darkSvg = darkSvg.replace(new RegExp(`{{${v}}}`, 'g'), data.dark[v]);
+            });
+
+            // Build Light Mode SVG
+            let lightSvg = tpl.replace(/{{id}}/g, `${key}-light`);
+            Object.keys(data.light).forEach(v => {
+                lightSvg = lightSvg.replace(new RegExp(`{{${v}}}`, 'g'), data.light[v]);
+            });
+
+            // Create Row Element
+            const row = document.createElement('div');
+            row.className = 'category-row';
+            row.innerHTML = `
+                <div class="category-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    ${data.title}
+                </div>
+                <div class="grid">
+                    <div class="theme-col">
+                        <div class="theme-label">DARK MODE</div>
+                        <div class="table-cell-mockup dark-mode-box">${darkSvg}</div>
+                    </div>
+                    <div class="theme-col">
+                        <div class="theme-label" style="color:#e2e8f0;">LIGHT MODE</div>
+                        <div class="table-cell-mockup light-mode-box">${lightSvg}</div>
+                    </div>
+                </div>
+            `;
+            dashboard.appendChild(row);
+        });
+    </script>
+</body>
+
+</html>

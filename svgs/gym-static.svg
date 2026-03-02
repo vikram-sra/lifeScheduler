@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Background faint pulsing gradient -->
+     <linearGradient id="gymPulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+       <stop offset="0%" stop-color="#ff4757" stop-opacity="0.0"/>
+       <stop offset="50%" stop-color="#ff4757" stop-opacity="0.3"/>
+       <stop offset="100%" stop-color="#ff4757" stop-opacity="0.0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Pulsing base layer -->
+  <rect width="200" height="60" fill="url(#gymPulseGrad)">
+    
+  </rect>
+
+  <g>
+    <!-- Seamless slide matched with the heartbeat distance -->
+    
+    
+    <g id="tile">
+      <!-- Glow line -->
+      <path d="M0,30 L60,30 L70,10 L80,45 L90,20 L100,30 L200,30" 
+            stroke="#ff6b81" stroke-width="6" fill="none" stroke-linejoin="round" opacity="0.8">
+      </path>
+      <!-- Core crisp path -->
+      <path d="M0,30 L60,30 L70,10 L80,45 L90,20 L100,30 L200,30" 
+            stroke="#fff" stroke-width="2" fill="none" stroke-linejoin="round" />
+            
+      <!-- Horizontal speed dashes zooming past (Slowed down significantly) -->
+      <g stroke="#ffffff" stroke-linecap="round" opacity="0.5">
+        
+        <line x1="40" y1="15" x2="60" y2="15" stroke-width="1.5" />
+        <line x1="240" y1="15" x2="260" y2="15" stroke-width="1.5" /> 
+
+        <line x1="120" y1="45" x2="150" y2="45" stroke-width="2" opacity="0.3" />
+        <line x1="320" y1="45" x2="350" y2="45" stroke-width="2" opacity="0.3" />
+
+        <line x1="80" y1="8" x2="90" y2="8" stroke-width="1" />
+        <line x1="280" y1="8" x2="290" y2="8" stroke-width="1" />
+        
+        <circle cx="10" cy="50" r="1.5" fill="#fff" opacity="0.3" stroke="none" />
+        <circle cx="150" cy="20" r="1" fill="#fff" opacity="0.3" stroke="none" />
+        <circle cx="210" cy="50" r="1.5" fill="#fff" opacity="0.3" stroke="none" />
+        <circle cx="350" cy="20" r="1" fill="#fff" opacity="0.3" stroke="none" />
+      </g>
+    </g>
+    
+    <!-- Exact duplicate adjacent to tile 1 so horizontal panning loops perfectly -->
+    <use href="#tile" x="200" />
+  </g>
+</svg>

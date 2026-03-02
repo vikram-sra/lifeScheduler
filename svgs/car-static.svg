@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100" preserveAspectRatio="xMidYMid slice">
+  <linearGradient id="skyCar" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#fdcb6e" />
+    <stop offset="100%" stop-color="#e17055" />
+  </linearGradient>
+  <rect width="300" height="100" fill="url(#skyCar)" />
+
+  <circle cx="80" cy="50" r="25" fill="#fab1a0" opacity="0.9">
+    
+  </circle>
+
+  <g opacity="0.4">
+    
+    <path d="M0,70 Q50,40 100,70 T200,70 T300,70 L300,100 L0,100 Z" fill="#2d3436" />
+    <path d="M300,70 Q350,40 400,70 T500,70 T600,70 L600,100 L300,100 Z" fill="#2d3436" />
+  </g>
+
+  <rect x="0" y="75" width="300" height="25" fill="#636e72" />
+  
+  <g stroke="#b2bec3" stroke-width="2" stroke-dasharray="20 15">
+     
+     <line x1="-50" y1="87" x2="350" y2="87" />
+  </g>
+
+  <g>
+     
+     <ellipse cx="150" cy="80" rx="35" ry="3" fill="#2d3436" opacity="0.6" />
+     
+     <path d="M 120 55 L 125 45 L 155 45 L 175 55 L 185 55 C 190 55, 190 68, 185 70 L 115 70 C 110 68, 110 55, 115 55 Z" fill="#0984e3" />
+     
+     <path d="M 128 48 L 145 48 L 145 58 L 122 58 Z" fill="#74b9ff" opacity="0.8" />
+     <path d="M 148 48 L 155 48 L 168 58 L 148 58 Z" fill="#74b9ff" opacity="0.8" />
+     
+     <!-- Headlight -->
+     <path d="M 183 58 L 181 58 L 181 64 L 186 64 Z" fill="#ffeaa7" />
+     <polygon points="186,63 230,55 230,75 186,65" fill="#ffeaa7" opacity="0.4" />
+     
+     <!-- Taillight -->
+     <path d="M 115 58 L 120 58 L 120 62 L 114 62 Z" fill="#d63031" />
+     <circle cx="116" cy="60" r="3" fill="#ff7675" opacity="0.8" />
+     <polygon points="114,60 80,57 80,63 114,61" fill="#d63031" opacity="0.3" />
+
+     <circle cx="130" cy="70" r="7" fill="#2d3436" />
+     <circle cx="130" cy="70" r="3" fill="#dfe6e9" />
+     <circle cx="170" cy="70" r="7" fill="#2d3436" />
+     <circle cx="170" cy="70" r="3" fill="#dfe6e9" />
+  </g>
+</svg>

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+    <defs>
+        <!-- Subtle yet colorful: Deep Midnight Plum to Dark Charcoal -->
+        <linearGradient id="bg-meals-rich" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e1b4b" /> <!-- deep indigo -->
+            <stop offset="50%" stop-color="#111827" /> <!-- midnight -->
+            <stop offset="100%" stop-color="#2e1065" /> <!-- deep violet -->
+        </linearGradient>
+        
+        <radialGradient id="vibrantGlow" cx="50%" cy="50%" r="70%">
+            <stop offset="0%" stop-color="#fb7185" stop-opacity="0.15" /> <!-- rose -->
+            <stop offset="100%" stop-color="#6366f1" stop-opacity="0" /> <!-- indigo -->
+        </radialGradient>
+
+        <path id="sparkle" d="M 0,-4 Q 0,0 4,0 Q 0,0 0,4 Q 0,0 -4,0 Q 0,0 0,-4 Z" fill="#FFEAA7" />
+        
+        <!-- Expansive Food Set (from 2 versions back) -->
+        <g id="chicken">
+            <path d="M -15,0 C -20,-10 -5,-15 0,-10 C 5,-15 20,-10 15,0 C 25,5 25,15 15,20 C 5,25 -5,25 -15,20 C -25,15 -25,5 -15,0 Z" fill="#8d6e63" stroke="#000" stroke-width="1.5" />
+            <ellipse cx="-20" cy="15" rx="6" ry="3" fill="#eeeeee" transform="rotate(30 -20 15)" stroke="#000" stroke-width="1" />
+        </g>
+        <g id="pizza">
+            <path d="M 0,0 L 20,0 L 10,25 Z" fill="#ffcc33" stroke="#000" stroke-width="1.5" />
+            <path d="M 0,0 L 20,0 L 22,-3 L -2,-3 Z" fill="#cc6600" stroke="#000" stroke-width="1.5" />
+            <circle cx="10" cy="5" r="2" fill="#cc0000" />
+        </g>
+        <g id="burger">
+            <rect x="-10" y="5" width="20" height="4" rx="2" fill="#ffcc66" stroke="#000" stroke-width="1.5" />
+            <rect x="-11" y="2" width="22" height="3" rx="1" fill="#663300" stroke="#000" stroke-width="1.5" />
+            <path d="M -10,0 C -10,-8 10,-8 10,0 Z" fill="#ffcc66" stroke="#000" stroke-width="1.5" />
+        </g>
+        <g id="taco">
+            <path d="M -15,0 C -15,-15 15,-15 15,0 Z" fill="#ff9933" stroke="#000" stroke-width="1.5" />
+            <circle cx="-5" cy="-7" r="2" fill="#339933" />
+            <circle cx="5" cy="-8" r="2" fill="#cc0000" />
+        </g>
+        <g id="broccoli">
+            <path d="M -2,0 L 2,0 L 3,10 L -3,10 Z" fill="#eeeeee" stroke="#000" stroke-width="1.5" />
+            <circle cx="0" cy="0" r="6" fill="#2d5a27" stroke="#000" stroke-width="1" />
+            <circle cx="-5" cy="-2" r="5" fill="#3d8236" />
+        </g>
+        <g id="sushi">
+            <rect x="-12" y="0" width="24" height="12" rx="4" fill="#ffffff" stroke="#000" stroke-width="1.5" />
+            <rect x="-14" y="-3" width="28" height="6" rx="3" fill="#ff7f50" stroke="#000" stroke-width="1.5" />
+        </g>
+        <g id="egg">
+            <ellipse cx="0" cy="0" rx="12" ry="10" fill="#ffffff" stroke="#000" stroke-width="1.5" />
+            <circle cx="2" cy="1" r="5" fill="#ffb300" stroke="#000" stroke-width="1" />
+        </g>
+        <g id="donut">
+            <circle cx="0" cy="0" r="12" fill="#ff80ab" stroke="#000" stroke-width="1.5" />
+            <circle cx="0" cy="0" r="4" fill="#1e1b4b" />
+        </g>
+        <g id="watermelon">
+            <path d="M -15,0 A 15 15 0 0 0 15 0 Z" fill="#f44336" stroke="#000" stroke-width="1.5" />
+            <path d="M -15,0 Q 0,5 15,0" fill="none" stroke="#2e7d32" stroke-width="3" />
+        </g>
+    </defs>
+    
+    <rect width="400" height="160" fill="url(#bg-meals-rich)" />
+    <rect width="400" height="160" fill="url(#vibrantGlow)" />
+    
+    <g opacity="0.9">
+        <!-- Floating items scattered -->
+        <g transform="translate(40,40) scale(0.65)">
+            
+            <use href="#chicken"/>
+        </g>
+        <g transform="translate(140,30) scale(0.75)">
+            
+            <use href="#pizza"/>
+        </g>
+        <g transform="translate(240,45) scale(0.65)">
+            
+            <use href="#taco"/>
+        </g>
+        <g transform="translate(340,35) scale(0.75)">
+            
+            <use href="#burger"/>
+        </g>
+        
+        <g transform="translate(60,110) scale(0.65)">
+            
+            <use href="#broccoli"/>
+        </g>
+        <g transform="translate(160,120) scale(0.85)">
+            
+            <use href="#sushi"/>
+        </g>
+        <g transform="translate(360,125) scale(0.75)">
+            
+            <use href="#egg"/>
+        </g>
+        
+        <g transform="translate(100,75) scale(0.65)">
+            
+            <use href="#donut"/>
+        </g>
+        <g transform="translate(300,70) scale(0.65)">
+            
+            <use href="#watermelon"/>
+        </g>
+    </g>
+
+    <g>
+        <g opacity="0.3"><use href="#sparkle"/></g>
+        <g opacity="0.3"><use href="#sparkle"/></g>
+    </g>
+</svg>

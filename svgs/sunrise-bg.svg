@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff9a9e" />
+      <stop offset="100%" stop-color="#fecfef" />
+    </linearGradient>
+  </defs>
+  <rect width="300" height="100" fill="url(#skyGrad)" />
+  <circle cx="150" cy="70" r="30" fill="#FFD700" />
+  <rect x="0" y="80" width="300" height="20" fill="#fdcb6e" opacity="0.4" />
+</svg>

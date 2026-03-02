@@ -409,22 +409,58 @@ td:nth-child(n+3) {
     }
 }
 
-.activity-work {
-    color: #4ecdc4;
+.activity-work,
+.current-time-row td.activity-work,
+.current-time-row td.rituals-col.activity-work {
+    color: #bae6fd;
+    background-image: url('svgs/work-static.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    border-color: #1e293b !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(56, 189, 248, 0.5);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    opacity: 1;
 }
 
-.activity-gym {
-    color: #ff4757;
+.activity-gym,
+.current-time-row td.activity-gym,
+.current-time-row td.rituals-col.activity-gym {
+    color: #ffffff;
     font-weight: 700;
-    background: linear-gradient(135deg, rgba(255, 71, 87, 0.25), rgba(255, 107, 107, 0.15)) !important;
+    background-image: url('svgs/gym-static.svg'), linear-gradient(135deg, rgba(255, 71, 87, 0.45), rgba(255, 107, 107, 0.25)) !important;
+    background-size: cover, auto !important;
+    background-position: center !important;
     box-shadow: inset 0 0 20px rgba(255, 71, 87, 0.3), 0 0 10px rgba(255, 71, 87, 0.2);
-    border: 1px solid rgba(255, 71, 87, 0.4) !important;
-    text-shadow: 0 0 8px rgba(255, 71, 87, 0.5);
-    animation: gymGlow 5s ease-in-out infinite;
+    border: 1px solid rgba(255, 71, 87, 0.6) !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(255, 71, 87, 0.8);
 }
 
-.activity-meal {
-    color: #95e1d3;
+.activity-meal,
+.current-time-row td.activity-meal,
+.current-time-row td.rituals-col.activity-meal {
+    color: #ccfbf1;
+    background-image: url('svgs/meals-static.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    border-color: #0f2b2b !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(45, 212, 191, 0.5);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.activity-duar,
+.current-time-row td.activity-duar,
+.current-time-row td.rituals-col.activity-duar {
+    color: #ffffff;
+    background-image: url('svgs/duar-static.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+td.active-slot.activity-duar {
+    background-image: url('svgs/duar-bg.svg') !important;
 }
 
 td {
@@ -538,21 +574,94 @@ td {
     display: none;
 }
 
-.activity-meditate {
-    color: #fd79a8;
+.activity-meditate,
+.current-time-row td.activity-meditate,
+.current-time-row td.rituals-col.activity-meditate {
+    color: #ffffff;
+    background-image: url('svgs/meditate-static.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    border-color: rgba(253, 121, 168, 0.5) !important;
+    box-shadow: inset 0 0 15px rgba(253, 121, 168, 0.2);
+    text-shadow: 0 0 8px rgba(253, 121, 168, 0.9), 0 0 15px rgba(253, 121, 168, 0.6), 1px 1px 2px #000;
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.5px;
 }
 
-.activity-water {
-    color: #74b9ff;
-    font-weight: bold;
+.activity-water,
+.current-time-row td.activity-water,
+.current-time-row td.rituals-col.activity-water {
+    color: #E0F7FA;
+    background-image: url('svgs/water-static.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    border-color: rgba(67, 198, 172, 0.4) !important;
+    box-shadow: inset 0 0 15px rgba(67, 198, 172, 0.15);
+    text-shadow: 0 0 8px rgba(67, 198, 172, 0.9), 0 0 15px #000, 1px 1px 3px #000;
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+}
+
+.activity-wakeup,
+.current-time-row td.activity-wakeup {
+    color: #ffffff;
+    background-image: url('svgs/sunrise-bg.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    border-color: #fecfef !important;
+}
+
+td.active-slot.activity-wakeup {
+    background-image: url('svgs/sunrise-anim-bg.svg') !important;
+}
+
+.activity-bus,
+.current-time-row td.activity-bus {
+    color: #ffffff;
+    background-image: url('svgs/bus-static.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    border-color: #0984e3 !important;
+}
+
+.activity-car,
+.current-time-row td.activity-car {
+    color: #ffffff;
+    background-image: url('svgs/car-static.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    border-color: #e17055 !important;
 }
 
 .activity-commute {
     color: #ffeaa7;
 }
 
-.activity-hike {
-    color: #55efc4;
+.activity-hike,
+.current-time-row td.activity-hike {
+    color: #ffffff;
+    background-image: url('svgs/hike-static.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+    border-color: #8FBC8F !important;
+}
+
+.activity-finances,
+.current-time-row td.activity-finances,
+.current-time-row td.rituals-col.activity-finances {
+    color: #34d399;
+    background-image: url('svgs/finances-static.svg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    border-color: #064e3b !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
 .activity-clean {
@@ -1649,4 +1758,47 @@ input:checked+.slider:before {
     padding: 8px;
     font-family: inherit;
     font-size: 14px;
+}
+
+td.active-slot.activity-work {
+    background-image: url('svgs/work-bg.svg') !important;
+}
+
+
+td.active-slot.activity-gym {
+    background-image: url('svgs/gym-bg.svg') !important;
+}
+
+
+td.active-slot.activity-meal {
+    background-image: url('svgs/meals-bg.svg') !important;
+}
+
+
+td.active-slot.activity-meditate {
+    background-image: url('svgs/meditate-bg.svg') !important;
+}
+
+td.active-slot.activity-finances {
+    background-image: url('svgs/finances-bg.svg') !important;
+}
+
+
+td.active-slot.activity-water {
+    background-image: url('svgs/water-bg.svg') !important;
+}
+
+
+td.active-slot.activity-bus {
+    background-image: url('svgs/bus-bg.svg') !important;
+}
+
+
+td.active-slot.activity-car {
+    background-image: url('svgs/car-bg.svg') !important;
+}
+
+
+td.active-slot.activity-hike {
+    background-image: url('svgs/hike-bg.svg') !important;
 }

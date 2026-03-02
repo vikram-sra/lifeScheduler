@@ -6,187 +6,191 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Painting Ideas</title>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-            body {
-                font-family: 'Inter', sans-serif;
-                margin: 0;
-                padding: 40px 20px;
-                padding-top: calc(20px + env(safe-area-inset-top, 0px));
-                padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-                color: #e0e0e0;
-                background: #121212;
-                -webkit-text-size-adjust: 100%;
-            }
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-            }
-            h1 {
-                font-size: 28px;
-                border-bottom: 2px solid #333;
-                padding-bottom: 10px;
-                margin-bottom: 30px;
-                color: #fff;
-            }
-            h2 {
-                font-size: 22px;
-                margin-top: 40px;
-                color: #fce4ec;
-                border-left: 4px solid #f48fb1;
-                padding-left: 10px;
-            }
-            table {
-                width: 100%;
-                border-collapse: separate;
-                border-spacing: 0;
-                margin: 20px 0;
-                font-size: 14px;
-                line-height: 1.5;
-                background: #1e1e1e;
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            }
-            table th {
-                background-color: #2c2c2c;
-                font-weight: 600;
-                text-align: left;
-                padding: 16px;
-                color: #fff;
-            }
-            table td {
-                padding: 16px;
-                border-bottom: 1px solid #333;
-                vertical-align: top;
-            }
-            table tr:last-child td {
-                border-bottom: none;
-            }
-            tr:hover {
-                background-color: #252525;
-            }
-            input[type="checkbox"] {
-                appearance: none;
-                width: 24px;
-                height: 24px;
-                border: 2px solid #555;
-                border-radius: 4px;
-                background: #1e1e1e;
-                cursor: pointer;
-                transition: all 0.2s;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            input[type="checkbox"]:checked {
-                background: #f48fb1;
-                border-color: #f48fb1;
-            }
-            input[type="checkbox"]:checked::after {
-                content: '✅';
-                font-size: 16px;
-            }
-            input.prog-cb:checked {
-                background: #ffeb3b;
-                border-color: #ffeb3b;
-            }
-            input.prog-cb:checked::after {
-                content: '✍️';
-            }
-            code {
-                background-color: #333;
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 13px;
-                color: #f48fb1;
-            }
-            a {
-                color: #81d4fa;
-                text-decoration: none;
-            }
-            a:hover {
-                text-decoration: underline;
-            }
-            .back-btn {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #333;
-                color: #fff;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 20px;
-                cursor: pointer;
-                font-weight: 600;
-                font-family: inherit;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-                z-index: 100;
-            }
-            .back-btn:hover {
-                background: #444;
-            }
-            .table-container {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                margin: 20px 0;
-                border-radius: 8px;
-            }
-            @media screen and (max-width: 768px) {
-                body {
-                    padding: 10px;
-                    padding-top: 80px;
-                }
-                .back-btn {
-                    top: 10px;
-                    left: 10px;
-                    right: 10px;
-                    width: auto;
-                    border-radius: 8px;
-                    padding: 12px;
-                    text-align: center;
-                    background: rgba(30,30,30,0.95);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255,255,255,0.1);
-                    font-size: 14px;
-                }
-                table {
-                    min-width: 800px;
-                }
-                th, td {
-                    padding: 10px;
-                    font-size: 12px;
-                }
-                h1 { font-size: 22px; }
-            }
-            /* Cleaned Mobile Styles */
-            @media screen and (max-width: 768px) {
-                body {
-                    padding: 8px;
-                    padding-top: calc(70px + env(safe-area-inset-top, 0px));
-                }
-                .back-btn {
-                    top: 10px;
-                    left: 10px;
-                    right: 10px;
-                    width: auto;
-                    border-radius: 8px;
-                    padding: 12px;
-                    text-align: center;
-                    background: rgba(30,30,30,0.95);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255,255,255,0.1);
-                }
-                table {
-                    min-width: 850px; /* Force minimum width to maintain table structure */
-                    font-size: 11px;
-                }
-                table th, table td {
-                    padding: 8px;
-                }
-            }
-        </style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
+:root {
+    --bg-main: #0b0c10;
+    --bg-card: rgba(18, 18, 25, 0.6);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-primary: #e0e6ed;
+    --text-secondary: #8b9bb4;
+    --accent-primary: #00d9ff;
+    --pink-glow: #ff2a6d;
+    --yellow-glow: #f1c40f;
+    --green: #00ff88;
+}
+* { box-sizing: border-box; }
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0; padding: 0;
+    background: var(--bg-main) radial-gradient(circle at 15% 50%, rgba(0, 217, 255, 0.05) 0%, transparent 50%) fixed;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    /* Safe Area Insets for Notch compatibility */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+/* Fixed Top Bar */
+.top-bar { 
+    position: fixed; 
+    top: env(safe-area-inset-top, 0px); 
+    left: env(safe-area-inset-left, 0px); 
+    right: env(safe-area-inset-right, 0px); 
+    height: 50px; 
+    background: rgba(11, 12, 16, 0.85); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); 
+    border-bottom: 1px solid var(--border-color); 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 0 15px; 
+    z-index: 1000;
+}
+
+.top-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.top-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--accent-primary);
+}
+
+.container { 
+    max-width: 1400px; 
+    margin: 0 auto; 
+    padding: 10px; 
+    padding-top: calc(50px + 10px);
+}
+
+/* Hide original table structures to prevent flash of content */
+.table-container, h1, p, h2 { display: none; }
+
+.app-header { 
+    margin-bottom: 15px; 
+    background: rgba(18, 18, 25, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px;
+    backdrop-filter: blur(10px);
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, margin 0.3s ease-out;
+    max-height: 500px;
+    opacity: 1;
+    overflow: hidden;
+}
+
+.app-header.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-color: transparent;
+}
+
+h2.dash-title { font-size: 20px; font-weight: 800; margin: 0 0 10px 0; background: linear-gradient(135deg, #fff, var(--accent-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height:1.2; display: block; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+.stat-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+.stat-box::before { content:''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--border-color); }
+.stat-box.st-done::before { background: var(--green); box-shadow: 0 0 10px var(--green); }
+.stat-box.st-prog::before { background: var(--yellow-glow); box-shadow: 0 0 10px var(--yellow-glow); }
+.stat-val { font-size: 16px; font-weight: 800; line-height: 1.1; color: #fff; }
+.stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-top: 2px; }
+
+.filters-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.filters-row .modern-input { grid-column: 1 / -1; }
+.modern-input, .modern-select { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: #fff; padding: 8px 10px; border-radius: 8px; font-family: inherit; font-size: 12px; outline: none; transition: border-color 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+.modern-input:focus, .modern-select:focus { border-color: var(--accent-primary); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 0 8px rgba(0,217,255,0.3); }
+.modern-select { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 0.6em top 50%; background-size: .5em auto; cursor: pointer; }
+
+/* The Grid */
+.masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; align-items: start; }
+
+.idea-panel { background: rgba(18, 18, 25, 0.4); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; transition: transform 0.2s, background 0.2s, border-color 0.2s; backdrop-filter: blur(10px); min-width: 0; word-wrap: break-word; }
+.idea-panel:hover { transform: translateY(-2px); background: rgba(30, 30, 45, 0.6); border-color: rgba(255,255,255,0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+.idea-panel.is-done { border-color: rgba(0, 255, 136, 0.4); background: rgba(0, 255, 136, 0.04); }
+.idea-panel.is-prog { border-color: rgba(241, 196, 15, 0.4); background: rgba(241, 196, 15, 0.04); }
+
+.panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+.cat-tag { font-size: 9px; background: rgba(255, 42, 109, 0.2); color: var(--pink-glow); padding: 2px 8px; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(255, 42, 109, 0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }
+.id-tag { font-size: 9px; color: var(--text-secondary); background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-weight: 600; white-space: nowrap; }
+
+.panel-body { font-size: 12px; line-height: 1.4; color: #ddd; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
+.panel-body strong { color: var(--accent-primary); font-size: 13px; font-weight: 600; display: block; margin-bottom: 2px;}
+.panel-body em { color: var(--text-secondary); font-style: italic; font-size: 11px; display: block; margin-bottom: 4px; }
+
+/* Turn off breaks inside body text for compactness */
+.panel-body br { display: none; }
+.panel-refs { font-size: 11px; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 8px; line-height: 1.4; border: 1px solid rgba(255,255,255,0.05); color: #bbb; display: inline-block; width: 100%; word-break: break-word; }
+.panel-refs strong { color: var(--yellow-glow); font-size: 12px; font-weight: 500; display: inline; }
+.panel-refs br { display: none; }
+.panel-refs a { color: var(--accent-primary); text-decoration: none; display: inline; word-break: break-all; }
+
+.panel-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+.date-txt { font-size: 10px; color: rgba(255,255,255,0.4); font-family: monospace; white-space: nowrap;}
+.action-toggles { display: flex; gap: 6px; }
+.toggle-btn { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; user-select: none; color: var(--text-secondary); white-space: nowrap; flex: 1; }
+.toggle-btn input { display: none; }
+.toggle-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.toggle-btn.active-prog { background: rgba(241, 196, 15, 0.2); color: var(--yellow-glow); border-color: var(--yellow-glow); box-shadow: 0 0 10px rgba(241,196,15,0.2); }
+.toggle-btn.active-done { background: rgba(0, 255, 136, 0.2); color: var(--green); border-color: var(--green); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+.toggle-icon { font-size: 12px; }
+
+/* Hide original back button since we now put it in the top bar */
+body > button.back-btn, body > .back-btn { display: none !important; }
+
+@media (max-width: 768px) {
+    .container { padding-top: 55px; padding-left: 6px; padding-right: 6px; }
+    
+    /* 2 COLUMNS ON MOBILE */
+    .masonry-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .idea-panel { padding: 8px; gap: 6px; border-radius: 8px; overflow: hidden; min-width: 0; }
+    
+    .panel-head { margin-bottom: 2px; }
+    .cat-tag { font-size: 8px; padding: 2px 4px; border-radius: 4px; }
+    .id-tag { font-size: 8px; padding: 2px 4px; }
+    
+    /* INDENTATION */
+    .panel-body { font-size: 10px; line-height: 1.3; padding-left: 6px; border-left: 2px solid rgba(0, 217, 255, 0.5); margin-left: 2px; }
+    .panel-body strong { font-size: 11px; margin-bottom: 2px; line-height: 1.2;}
+    .panel-body em { font-size: 9px; line-height: 1.2; margin-bottom: 2px; }
+    
+    .panel-refs { font-size: 8.5px; padding: 4px 6px; border-radius: 4px; margin-top: 0; line-height: 1.2; }
+    .panel-refs strong { font-size: 9px; }
+    
+    .panel-foot { padding-top: 6px; margin-top: 2px; flex-direction: column; align-items: stretch; gap: 4px; }
+    .date-txt { font-size: 8px; text-align: center; margin-bottom: 2px; }
+    
+    .action-toggles { width: 100%; display: flex; gap: 4px; }
+    .toggle-btn { padding: 4px 0; border-radius: 6px; font-size: 9px; }
+    .toggle-icon { font-size: 10px; }
+
+    .stats-row { grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
+    .stat-box { padding: 6px 4px; align-items: center; }
+    .stat-val { font-size: 14px; }
+    .stat-label { font-size: 7px; margin-top: 1px; text-align: center; }
+    
+    .filters-row select { font-size: 10px; padding: 6px; border-radius: 6px; }
+    .filters-row input { font-size: 10px; padding: 6px; border-radius: 6px; }
+}
+</style>
     </head>
     <body>
         <button class="back-btn" onclick="window.location.href='index.html'">⏮️ Back to Schedule</button>
@@ -1089,51 +1093,208 @@
         </div>
         
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                
-                checkboxes.forEach((cb, index) => {
-                    const row = cb.closest('tr');
-                    const snoCell = row.querySelector('td:nth-child(3) code');
-                    let id_prefix = cb.classList.contains('prog-cb') ? 'prog_' : 'done_';
-                    let id = 'paint_' + id_prefix + index;
+document.addEventListener("DOMContentLoaded", () => {
+    function initApp() {
+        const parsedData = [];
+        const categoriesSet = new Set();
+        
+        const h2s = document.querySelectorAll('h2');
+        h2s.forEach(h2 => {
+            const catName = h2.textContent.trim();
+            // Dont add Dash Title into categories
+            if(catName === "🎨 Idea Dashboard") return;
+            categoriesSet.add(catName);
+            const table = h2.nextElementSibling;
+            if(table && table.tagName === 'TABLE') {
+                table.querySelectorAll('tbody tr').forEach((row, index) => {
+                    const cells = row.querySelectorAll('td');
+                    if(cells.length < 6) return;
                     
-                    if (snoCell) {
-                        id = 'paint_' + id_prefix + snoCell.textContent.trim();
-                    }
+                    const snoCell = cells[2].querySelector('code');
+                    const idCode = snoCell ? snoCell.textContent.trim() : String(index);
                     
-                    cb.id = id;
+                    const doneId = 'paint_done_' + idCode;
+                    const progId = 'paint_prog_' + idCode;
                     
-                    const saved = localStorage.getItem(id);
-                    if (saved === 'true') {
-                        cb.checked = true;
-                    }
+                    const originalDoneId = cells[0].querySelector('.done-cb')?.id;
+                    const originalProgId = cells[1].querySelector('.prog-cb')?.id;
                     
-                    cb.addEventListener('change', (e) => {
-                        localStorage.setItem(id, e.target.checked);
-                        updateRowStyle(row);
+                    let isDone = localStorage.getItem(doneId) === 'true' || (originalDoneId && localStorage.getItem(originalDoneId) === 'true');
+                    let isProg = localStorage.getItem(progId) === 'true' || (originalProgId && localStorage.getItem(originalProgId) === 'true');
+                    
+                    const dateText = cells[3].textContent.trim().substring(0, 10);
+                    
+                    let ideaHtml = cells[4].innerHTML;
+                    ideaHtml = ideaHtml.replace(/<br\s*\/?>/gi, ' <span style="opacity:0.3; padding: 0 4px">•</span> ');
+                    
+                    let refsHtml = cells[5].innerHTML;
+                    refsHtml = refsHtml.replace(/<br\s*\/?>/gi, ' <span style="opacity:0.3; padding: 0 4px">•</span> ');
+                    
+                    const plainIdea = cells[4].textContent.toLowerCase();
+                    
+                    parsedData.push({
+                        catName, idCode, dateText, ideaHtml, refsHtml, plainIdea,
+                        isDone, isProg, doneId, progId
                     });
                 });
+            }
+        });
 
-                function updateRowStyle(row) {
-                    const progCb = row.querySelector('.prog-cb');
-                    const doneCb = row.querySelector('.done-cb');
-                    
-                    if (doneCb && doneCb.checked) {
-                        row.style.opacity = '0.5';
-                        row.style.borderLeft = '4px solid #f48fb1';
-                    } else if (progCb && progCb.checked) {
-                        row.style.opacity = '1';
-                        row.style.borderLeft = '4px solid #ffeb3b';
-                    } else {
-                        row.style.opacity = '1';
-                        row.style.borderLeft = 'none';
-                    }
-                }
+        // Avoid appending multiple times if script re-runs
+        if (document.getElementById('modern-app')) {
+            document.getElementById('modern-app').remove();
+        }
+
+        const app = document.createElement('div');
+        app.id = 'modern-app';
+        app.innerHTML = `
+            <div class="top-bar">
+                <a href="index.html" class="top-btn">⏮️ Back</a>
+                <span onclick="window.randomizeCards()" style="font-weight: 800; font-size: 14px; background: linear-gradient(135deg, #fff, var(--accent-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; user-select: none;">Ideas 🎲</span>
+                <button class="top-btn" onclick="document.getElementById('dash-header').classList.toggle('collapsed')">📊 Dash</button>
+            </div>
+            
+            <div id="dash-header" class="app-header collapsed">
+                <h2 class="dash-title">🎨 Idea Dashboard</h2>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-val" id="st-total">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                    <div class="stat-box st-done">
+                        <div class="stat-val" id="st-done" style="color:var(--green)">0</div>
+                        <div class="stat-label">Done</div>
+                    </div>
+                    <div class="stat-box st-prog">
+                        <div class="stat-val" id="st-prog" style="color:var(--yellow-glow)">0</div>
+                        <div class="stat-label">Prog</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="st-todo" style="color:var(--text-secondary)">0</div>
+                        <div class="stat-label">To Do</div>
+                    </div>
+                </div>
                 
-                document.querySelectorAll('tbody tr').forEach(row => updateRowStyle(row));
+                <div class="filters-row">
+                    <input type="text" id="searchInput" placeholder="🔍 Search..." class="modern-input">
+                    <select id="catFilter" class="modern-select">
+                        <option value="ALL">📁 All Cats</option>
+                        ${Array.from(categoriesSet).map(c => `<option value="${c}">${c}</option>`).join('')}
+                    </select>
+                    <select id="statusFilter" class="modern-select">
+                        <option value="ALL">🚦 All Status</option>
+                        <option value="DONE">✓ Done</option>
+                        <option value="PROG">⋯ Prog</option>
+                        <option value="TODO">○ To Do</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="masonry-grid" id="ideasGrid"></div>
+        `;
+        
+        document.querySelector('.container').appendChild(app);
+        
+        // Remove native back button if present
+        const oldBackBtn = document.querySelector('body > .back-btn');
+        if (oldBackBtn) oldBackBtn.remove();
+        
+        let currentData = [...parsedData];
+
+        const renderGrid = () => {
+            const grid = document.getElementById('ideasGrid');
+            if (currentData.length === 0) {
+                grid.innerHTML = '<div style="color:var(--text-secondary); padding: 40px; text-align: center; width: 100%; grid-column: 1/-1;">No ideas found matching your filters.</div>';
+                return;
+            }
+            grid.innerHTML = currentData.map(d => {
+                const statusClass = d.isDone ? 'is-done' : (d.isProg ? 'is-prog' : '');
+                return `
+                <div class="idea-panel ${statusClass}">
+                    <div class="panel-head">
+                        <span class="cat-tag">${d.catName}</span>
+                        <span class="id-tag">${d.idCode}</span>
+                    </div>
+                    <div class="panel-body">${d.ideaHtml}</div>
+                    <div class="panel-refs">${d.refsHtml}</div>
+                    <div class="panel-foot">
+                        <span class="date-txt">${d.dateText}</span>
+                        <div class="action-toggles">
+                            <label class="toggle-btn ${d.isProg ? 'active-prog':''}">
+                                <input type="checkbox" onchange="window.toggleProg('${d.idCode}')" ${d.isProg?'checked':''}> 
+                                <span class="toggle-icon">⋯</span> Prog
+                            </label>
+                            <label class="toggle-btn ${d.isDone ? 'active-done':''}">
+                                <input type="checkbox" onchange="window.toggleDone('${d.idCode}')" ${d.isDone?'checked':''}> 
+                                <span class="toggle-icon">✓</span> Done
+                            </label>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        };
+        
+        const updateStats = () => {
+            const total = currentData.length;
+            const done = currentData.filter(d => d.isDone).length;
+            const prog = currentData.filter(d => d.isProg).length;
+            const todo = total - done - prog;
+            
+            document.getElementById('st-total').innerText = total;
+            document.getElementById('st-done').innerText = done;
+            document.getElementById('st-prog').innerText = prog;
+            document.getElementById('st-todo').innerText = todo;
+        };
+
+        const updateUI = () => {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const cat = document.getElementById('catFilter').value;
+            const stat = document.getElementById('statusFilter').value;
+            
+            currentData = parsedData.filter(d => {
+                if(q && !d.plainIdea.includes(q)) return false;
+                if(cat !== 'ALL' && d.catName !== cat) return false;
+                if(stat === 'DONE' && !d.isDone) return false;
+                if(stat === 'PROG' && !d.isProg) return false;
+                if(stat === 'TODO' && (d.isDone || d.isProg)) return false;
+                return true;
             });
-        </script>
-    </body>
-    </html>
+            
+            renderGrid();
+            updateStats();
+        };
+
+        window.randomizeCards = () => {
+            currentData.sort(() => Math.random() - 0.5);
+            renderGrid();
+        };
+        
+        document.getElementById('searchInput').addEventListener('input', updateUI);
+        document.getElementById('catFilter').addEventListener('change', updateUI);
+        document.getElementById('statusFilter').addEventListener('change', updateUI);
+        
+        window.toggleProg = (idCode) => {
+            const item = parsedData.find(x => x.idCode === idCode);
+            item.isProg = !item.isProg;
+            if(item.isProg) item.isDone = false; 
+            localStorage.setItem(item.progId, item.isProg);
+            localStorage.setItem(item.doneId, item.isDone);
+            updateUI();
+        };
+        window.toggleDone = (idCode) => {
+            const item = parsedData.find(x => x.idCode === idCode);
+            item.isDone = !item.isDone;
+            if(item.isDone) item.isProg = false;
+            localStorage.setItem(item.progId, item.isProg);
+            localStorage.setItem(item.doneId, item.isDone);
+            updateUI();
+        };
+
+        updateUI();
+    }
     
+    initApp();
+});
+</script>
+</body>
+</html>

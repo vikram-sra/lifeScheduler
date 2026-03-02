@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="skyGradAnim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff9a9e" />
+      <stop offset="100%" stop-color="#fecfef">
+        <animate attributeName="stop-color" values="#fecfef; #fcb69f; #fecfef" dur="6s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="100" fill="url(#skyGradAnim)" />
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="0,20; 0,-15; 0,20" dur="6s" repeatCount="indefinite" />
+    <!-- Sun -->
+    <circle cx="150" cy="70" r="30" fill="#FFD700" />
+    <!-- Sun rays -->
+    <g stroke="#FFD700" stroke-width="4" stroke-linecap="round">
+       <animate attributeName="opacity" values="0.2; 1; 0.2" dur="3s" repeatCount="indefinite" />
+       <path d="M150,30 L150,20 M150,110 L150,120 M110,70 L100,70 M190,70 L200,70 M121.7,41.7 L114.6,34.6 M178.3,98.3 L185.4,105.4 M121.7,98.3 L114.6,105.4 M178.3,41.7 L185.4,34.6" />
+    </g>
+  </g>
+  <rect x="0" y="80" width="300" height="20" fill="#fdcb6e" opacity="0.4" />
+</svg>
