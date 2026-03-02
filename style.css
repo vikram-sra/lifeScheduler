@@ -113,6 +113,13 @@ td:nth-child(n+3) {
     font-size: 12px;
 }
 
+/* 9-5 Work block highlighter for time-col */
+.work-hour {
+    color: #cddc39 !important;
+    /* Greenish/yellow */
+    font-weight: 600;
+}
+
 .rituals-col {
     background-color: #2a2a5e;
     color: #ffd700;
@@ -494,7 +501,9 @@ td:nth-child(n+3) {
     border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
-td.active-slot.activity-duar {
+td.active-slot.activity-duar,
+.current-time-row td.active-slot.activity-duar,
+.current-time-row td.rituals-col.active-slot.activity-duar {
     background-image: url('svgs/duar-bg.svg') !important;
 }
 
@@ -1451,8 +1460,10 @@ td:hover {
    ============================================ */
 
 /* PAST TIME FADING */
-.past-slot {
-    opacity: 0.25;
+.past-slot td.time-col,
+.past-slot td.rituals-col,
+.past-slot td.today {
+    opacity: 0.25 !important;
     transition: opacity 0.5s ease;
 }
 
@@ -1839,46 +1850,57 @@ tr.work-schedule-row td {
     font-size: 14px;
 }
 
-td.active-slot.activity-work {
+td.active-slot.activity-work,
+.current-time-row td.active-slot.activity-work,
+.current-time-row td.rituals-col.active-slot.activity-work {
     background-image: url('svgs/work-bg.svg') !important;
 }
 
-
-td.active-slot.activity-gym {
+td.active-slot.activity-gym,
+.current-time-row td.active-slot.activity-gym,
+.current-time-row td.rituals-col.active-slot.activity-gym {
     background-image: url('svgs/gym-bg.svg') !important;
 }
 
-
-td.active-slot.activity-meal {
+td.active-slot.activity-meal,
+.current-time-row td.active-slot.activity-meal,
+.current-time-row td.rituals-col.active-slot.activity-meal {
     background-image: url('svgs/meals-bg.svg') !important;
 }
 
-
-td.active-slot.activity-meditate {
+td.active-slot.activity-meditate,
+.current-time-row td.active-slot.activity-meditate,
+.current-time-row td.rituals-col.active-slot.activity-meditate {
     background-image: url('svgs/meditate-bg.svg') !important;
 }
 
-td.active-slot.activity-finances {
+td.active-slot.activity-finances,
+.current-time-row td.active-slot.activity-finances,
+.current-time-row td.rituals-col.active-slot.activity-finances {
     background-image: url('svgs/finances-bg.svg') !important;
 }
 
-
-td.active-slot.activity-water {
+td.active-slot.activity-water,
+.current-time-row td.active-slot.activity-water,
+.current-time-row td.rituals-col.active-slot.activity-water {
     background-image: url('svgs/water-bg.svg') !important;
 }
 
-
-td.active-slot.activity-bus {
+td.active-slot.activity-bus,
+.current-time-row td.active-slot.activity-bus,
+.current-time-row td.rituals-col.active-slot.activity-bus {
     background-image: url('svgs/bus-bg.svg') !important;
 }
 
-
-td.active-slot.activity-car {
+td.active-slot.activity-car,
+.current-time-row td.active-slot.activity-car,
+.current-time-row td.rituals-col.active-slot.activity-car {
     background-image: url('svgs/car-bg.svg') !important;
 }
 
-
-td.active-slot.activity-hike {
+td.active-slot.activity-hike,
+.current-time-row td.active-slot.activity-hike,
+.current-time-row td.rituals-col.active-slot.activity-hike {
     background-image: url('svgs/hike-bg.svg') !important;
 }
 

@@ -18,23 +18,6 @@
   <!-- Dark Deep Water Background Base -->
   <rect width="300" height="150" fill="url(#deepWaterGrad)" />
 
-  <!-- Subsurface Deep Water Ambient Orbs -->
-  <g opacity="0.4">
-    <circle cx="50" cy="120" r="15" fill="#3B8D99" filter="blur(4px)">
-      <animate attributeName="cy" values="120; 30; 120" dur="15s" repeatCount="indefinite" />
-      <animate attributeName="opacity" values="0.2; 0.6; 0.2" dur="5s" repeatCount="indefinite" />
-    </circle>
-    <circle cx="250" cy="80" r="25" fill="#43C6AC" filter="blur(6px)">
-      <animate attributeName="cy" values="80; 130; 80" dur="12s" repeatCount="indefinite" />
-      <animate attributeName="opacity" values="0.1; 0.5; 0.1" dur="7s" repeatCount="indefinite" />
-    </circle>
-  </g>
-
-  <!-- Glowing Stream Of Water Entering -->
-  <line x1="-10" y1="75" x2="235" y2="75" stroke="#43C6AC" stroke-width="4" stroke-linecap="round" stroke-dasharray="255" stroke-dashoffset="255" filter="drop-shadow(0px 0px 4px #43C6AC)">
-    <animate attributeName="stroke-dashoffset" values="255; 0; 0; -255; -255" keyTimes="0; 0.1; 0.55; 0.6; 1" dur="6s" repeatCount="indefinite"/>
-  </line>
-
   <!-- The Filling Bottle -->
   <g clip-path="url(#bottleClipPath)">
     
@@ -48,60 +31,40 @@
                  values="M 30,0 Q 45,-6 60,0 T 90,0 T 120,0 T 150,0 T 180,0 T 210,0 T 240,0 T 270,0 L 270,80 L 30,80 Z; 
                          M 30,0 Q 45,6 60,0 T 90,0 T 120,0 T 150,0 T 180,0 T 210,0 T 240,0 T 270,0 L 270,80 L 30,80 Z; 
                          M 30,0 Q 45,-6 60,0 T 90,0 T 120,0 T 150,0 T 180,0 T 210,0 T 240,0 T 270,0 L 270,80 L 30,80 Z" 
-                 dur="1s" repeatCount="indefinite" />
+                 dur="2s" repeatCount="indefinite" />
       </path>
       
       <!-- Deep Body Liquid in Bottle -->
       <rect x="30" y="5" width="240" height="75" fill="#3B8D99" opacity="0.8" />
 
-      <!-- Deep Liquid Ambient Particles moving UP -->
-      <circle cx="120" cy="50" r="4" fill="#E0F7FA" opacity="0.6" filter="blur(1px)">
+      <!-- Deep Liquid Ambient Particles moving UP (Removed blurs for perf) -->
+      <circle cx="120" cy="50" r="4" fill="#E0F7FA" opacity="0.6">
          <animate attributeName="cy" values="70; -10" dur="2s" repeatCount="indefinite" />
       </circle>
-      <circle cx="200" cy="40" r="6" fill="#43C6AC" opacity="0.4" filter="blur(2px)">
+      <circle cx="200" cy="40" r="6" fill="#43C6AC" opacity="0.4">
          <animate attributeName="cy" values="70; 0" dur="3s" repeatCount="indefinite" />
       </circle>
     </g>
 
-    <!-- Tiny Glowing Bubbles (Rise up from the stream hitting the glass) -->
-    <g opacity="0">
-      <animate attributeName="opacity" values="0; 0; 1; 1; 0; 0" keyTimes="0; 0.35; 0.45; 0.75; 0.8; 1" dur="6s" repeatCount="indefinite" />
+    <!-- Tiny Bubbles (Simplified opacity, no tracking animation on cx for perf) -->
+    <g opacity="0.8">
       <circle cx="100" cy="95" r="2" fill="#E0F7FA" opacity="0.9">
-        <animate attributeName="cy" values="95; 55" dur="1s" repeatCount="indefinite" />
-        <animate attributeName="cx" values="100; 97; 103; 100" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="cy" values="95; 55" dur="1.5s" repeatCount="indefinite" />
       </circle>
       <circle cx="160" cy="100" r="1.5" fill="#E0F7FA" opacity="0.8">
-        <animate attributeName="cy" values="100; 60" dur="1.5s" repeatCount="indefinite" />
-        <animate attributeName="cx" values="160; 163; 157; 160" dur="1.5s" repeatCount="indefinite" />
+        <animate attributeName="cy" values="100; 60" dur="2s" repeatCount="indefinite" />
       </circle>
       <circle cx="210" cy="90" r="2.5" fill="#43C6AC" opacity="0.9">
-        <animate attributeName="cy" values="90; 50" dur="1.2s" repeatCount="indefinite" />
-        <animate attributeName="cx" values="210; 213; 207; 210" dur="1.2s" repeatCount="indefinite" />
+        <animate attributeName="cy" values="90; 50" dur="1.8s" repeatCount="indefinite" />
       </circle>
     </g>
   </g>
 
-  <!-- Bottle Glass Exterior Line -->
-  <use href="#bottleTop" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="100" stroke-dashoffset="100">
-    <animate attributeName="stroke-dashoffset" values="100; 100; 0; 0; 100; 100" keyTimes="0; 0.1; 0.25; 0.9; 0.95; 1" dur="6s" repeatCount="indefinite" />
-  </use>
-
-  <!-- Splashes on far right of bottle interior -->
-  <g transform="translate(230, 75)">
-    <animate attributeName="opacity" values="0; 0; 1; 1; 0; 0" keyTimes="0; 0.08; 0.1; 0.55; 0.57; 1" dur="6s" repeatCount="indefinite" />
-    <circle cx="0" cy="0" r="2.5" fill="#43C6AC">
-      <animateTransform attributeName="transform" type="translate" values="0,0; -15,-15; -25,10" dur="0.4s" repeatCount="indefinite" />
-      <animate attributeName="opacity" values="1; 0.8; 0" dur="0.4s" repeatCount="indefinite" />
-    </circle>
-    <circle cx="5" cy="5" r="2" fill="#E0F7FA">
-      <animateTransform attributeName="transform" type="translate" values="0,0; -10,-20; -15,5" dur="0.5s" repeatCount="indefinite" />
-      <animate attributeName="opacity" values="1; 0.8; 0" dur="0.5s" repeatCount="indefinite" />
-    </circle>
-  </g>
+  <!-- Static Bottle Glass Exterior Line - outline animation REMOVED -->
+  <use href="#bottleTop" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 
   <!-- Glass Gleam Highlights -->
-  <g opacity="0">
-    <animate attributeName="opacity" values="0; 0; 1; 1; 0; 0" keyTimes="0; 0.25; 0.3; 0.9; 0.95; 1" dur="6s" repeatCount="indefinite" />
+  <g opacity="0.6">
     <line x1="45" y1="62" x2="45" y2="88" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" />
     <path d="M 100 52 C 110 50, 120 50, 130 50 L 210 50" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none" stroke-linecap="round" />
     <line x1="215" y1="50" x2="225" y2="52" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" />

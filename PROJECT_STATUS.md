@@ -152,15 +152,17 @@ foodprep, office, workout, dinner, duar, arrow, custom
 ## 📝 Recent Changes
 
 ### Latest Branch: `mvp3`
-- Created branch `mvp3` to track Aero & Performance enhancements.
-- Pushed major design overhaul (Unified Yellow Glow) to repository.
+- Tracked Aero & Performance enhancements and onboarding prep.
+- **Animation Optimization:** Re-engineered `water-bg.svg` and `gym-bg.svg` to drastically reduce GPU/CPU overhead while maintaining aesthetics (removed clipPaths, blurs, and excessive discrete particles).
+- **Time Visibility:** Fixed bug where past-time fading affected future/past days. Fading is now strictly tied to the `.today` active column.
+- **Work Hours Clarity:** Added distinct greenish-yellow text color styling to the `time-col` for the standard 9:00 AM – 5:00 PM block.
+- **Rituals Persistence:** Ensured active-slot SVG backgrounds correctly override the static rituals column definitions during the current hour.
 
 ### Recent MVP2 Milestone Changes
 - **SVG Engine**: Replaced static backgrounds with animated SVGs for core activities.
 - **Theme Polish**: Implemented the "Golden Glow" design language across all active elements.
 - **Smart Logic**: Added automatic continuity detection for tasks spanning multiple slots.
 - **Mobile Survival**: Reduced CPU/GPU overhead by 40% through optimized CSS keyframes.
-- **Workday Clarity**: Doubled visual weight of work hour boundaries.
 
 ## 🚀 Usage Instructions
 

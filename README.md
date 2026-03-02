@@ -28,12 +28,12 @@ Open `index.html` in any browser or add to your phone's homescreen for a native 
 - **Settings Panel** - ⚙️ Access advanced settings and data management
 
 ### Visual Indicators & Animations 🚀
-- **Animated SVG Backgrounds** - Rich, GPU-accelerated backgrounds for Gym, Work, and Arrow items
+- **Animated SVG Backgrounds** - Rich, highly-optimized SVG backgrounds for Gym, Work, Water, Sleep, and Arrow items
 - **Continuity Arrows (↑)** - Automatically detected upward-drifting animations for continued tasks
 - **Adaptive Progress Bars** - Colors shift dynamically: Cyan → **Yellow (>50%)** → **Orange (>75%)** → **Red (>90%)**
-- **Past Time Fading** - Past slots are faded by 75% (opacity 0.25) to prioritize the "Now"
+- **Past Time Fading** - Past slots for the *current day* are faded by 75% (opacity 0.25) to prioritize the "Now"
 - **Expanded Animation Window** - Highlighting and animations active for a ±2 hour window around current time
-- **Workday Boundaries** - 3x thicker horizontal dividers for the 9 AM - 5 PM work window
+- **Workday Boundaries** - First column text is distinctly highlighted (Green-Yellow) during the 9 AM - 5 PM window
 - **Live Time Display** - Shows real-time precision clock in the currently active time cell
 
 ### Sleep/Wake Flap System
