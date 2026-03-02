@@ -144,6 +144,8 @@ td:nth-child(n+3) {
         inset 0 0 20px rgba(255, 204, 0, 0.4),
         0 0 15px rgba(255, 204, 0, 0.4) !important;
     border: 2px solid rgba(255, 204, 0, 0.8) !important;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
     animation: activeGlow 3s ease-in-out infinite;
     will-change: box-shadow;
     transform: translateZ(0);
@@ -213,6 +215,18 @@ td:nth-child(n+3) {
 .today {
     background-color: rgba(0, 217, 255, 0.15) !important;
     position: relative;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+}
+
+td:has(+ .today),
+th:has(+ .today-header) {
+    border-right-color: transparent !important;
+}
+
+.today+td,
+.today-header+th {
+    border-left-color: transparent !important;
 }
 
 /* Wavy Animated Border for Today Column */
@@ -224,33 +238,32 @@ td:nth-child(n+3) {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 6px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='20' viewBox='0 0 6 20'%3E%3Cpath d='M1,0 Q5,5 1,10 T1,20' fill='none' stroke='%23ffcc00' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-size: 6px 20px;
-    background-repeat: repeat-y;
-    animation: waveMove 1s linear infinite;
-    z-index: 10;
+    width: 12px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 100' preserveAspectRatio='none'%3E%3Cpath d='M6,0 Q18,12.5 6,25 T6,50 Q18,62.5 6,75 T6,100' fill='none' stroke='%23ffcc00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-size: 100% 200%;
+    animation: waveMoveRow 2s linear infinite;
+    z-index: 999;
     pointer-events: none;
 }
 
 .today::before,
 .today-header::before {
-    left: 0;
+    left: -6px;
 }
 
 .today::after,
 .today-header::after {
-    right: 0;
+    right: -6px;
     transform: scaleX(-1);
 }
 
-@keyframes waveMove {
+@keyframes waveMoveRow {
     0% {
-        background-position-y: 0;
+        background-position-y: 100%;
     }
 
     100% {
-        background-position-y: 20px;
+        background-position-y: 0%;
     }
 }
 
