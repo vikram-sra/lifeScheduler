@@ -18,86 +18,20 @@
   <!-- Dark Deep Water Background Base -->
   <rect width="300" height="150" fill="url(#deepWaterGrad)" />
 
-  <!-- Subsurface Deep Water Ambient Orbs -->
-  <g opacity="0.4">
-    <circle cx="50" cy="120" r="15" fill="#3B8D99" filter="blur(4px)">
-      
-      
-    </circle>
-    <circle cx="250" cy="80" r="25" fill="#43C6AC" filter="blur(6px)">
-      
-      
-    </circle>
-  </g>
-
-  <!-- Glowing Stream Of Water Entering -->
-  <line x1="-10" y1="75" x2="235" y2="75" stroke="#43C6AC" stroke-width="4" stroke-linecap="round" stroke-dasharray="255" stroke-dashoffset="255" filter="drop-shadow(0px 0px 4px #43C6AC)">
-    
-  </line>
-
-  <!-- The Filling Bottle -->
   <g clip-path="url(#bottleClipPath)">
-    
-    <!-- Water Level Going Up and Down -->
-    <g>
-      
-      
-      <!-- Surface Waves (Cyber Cyan) -->
-      <path fill="#43C6AC" d="M 30,0 Q 45,-6 60,0 T 90,0 T 120,0 T 150,0 T 180,0 T 210,0 T 240,0 T 270,0 L 270,80 L 30,80 Z">
-        
-      </path>
-      
+    <g transform="translate(0, 45)">
       <!-- Deep Body Liquid in Bottle -->
-      <rect x="30" y="5" width="240" height="75" fill="#3B8D99" opacity="0.8" />
-
-      <!-- Deep Liquid Ambient Particles moving UP -->
-      <circle cx="120" cy="50" r="4" fill="#E0F7FA" opacity="0.6" filter="blur(1px)">
-         
-      </circle>
-      <circle cx="200" cy="40" r="6" fill="#43C6AC" opacity="0.4" filter="blur(2px)">
-         
-      </circle>
-    </g>
-
-    <!-- Tiny Glowing Bubbles (Rise up from the stream hitting the glass) -->
-    <g opacity="0">
-      
-      <circle cx="100" cy="95" r="2" fill="#E0F7FA" opacity="0.9">
-        
-        
-      </circle>
-      <circle cx="160" cy="100" r="1.5" fill="#E0F7FA" opacity="0.8">
-        
-        
-      </circle>
-      <circle cx="210" cy="90" r="2.5" fill="#43C6AC" opacity="0.9">
-        
-        
-      </circle>
+      <rect x="30" y="0" width="230" height="70" fill="#3B8D99" opacity="0.6" />
+      <!-- Simple static edge surface -->
+      <path fill="#43C6AC" d="M 30,0 L 260,0 Q 262,35 260,70 L 30,70 Z" opacity="0.5" />
     </g>
   </g>
 
   <!-- Bottle Glass Exterior Line -->
-  <use href="#bottleTop" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="100" stroke-dashoffset="100">
-    
-  </use>
-
-  <!-- Splashes on far right of bottle interior -->
-  <g transform="translate(230, 75)">
-    
-    <circle cx="0" cy="0" r="2.5" fill="#43C6AC">
-      
-      
-    </circle>
-    <circle cx="5" cy="5" r="2" fill="#E0F7FA">
-      
-      
-    </circle>
-  </g>
+  <use href="#bottleTop" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 
   <!-- Glass Gleam Highlights -->
-  <g opacity="0">
-    
+  <g opacity="0.5">
     <line x1="45" y1="62" x2="45" y2="88" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" />
     <path d="M 100 52 C 110 50, 120 50, 130 50 L 210 50" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none" stroke-linecap="round" />
     <line x1="215" y1="50" x2="225" y2="52" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" />
