@@ -1446,7 +1446,7 @@ td:hover {
 
 /* PAST TIME FADING */
 .past-slot {
-    opacity: 0.8;
+    opacity: 0.5;
     transition: opacity 0.5s ease;
 }
 
