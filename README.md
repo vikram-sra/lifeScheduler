@@ -1,6 +1,6 @@
 # DAY - Life Scheduler 📅
 
-A beautiful, mobile-friendly weekly schedule web application with real-time progress tracking, animated visual indicators, sleep/wake flap system, and **interactive editing capabilities**. Manage your schedule directly in the browser with persistent storage and data export options.
+A high-performance, beautiful weekly schedule web application with real-time progress tracking, **premium animated SVG backgrounds**, a smart yellow glow system, and intelligent focus modes. Designed for maximum productivity with 60fps fluid mobile animations and local persistence.
 
 ## 🌐 Live Demo
 
@@ -12,9 +12,9 @@ Open `index.html` in any browser or add to your phone's homescreen for a native 
 
 ### Core Functionality
 - **Weekly Schedule Table** - Displays time slots from 7:30 AM to 11:00 PM across all 7 days
-- **Frozen Columns** - Time and Rituals columns stay fixed while scrolling horizontally
-- **Current Time Highlighting** - Automatically highlights the current time slot row
-- **Current Day Highlighting** - Today's column is visually distinct with date and month progress
+- **Frozen Columns** - Time and Rituals columns stay fixed while scrolling horizontally (hardware accelerated)
+- **Unified Yellow Glow** - Premium golden-yellow pulsing glow for the current time, active activity, and day title
+- **Current Day Highlighting** - Today's column is visually distinct with date and dynamic month progress
 - **Interactive Editing** - ✏️ Click the edit button to modify any cell in your schedule
 - **Persistent Storage** - All changes automatically saved to browser localStorage
 - **Data Management** - Export to CSV/JSON, import backups, and reset functionality
@@ -27,13 +27,14 @@ Open `index.html` in any browser or add to your phone's homescreen for a native 
 - **Auto-Save** - Changes are automatically saved to localStorage
 - **Settings Panel** - ⚙️ Access advanced settings and data management
 
-### Visual Indicators
-- **Live Time Display** - Shows real-time clock (updates every second) in the current time cell
-- **Time Progress Bar** - Horizontal fill showing how much of the current time slot has elapsed
-- **Month Progress Bar** - Shows percentage of current month completed in the day header
-- **Animated Glow Effects** - Special highlighting for priority activities:
-  - 🟡 **Paint** - Yellow glow (priority creative time)
-  - 🔴 **GYM** - Red glow (fitness activities)
+### Visual Indicators & Animations 🚀
+- **Animated SVG Backgrounds** - Rich, GPU-accelerated backgrounds for Gym, Work, and Arrow items
+- **Continuity Arrows (↑)** - Automatically detected upward-drifting animations for continued tasks
+- **Adaptive Progress Bars** - Colors shift dynamically: Cyan → **Yellow (>50%)** → **Orange (>75%)** → **Red (>90%)**
+- **Past Time Fading** - Past slots are faded by 75% (opacity 0.25) to prioritize the "Now"
+- **Expanded Animation Window** - Highlighting and animations active for a ±2 hour window around current time
+- **Workday Boundaries** - 3x thicker horizontal dividers for the 9 AM - 5 PM work window
+- **Live Time Display** - Shows real-time precision clock in the currently active time cell
 
 ### Sleep/Wake Flap System
 - **Cell Flaps** - All cells are covered by dark "flaps" during sleep hours (11 PM - 7:30 AM)
@@ -58,11 +59,9 @@ Open `index.html` in any browser or add to your phone's homescreen for a native 
 ## 🎨 Design System
 
 ### Color Palette
-| Element | Color | Hex |
-|---------|-------|-----|
 | Background | Dark Navy | `#1a1a2e` |
 | Table Background | Deep Blue | `#16213e` |
-| Accent/Highlight | Cyan | `#00d9ff` |
+| **Active Highlight** | **Golden Yellow** | `#ffcc00` |
 | Paint Activity | Yellow | `#ffe66d` |
 | GYM Activity | Red | `#ff4757` |
 | Work | Teal | `#4ecdc4` |
@@ -352,8 +351,10 @@ animation: animationName 2s ease-in-out infinite; /* Faster */
 7. **Add new features** → Extend `script.js` and update UI in `createSettingsPanel()`
 
 ### Key Implementation Notes
-- Frozen columns use `position: sticky` with explicit `left` values and `z-index`
-- Progress bars use `position: absolute` with dynamic `width` set via JavaScript
+- Frozen columns use `position: sticky` with explicit `left` values and optimized `z-index`
+- Progress bars use `position: absolute` with dynamic `width` and `transition` properties
+- **Performance**: Deep mobile optimization via `will-change: box-shadow`, `transform: translateZ(0)`, and simplified composite layers
+- **Continuous Motion**: Animated SVGs use `animateTransform` for seamless loops without triggering JS layout thrashing
 - Current time detection compares `data-time` attributes to current hour as decimal
 - Mobile responsiveness handled via `@media (max-width: 768px)`
 - Flap system uses CSS 3D transforms (`rotateX`) for flip animation
@@ -361,7 +362,7 @@ animation: animationName 2s ease-in-out infinite; /* Faster */
 - **Activity picker** is positioned absolutely and shown/hidden via `.visible` class
 - **localStorage** saves complete schedule state including icons, text, and classes
 - **Data cleaning** removes UI elements (`.cell-flap`, `.time-progress-fill`, etc.) before saving
-- **Performance optimization** uses cached DOM queries and selective updates
+- **Performance optimization** uses cached DOM queries, hardware acceleration, and selective updates
 
 ### Data Flow
 ```
@@ -388,5 +389,5 @@ Page Load → loadSchedule() ← localStorage ← JSON.parse()
 
 **Made with ❤️ for productivity and focus**
 
-**Version:** 2.0 (Interactive Edition)  
-**Last Updated:** February 2026
+**Version:** 3.0 (Performance & Aero Edition)  
+**Last Updated:** March 2026
