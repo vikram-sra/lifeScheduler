@@ -128,27 +128,33 @@ td:nth-child(n+3) {
 
 /* Today highlight */
 .today-header {
-    background: linear-gradient(135deg, #0a2a4c, #1a3a5c) !important;
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.4), inset 0 0 15px rgba(0, 217, 255, 0.3);
+    background: linear-gradient(135deg, #2a2a0a, #4c4c0a) !important;
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(0, 217, 255, 0.4);
+    z-index: 10 !important;
+    box-shadow:
+        inset 0 0 20px rgba(255, 204, 0, 0.4),
+        0 0 15px rgba(255, 204, 0, 0.4) !important;
+    border: 2px solid rgba(255, 204, 0, 0.8) !important;
+    animation: activeGlow 3s ease-in-out infinite;
+    will-change: box-shadow;
+    transform: translateZ(0);
 }
 
 .today-header .date-display {
     display: block;
     font-size: 10px;
     font-weight: 600;
-    color: #00d9ff;
+    color: #ffcc00;
     margin-top: 2px;
-    text-shadow: 0 0 8px rgba(0, 217, 255, 0.6);
+    text-shadow: 0 0 8px rgba(255, 204, 0, 0.6);
 }
 
 .today-header .month-progress {
     display: block;
     font-size: 9px;
     font-weight: 500;
-    color: #7ec8e3;
+    color: #ffeb3b;
     margin-top: 1px;
 }
 
@@ -548,9 +554,9 @@ td {
 
 .header-time-display {
     font-size: 10px;
-    color: #00d9ff;
+    color: #ffcc00;
     font-weight: 700;
-    text-shadow: 0 0 5px rgba(0, 217, 255, 0.5);
+    text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
     font-family: 'Courier New', Courier, monospace;
 }
 
