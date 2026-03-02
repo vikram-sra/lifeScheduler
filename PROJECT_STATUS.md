@@ -155,6 +155,7 @@ foodprep, office, workout, dinner, duar, arrow, custom
 - Tracked Aero & Performance enhancements and onboarding prep.
 - **Animation Optimization:** Re-engineered `water-bg.svg` and `gym-bg.svg` to drastically reduce GPU/CPU overhead while maintaining aesthetics (removed clipPaths, blurs, and excessive discrete particles).
 - **Time Visibility:** Fixed bug where past-time fading affected future/past days. Fading is now strictly tied to the `.today` active column.
+- **Work/Meals UI Adjustments:** Fine-tuned `work-bg.svg` and `work-static.svg` for better text contrast with dimmed backgrounds and brighter cursors. Replaced noisy `meals-static.svg` with a minimal, elegant bento box/tray outline.
 - **Work Hours Clarity:** Added distinct greenish-yellow text color styling to the `time-col` for the standard 9:00 AM – 5:00 PM block.
 - **Rituals Persistence:** Ensured active-slot SVG backgrounds correctly override the static rituals column definitions during the current hour.
 
