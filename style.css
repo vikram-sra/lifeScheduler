@@ -620,6 +620,34 @@ td {
     letter-spacing: 0.5px;
 }
 
+.activity-arrow,
+.current-time-row td.activity-arrow {
+    background-image: url('svgs/arrow-up-static.svg') !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    color: #00d9ff;
+    font-weight: bold;
+    animation: arrowBounce 2s infinite ease-in-out;
+}
+
+td.active-slot.activity-arrow {
+    background-image: url('svgs/arrow-up-bg.svg') !important;
+}
+
+@keyframes arrowBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+
 .activity-wakeup,
 .current-time-row td.activity-wakeup {
     color: #ffffff;

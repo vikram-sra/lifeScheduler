@@ -1224,6 +1224,12 @@ function loadSchedule() {
                         cellData.class = 'activity-hike';
                     }
 
+                    // Handle arrow continuity
+                    if (cleanText === '↑' || currentIcon === '↑' || currentIcon === '▲') {
+                        cell.classList.add('activity-arrow');
+                        cellData.class = 'activity-arrow';
+                    }
+
                     cell.innerHTML = (currentIcon ? `<span class="icon">${currentIcon}</span>` : '') +
                         cleanText + flapHtml;
 
@@ -1611,9 +1617,23 @@ function checkNotifications() {
     }
 }
 
+// Initialize automatic classes for hardcoded elements
+function initializeAutoClasses() {
+    document.querySelectorAll('td').forEach(cell => {
+        const text = cell.textContent.trim();
+        // Check for ↑ and apply activity-arrow
+        if (text === '↑' && !cell.classList.contains('activity-arrow')) {
+            cell.classList.add('activity-arrow');
+        }
+    });
+}
+
 // ============================================
 // INITIALIZATION
 // ============================================
+
+// Initialize auto classes for harcoded/initial elements
+initializeAutoClasses();
 
 // Initialize base setup
 initializeFlaps();

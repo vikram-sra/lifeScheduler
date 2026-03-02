@@ -1,0 +1,9 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="arrowGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:0.1" />
+            <stop offset="100%" style="stop-color:#00d9ff;stop-opacity:0.4" />
+        </linearGradient>
+    </defs>
+    <path d="M100 50 L70 90 H90 V150 H110 V90 H130 L100 50Z" fill="url(#arrowGrad)" stroke="#00d9ff" stroke-width="2" stroke-opacity="0.5" />
+</svg>
