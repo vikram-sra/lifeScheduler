@@ -1,3 +1,70 @@
+/* ============================================
+   DESIGN TOKENS — "Refined Midnight"
+   Deep neutral surfaces, one primary accent (cyan), one warm accent (gold)
+   for "today/active", muted category colors that mirror data.js CATEGORIES.
+   ============================================ */
+:root {
+    /* Surfaces */
+    --bg-void: #0a0c14;
+    --bg-surface: #10131e;
+    --bg-surface-2: #151928;
+    --bg-surface-3: #1b2032;
+    --bg-glass: rgba(16, 19, 30, 0.82);
+    --bg-glass-heavy: rgba(10, 12, 20, 0.92);
+
+    /* Borders */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-default: rgba(255, 255, 255, 0.10);
+    --border-strong: rgba(255, 255, 255, 0.18);
+
+    /* Text */
+    --text-primary: #f2f4f8;
+    --text-secondary: rgba(242, 244, 248, 0.64);
+    --text-tertiary: rgba(242, 244, 248, 0.38);
+
+    /* Primary accent — cyan */
+    --accent: #22d3ee;
+    --accent-soft: rgba(34, 211, 238, 0.14);
+    --accent-border: rgba(34, 211, 238, 0.45);
+    --accent-glow: rgba(34, 211, 238, 0.35);
+
+    /* Warm accent — "today / active now" */
+    --gold: #f5c451;
+    --gold-soft: rgba(245, 196, 81, 0.14);
+    --gold-border: rgba(245, 196, 81, 0.5);
+    --gold-glow: rgba(245, 196, 81, 0.4);
+
+    /* Status */
+    --danger: #fb7185;
+    --danger-soft: rgba(251, 113, 133, 0.14);
+    --danger-border: rgba(251, 113, 133, 0.4);
+    --success: #6ee7b7;
+
+    /* Category palette — mirrors CATEGORIES in data.js */
+    --cat-work: #38bdf8;
+    --cat-project: #f5c451;
+    --cat-habit: #f472b6;
+    --cat-health: #fb7185;
+    --cat-meal: #6ee7b7;
+    --cat-rest: #a78bfa;
+    --cat-commute: #fb923c;
+    --cat-admin: #94a3b8;
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 22px;
+    --radius-pill: 999px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.28);
+    --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.38);
+    --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.5);
+
+    --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -11,10 +78,11 @@ body {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #1a1a2e;
-    color: #ffffff;
-    padding: 12px;
+    font-family: var(--font-sans);
+    background: var(--bg-void);
+    color: var(--text-primary);
+    /* Full-bleed: the schedule IS the app — no frame, no gutter. */
+    padding: 0;
     display: flex;
     flex-direction: column;
 }
@@ -24,8 +92,6 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .table-wrapper {
@@ -37,11 +103,11 @@ body {
 
 table {
     min-width: 1000px;
-    width: 1000px;
+    width: 100%;
     height: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    background-color: #16213e;
+    background-color: var(--bg-surface);
     table-layout: fixed;
 }
 
@@ -49,7 +115,7 @@ th,
 td {
     padding: 4px 8px;
     text-align: center;
-    border: 1px solid #2a2a4a;
+    border: 1px solid var(--border-subtle);
     font-size: 13px;
     overflow: hidden;
     white-space: normal;
@@ -58,10 +124,12 @@ td {
 }
 
 th {
-    background-color: #0f3460;
+    background-color: var(--bg-surface-2);
+    color: var(--text-secondary);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    font-size: 11px;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -75,7 +143,7 @@ td:nth-child(1) {
     z-index: 2;
     min-width: 70px;
     width: 70px;
-    background-color: #1a1a3e;
+    background-color: var(--bg-surface-3);
 }
 
 th:nth-child(2),
@@ -85,8 +153,8 @@ td:nth-child(2) {
     z-index: 2;
     min-width: 100px;
     width: 100px;
-    background-color: #2a2a5e;
-    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
+    background-color: var(--bg-surface-3);
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
 }
 
 /* Header row frozen columns need higher z-index */
@@ -96,7 +164,7 @@ thead th:nth-child(2) {
 }
 
 thead th:nth-child(2) {
-    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Day columns */
@@ -106,44 +174,48 @@ td:nth-child(n+3) {
 }
 
 .time-col {
-    background-color: #1a1a3e;
+    background-color: var(--bg-surface-3);
     font-weight: 500;
-    color: #7ec8e3;
+    color: var(--accent);
     white-space: nowrap;
     font-size: 12px;
+    font-variant-numeric: tabular-nums;
 }
 
 /* 9-5 Work block highlighter for time-col */
 .work-hour {
-    color: #cddc39 !important;
-    /* Greenish/yellow */
+    color: var(--cat-project) !important;
     font-weight: 600;
 }
 
 .rituals-col {
-    background-color: #2a2a5e;
-    color: #ffd700;
+    background-color: var(--bg-surface-3);
+    color: var(--gold);
     font-weight: 500;
-    opacity: 0.75 !important;
+    /* Muted via color, NOT opacity — a translucent sticky column lets the
+       scrolled day columns bleed through underneath it, which read as glitchy. */
 }
 
 .day-header {
-    background: linear-gradient(135deg, #e94560, #c73e54);
-    color: white;
+    background: linear-gradient(180deg, var(--bg-surface-2), var(--bg-surface));
+    color: var(--text-secondary);
     font-size: 12px;
-    padding: 10px 8px;
+    font-weight: 700;
+    padding: 14px 8px;
+    box-shadow: inset 0 -1px 0 var(--border-subtle);
 }
 
 /* Today highlight */
 .today-header {
-    background: linear-gradient(135deg, #2a2a0a, #4c4c0a) !important;
+    background: linear-gradient(180deg, rgba(245, 196, 81, 0.14), rgba(245, 196, 81, 0.05)) !important;
     position: relative;
     overflow: hidden;
     z-index: 10 !important;
+    color: var(--text-primary);
     box-shadow:
-        inset 0 0 20px rgba(255, 204, 0, 0.4),
-        0 0 15px rgba(255, 204, 0, 0.4) !important;
-    border: 2px solid rgba(255, 204, 0, 0.8) !important;
+        inset 0 0 18px rgba(245, 196, 81, 0.22),
+        0 0 14px var(--gold-glow) !important;
+    border: 1px solid var(--gold-border) !important;
     animation: activeGlow 3s ease-in-out infinite;
     will-change: box-shadow;
     transform: translateZ(0);
@@ -153,17 +225,18 @@ td:nth-child(n+3) {
     display: block;
     font-size: 10px;
     font-weight: 600;
-    color: #ffcc00;
+    color: var(--gold);
     margin-top: 2px;
-    text-shadow: 0 0 8px rgba(255, 204, 0, 0.6);
+    opacity: 0.9;
 }
 
 .today-header .month-progress {
     display: block;
     font-size: 9px;
-    font-weight: 500;
-    color: #ffeb3b;
+    font-weight: 600;
+    color: var(--gold);
     margin-top: 1px;
+    opacity: 0.8;
 }
 
 /* Day progress bar in header - matches time progress style */
@@ -172,25 +245,25 @@ td:nth-child(n+3) {
     top: 0;
     left: 0;
     bottom: 0;
-    background: linear-gradient(90deg, rgba(0, 217, 255, 0.5), rgba(0, 217, 255, 0.25));
+    background: linear-gradient(90deg, var(--accent-glow), rgba(34, 211, 238, 0.12));
     z-index: 0;
     pointer-events: none;
     transition: width 1s linear, background-color 0.5s ease;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     overflow: hidden;
 }
 
 /* Progress Color Thresholds */
 .progress-yellow {
-    background: linear-gradient(90deg, rgba(255, 204, 0, 0.6), rgba(255, 204, 0, 0.3)) !important;
+    background: linear-gradient(90deg, rgba(245, 196, 81, 0.55), rgba(245, 196, 81, 0.22)) !important;
 }
 
 .progress-orange {
-    background: linear-gradient(90deg, rgba(255, 126, 0, 0.7), rgba(255, 126, 0, 0.4)) !important;
+    background: linear-gradient(90deg, rgba(251, 146, 60, 0.6), rgba(251, 146, 60, 0.25)) !important;
 }
 
 .progress-red {
-    background: linear-gradient(90deg, rgba(255, 68, 68, 0.8), rgba(255, 68, 68, 0.5)) !important;
+    background: linear-gradient(90deg, rgba(251, 113, 133, 0.65), rgba(251, 113, 133, 0.3)) !important;
 }
 
 
@@ -201,7 +274,7 @@ td:nth-child(n+3) {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
     animation: progressShimmer 4s ease-in-out infinite;
 }
 
@@ -211,7 +284,7 @@ td:nth-child(n+3) {
 }
 
 .today {
-    background-color: rgba(0, 217, 255, 0.15) !important;
+    background-color: var(--accent-soft) !important;
 }
 
 /* Day progress bar for today's cells */
@@ -220,11 +293,11 @@ td:nth-child(n+3) {
     top: 0;
     left: 0;
     bottom: 0;
-    background: linear-gradient(90deg, rgba(0, 217, 255, 0.35), rgba(0, 217, 255, 0.15));
+    background: linear-gradient(90deg, rgba(34, 211, 238, 0.28), rgba(34, 211, 238, 0.1));
     z-index: 0;
     pointer-events: none;
     transition: width 1s linear;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     overflow: hidden;
 }
 
@@ -235,7 +308,7 @@ td:nth-child(n+3) {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
     animation: progressShimmer 4s ease-in-out infinite;
 }
 
@@ -253,25 +326,25 @@ td:nth-child(n+3) {
 /* Current time row highlight */
 .current-time-row td {
     position: relative;
-    background-color: rgba(0, 217, 255, 0.25) !important;
-    box-shadow: inset 0 0 15px rgba(0, 217, 255, 0.3);
+    background-color: rgba(34, 211, 238, 0.16) !important;
+    box-shadow: inset 0 0 12px rgba(34, 211, 238, 0.2);
 }
 
 .current-time-row td.time-col {
-    background: linear-gradient(135deg, #0a2a4c, #1a3a5c) !important;
-    color: #fff !important;
+    background: linear-gradient(180deg, var(--bg-surface-3), var(--bg-surface-2)) !important;
+    color: var(--text-primary) !important;
     position: sticky !important;
     left: 0 !important;
     z-index: 5 !important;
 }
 
 .current-time-row td.rituals-col {
-    background: linear-gradient(135deg, #1a3a5c, #1f4a6c) !important;
-    box-shadow: inset 0 0 20px rgba(0, 217, 255, 0.4), 4px 0 8px rgba(0, 0, 0, 0.3) !important;
+    background: linear-gradient(180deg, var(--bg-surface-3), var(--bg-surface-2)) !important;
+    box-shadow: inset 0 0 16px rgba(34, 211, 238, 0.28), 4px 0 10px rgba(0, 0, 0, 0.25) !important;
     position: sticky !important;
     left: 70px !important;
     z-index: 5 !important;
-    border-right: 2px solid rgba(0, 217, 255, 0.5) !important;
+    border-right: 1px solid var(--accent-border) !important;
 }
 
 .current-time-row td::before {
@@ -280,8 +353,8 @@ td:nth-child(n+3) {
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #00d9ff, #ff6b6b, #00d9ff);
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--gold), var(--accent));
     animation: pulse 4s ease-in-out infinite;
     will-change: opacity;
     transform: translateZ(0);
@@ -291,7 +364,7 @@ td:nth-child(n+3) {
 
     0%,
     100% {
-        opacity: 0.6;
+        opacity: 0.55;
     }
 
     50% {
@@ -303,10 +376,10 @@ td:nth-child(n+3) {
 .live-time {
     display: block;
     font-size: 10px;
-    color: #00d9ff;
+    color: var(--accent);
     font-weight: 600;
     margin-top: 2px;
-    text-shadow: 0 0 8px rgba(0, 217, 255, 0.6);
+    font-variant-numeric: tabular-nums;
     animation: liveTimePulse 3s ease-in-out infinite;
 }
 
@@ -314,7 +387,7 @@ td:nth-child(n+3) {
 
     0%,
     100% {
-        opacity: 0.8;
+        opacity: 0.75;
     }
 
     50% {
@@ -328,11 +401,11 @@ td:nth-child(n+3) {
     top: 0;
     left: 0;
     bottom: 0;
-    background: linear-gradient(90deg, rgba(0, 217, 255, 0.5), rgba(0, 217, 255, 0.25));
+    background: linear-gradient(90deg, rgba(34, 211, 238, 0.4), rgba(34, 211, 238, 0.16));
     z-index: 0;
     pointer-events: none;
     transition: width 1s linear;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     overflow: hidden;
 }
 
@@ -343,7 +416,7 @@ td:nth-child(n+3) {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
     animation: progressShimmer 4s ease-in-out infinite;
     will-change: transform;
     transform: translateZ(0);
@@ -365,9 +438,9 @@ td:nth-child(n+3) {
     z-index: 10 !important;
     overflow: hidden;
     box-shadow:
-        inset 0 0 20px rgba(255, 204, 0, 0.4),
-        0 0 15px rgba(255, 204, 0, 0.4) !important;
-    border: 2px solid rgba(255, 204, 0, 0.8) !important;
+        inset 0 0 16px rgba(245, 196, 81, 0.3),
+        0 0 12px var(--gold-glow) !important;
+    border: 1px solid var(--gold-border) !important;
     animation: activeGlow 3s ease-in-out infinite;
     will-change: box-shadow;
     transform: translateZ(0);
@@ -385,41 +458,34 @@ td:nth-child(n+3) {
     display: block;
 }
 
-.monday {
-    background-color: rgba(233, 69, 96, 0.08);
-}
-
-.tuesday {
-    background-color: rgba(0, 173, 181, 0.08);
-}
-
-.wednesday {
-    background-color: rgba(233, 69, 96, 0.08);
-}
-
-.thursday {
-    background-color: rgba(0, 173, 181, 0.08);
-}
-
+/* Weekday tint: kept intentionally quiet so activity color carries meaning */
+.monday,
+.tuesday,
+.wednesday,
+.thursday,
 .friday {
-    background-color: rgba(233, 69, 96, 0.08);
+    background-color: rgba(255, 255, 255, 0.012);
 }
 
-.saturday {
-    background-color: rgba(255, 215, 0, 0.08);
-}
-
+.saturday,
 .sunday {
-    background-color: rgba(255, 215, 0, 0.08);
+    background-color: rgba(245, 196, 81, 0.03);
 }
 
 .activity-paint {
-    color: #ffe66d;
+    color: var(--cat-project);
     font-weight: 700;
-    background: linear-gradient(135deg, rgba(255, 230, 109, 0.25), rgba(255, 230, 109, 0.15)) !important;
-    box-shadow: inset 0 0 20px rgba(255, 230, 109, 0.3), 0 0 10px rgba(255, 230, 109, 0.2);
-    border: 1px solid rgba(255, 230, 109, 0.4) !important;
-    text-shadow: 0 0 8px rgba(255, 230, 109, 0.5);
+    background: linear-gradient(135deg, rgba(245, 196, 81, 0.22), rgba(245, 196, 81, 0.1)) !important;
+    box-shadow: inset 0 0 16px rgba(245, 196, 81, 0.22);
+    border: 1px solid rgba(245, 196, 81, 0.35) !important;
+}
+
+/* The pulsing glow only runs on the occurrence that's actually live right now —
+   a week can have a dozen Paint/GYM cells, and most of them sit dimmed under
+   focus mode anyway, so animating all of them nonstop was pure battery waste. */
+.activity-paint.today,
+.activity-paint.current-active-cell,
+.activity-paint.active-slot {
     animation: paintGlow 5s ease-in-out infinite;
     will-change: box-shadow;
     transform: translateZ(0);
@@ -429,11 +495,11 @@ td:nth-child(n+3) {
 
     0%,
     100% {
-        box-shadow: inset 0 0 15px rgba(255, 230, 109, 0.2);
+        box-shadow: inset 0 0 12px rgba(245, 196, 81, 0.16);
     }
 
     50% {
-        box-shadow: inset 0 0 25px rgba(255, 230, 109, 0.4);
+        box-shadow: inset 0 0 20px rgba(245, 196, 81, 0.3);
     }
 }
 
@@ -441,25 +507,25 @@ td:nth-child(n+3) {
 
     0%,
     100% {
-        box-shadow: inset 0 0 15px rgba(255, 71, 87, 0.2);
+        box-shadow: inset 0 0 12px rgba(251, 113, 133, 0.16);
     }
 
     50% {
-        box-shadow: inset 0 0 25px rgba(255, 71, 87, 0.4);
+        box-shadow: inset 0 0 20px rgba(251, 113, 133, 0.3);
     }
 }
 
 .activity-work,
 .current-time-row td.activity-work,
 .current-time-row td.rituals-col.activity-work {
-    color: #bae6fd;
+    color: #bfe8fb;
     background-image: url('svgs/work-static.svg') !important;
     background-size: cover !important;
     background-position: center !important;
-    border-color: #1e293b !important;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(56, 189, 248, 0.5);
+    border-color: rgba(56, 189, 248, 0.3) !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 8px rgba(56, 189, 248, 0.4);
     font-weight: 500;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     opacity: 1;
 }
 
@@ -468,12 +534,17 @@ td:nth-child(n+3) {
 .current-time-row td.rituals-col.activity-gym {
     color: #ffffff;
     font-weight: 700;
-    background-image: url('svgs/gym-static.svg'), linear-gradient(135deg, rgba(255, 71, 87, 0.45), rgba(255, 107, 107, 0.25)) !important;
+    background-image: url('svgs/gym-static.svg'), linear-gradient(135deg, rgba(251, 113, 133, 0.4), rgba(251, 113, 133, 0.2)) !important;
     background-size: cover, auto !important;
     background-position: center !important;
-    box-shadow: inset 0 0 20px rgba(255, 71, 87, 0.3), 0 0 10px rgba(255, 71, 87, 0.2);
-    border: 1px solid rgba(255, 71, 87, 0.6) !important;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(255, 71, 87, 0.8);
+    box-shadow: inset 0 0 16px rgba(251, 113, 133, 0.25);
+    border: 1px solid rgba(251, 113, 133, 0.45) !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(251, 113, 133, 0.6);
+}
+
+.activity-gym.today,
+.activity-gym.current-active-cell,
+.activity-gym.active-slot {
     animation: gymGlow 5s infinite;
     will-change: box-shadow;
     transform: translateZ(0);
@@ -482,14 +553,14 @@ td:nth-child(n+3) {
 .activity-meal,
 .current-time-row td.activity-meal,
 .current-time-row td.rituals-col.activity-meal {
-    color: #ccfbf1;
+    color: #d3fbef;
     background-image: url('svgs/meals-static.svg') !important;
     background-size: cover !important;
     background-position: center !important;
-    border-color: #0f2b2b !important;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(45, 212, 191, 0.5);
+    border-color: rgba(110, 231, 183, 0.3) !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 8px rgba(110, 231, 183, 0.4);
     font-weight: 500;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .activity-duar,
@@ -499,7 +570,7 @@ td:nth-child(n+3) {
     background-image: url('svgs/duar-static.svg') !important;
     background-size: cover !important;
     background-position: center !important;
-    border-color: rgba(255, 255, 255, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
 }
 
 td.active-slot.activity-duar,
@@ -511,18 +582,20 @@ td.active-slot.activity-duar,
 td {
     padding: 4px 8px;
     text-align: center;
-    border: 1px solid #2a2a4a;
+    border: 1px solid var(--border-subtle);
     font-size: 13px;
     overflow: hidden;
     white-space: normal;
     word-wrap: break-word;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
-    will-change: transform, opacity;
+    /* No blanket will-change/translateZ(0) here — promoting every cell in the
+       table to its own GPU layer at all times (100+ cells) is a real battery
+       cost for almost no benefit, since most cells never animate. Layer
+       promotion is applied narrowly below, only where something actually moves. */
+    transition: background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     vertical-align: middle;
     position: relative;
-    transform: translateZ(0);
 }
 
 .cell-flap {
@@ -531,7 +604,7 @@ td {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #050510;
+    background-color: var(--bg-void);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -543,10 +616,10 @@ td {
     transform: translateZ(0);
     /* Force GPU acceleration */
     backface-visibility: hidden;
-    border: 1px solid #1a1a2e;
+    border: 1px solid var(--border-subtle);
     cursor: pointer;
     pointer-events: auto;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .cell-flap.open {
@@ -564,10 +637,10 @@ td {
 
 .header-time-display {
     font-size: 10px;
-    color: #ffcc00;
+    color: var(--gold);
     font-weight: 700;
-    text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
-    font-family: 'Courier New', Courier, monospace;
+    font-variant-numeric: tabular-nums;
+    font-family: inherit;
 }
 
 .cell-flap .flap-time {
@@ -579,7 +652,7 @@ td {
     content: '💤';
     position: absolute;
     font-size: 8px;
-    color: rgba(162, 155, 254, 0.4);
+    color: rgba(167, 139, 250, 0.45);
     animation: flapZzzz 3s infinite ease-in-out;
     pointer-events: none;
     top: 20%;
@@ -633,27 +706,27 @@ td {
     background-image: url('svgs/meditate-static.svg') !important;
     background-size: cover !important;
     background-position: center !important;
-    border-color: rgba(253, 121, 168, 0.5) !important;
-    box-shadow: inset 0 0 15px rgba(253, 121, 168, 0.2);
-    text-shadow: 0 0 8px rgba(253, 121, 168, 0.9), 0 0 15px rgba(253, 121, 168, 0.6), 1px 1px 2px #000;
+    border-color: rgba(244, 114, 182, 0.4) !important;
+    box-shadow: inset 0 0 12px rgba(244, 114, 182, 0.16);
+    text-shadow: 0 0 6px rgba(244, 114, 182, 0.7), 1px 1px 2px #000;
     font-weight: 400;
     font-size: 10px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .activity-water,
 .current-time-row td.activity-water,
 .current-time-row td.rituals-col.activity-water {
-    color: #E0F7FA;
+    color: #dff8f4;
     background-image: url('svgs/water-static.svg') !important;
     background-size: cover !important;
     background-position: center !important;
-    border-color: rgba(67, 198, 172, 0.4) !important;
-    box-shadow: inset 0 0 15px rgba(67, 198, 172, 0.15);
-    text-shadow: 0 0 8px rgba(67, 198, 172, 0.9), 0 0 15px #000, 1px 1px 3px #000;
+    border-color: rgba(110, 231, 183, 0.3) !important;
+    box-shadow: inset 0 0 12px rgba(110, 231, 183, 0.12);
+    text-shadow: 0 0 6px rgba(110, 231, 183, 0.7), 1px 1px 3px #000;
     font-weight: 400;
     font-size: 10px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .activity-arrow,
@@ -662,7 +735,7 @@ td {
     background-size: contain !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
-    color: #00d9ff;
+    color: var(--accent);
     font-weight: bold;
 }
 
@@ -679,7 +752,7 @@ td.active-slot.activity-arrow {
     background-size: cover !important;
     background-position: center !important;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-    border-color: #fecfef !important;
+    border-color: rgba(244, 114, 182, 0.35) !important;
 }
 
 td.active-slot.activity-wakeup {
@@ -693,7 +766,7 @@ td.active-slot.activity-wakeup {
     background-size: cover !important;
     background-position: center !important;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-    border-color: #0984e3 !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
 }
 
 .activity-car,
@@ -703,11 +776,11 @@ td.active-slot.activity-wakeup {
     background-size: cover !important;
     background-position: center !important;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-    border-color: #e17055 !important;
+    border-color: rgba(251, 146, 60, 0.4) !important;
 }
 
 .activity-commute {
-    color: #ffeaa7;
+    color: var(--cat-commute);
 }
 
 .activity-hike,
@@ -718,22 +791,22 @@ td.active-slot.activity-wakeup {
     background-position: center !important;
     background-repeat: no-repeat;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
-    border-color: #8FBC8F !important;
+    border-color: rgba(110, 231, 183, 0.35) !important;
 }
 
 .activity-finances,
 .current-time-row td.activity-finances,
 .current-time-row td.rituals-col.activity-finances {
-    color: #34d399;
+    color: #a6f4d8;
     background-image: url('svgs/finances-static.svg') !important;
     background-size: cover !important;
     background-position: center !important;
-    border-color: #064e3b !important;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(16, 185, 129, 0.5);
+    border-color: rgba(110, 231, 183, 0.3) !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 8px rgba(110, 231, 183, 0.4);
 }
 
 .activity-clean {
-    color: #81ecec;
+    color: var(--cat-admin);
 }
 
 /* Icons */
@@ -757,12 +830,11 @@ td.active-slot.activity-wakeup {
 
 /* Hover effects */
 tr:hover td:not(.time-col):not(.rituals-col) {
-    background-color: rgba(255, 255, 255, 0.08);
-    transform: scale(1.01);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 td:hover {
-    box-shadow: inset 0 0 0 2px rgba(0, 217, 255, 0.3);
+    box-shadow: inset 0 0 0 1px var(--accent-border);
 }
 
 /* Scrollbar styling */
@@ -771,37 +843,31 @@ td:hover {
 }
 
 .table-wrapper::-webkit-scrollbar-track {
-    background: #1a1a3e;
+    background: var(--bg-surface);
     border-radius: 4px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb {
-    background: linear-gradient(90deg, #e94560, #0f3460);
+    background: rgba(34, 211, 238, 0.35);
     border-radius: 4px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(90deg, #ff6b6b, #1a5276);
+    background: rgba(34, 211, 238, 0.55);
 }
 
 /* Mobile-specific styles */
 @media screen and (max-width: 768px) {
     body {
-        padding: 8px;
-        padding-top: env(safe-area-inset-top, 8px);
-        padding-bottom: env(safe-area-inset-bottom, 8px);
-        padding-left: env(safe-area-inset-left, 8px);
-        padding-right: env(safe-area-inset-right, 8px);
-        padding-bottom: 0;
-        /* Remove bottom bar gap */
+        /* Full-bleed on mobile too — only the notch/home-bar safe areas are respected. */
+        padding: 0;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
         touch-action: pan-x pan-y;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         user-select: none;
-    }
-
-    .schedule-container {
-        border-radius: 8px;
     }
 
     th,
@@ -876,16 +942,30 @@ td:hover {
    CONTROL BUTTONS (Grouped)
    ============================================ */
 
+/* The dock itself — one shared frosted-glass capsule (Instagram-style),
+   anchored bottom-right rather than centered like a typical nav dock. */
 .floating-controls {
     position: fixed;
     bottom: 20px;
     right: 20px;
     display: flex;
-    gap: 12px;
+    gap: 4px;
     z-index: 1000;
     align-items: center;
+    padding: 6px;
+    border-radius: var(--radius-pill);
+    background: var(--bg-glass);
+    /* This dock is always on-screen, so its blur cost is paid continuously —
+       kept modest rather than the heavier radius used for panels that only
+       render while open. */
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-md);
 }
 
+/* Buttons live INSIDE the dock's glass — icon-only by default, no
+   competing backgrounds/blur of their own so the capsule reads as one piece. */
 .edit-toggle,
 .settings-toggle,
 .focus-toggle {
@@ -896,31 +976,38 @@ td:hover {
     right: auto;
     left: auto;
     /* Reset fixed positioning */
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: none;
+    border: 1px solid transparent;
     font-size: 0;
     /* Hide text if any */
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    box-shadow: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    /* For SVGs */
-    padding: 12px;
+    color: var(--text-secondary);
+    padding: 11px;
+}
+
+.edit-toggle:hover,
+.settings-toggle:hover,
+.focus-toggle:hover {
+    transform: scale(1.06);
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 /* Edit Button */
 .edit-toggle {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
-    padding: 12px;
+    padding: 11px;
 }
 
 .edit-text {
@@ -934,19 +1021,16 @@ td:hover {
     margin-left: 0;
 }
 
-.edit-toggle:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-}
-
 .edit-toggle.active {
-    background: linear-gradient(135deg, #00d9ff, #00b4d8);
-    width: 160px;
-    border-radius: 25px;
-    padding-left: 18px;
-    padding-right: 18px;
-    box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5);
-    animation: editPulse 2s ease-in-out infinite;
+    width: 150px;
+    border-radius: var(--radius-pill);
+    padding-left: 16px;
+    padding-right: 16px;
+    color: var(--bg-void);
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 4px 20px var(--accent-glow);
+    animation: editPulse 2.5s ease-in-out infinite;
 }
 
 .edit-toggle.active .edit-text {
@@ -956,42 +1040,27 @@ td:hover {
 }
 
 /* Settings Button */
-.settings-toggle {
-    background: linear-gradient(135deg, #2d3436, #636e72);
-}
-
 .settings-toggle:hover {
-    transform: rotate(45deg);
-    background: linear-gradient(135deg, #636e72, #b2bec3);
+    transform: scale(1.06) rotate(35deg);
 }
 
 /* Focus Button */
-.focus-toggle {
-    background: linear-gradient(135deg, #2d3436, #636e72);
-    color: #a4b0be;
-}
-
-.focus-toggle:hover {
-    transform: scale(1.1);
-    color: white;
-    background: linear-gradient(135deg, #636e72, #b2bec3);
-}
-
 .focus-toggle.active {
-    background: linear-gradient(135deg, #00d9ff, #00b4d8);
-    color: white;
-    box-shadow: 0 0 15px rgba(0, 217, 255, 0.6);
+    color: var(--bg-void);
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
 }
 
 @keyframes editPulse {
 
     0%,
     100% {
-        box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5);
+        box-shadow: 0 4px 20px var(--accent-glow);
     }
 
     50% {
-        box-shadow: 0 4px 30px rgba(0, 217, 255, 0.8);
+        box-shadow: 0 4px 28px rgba(34, 211, 238, 0.55);
     }
 }
 
@@ -1002,16 +1071,15 @@ td:hover {
     right: -320px;
     width: 300px;
     height: 100%;
-    background: linear-gradient(180deg, #1a1a2e, #16213e);
+    background: linear-gradient(180deg, var(--bg-glass-heavy), var(--bg-surface));
     z-index: 1001;
-    z-index: 1001;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.4);
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid var(--border-default);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 }
 
 .settings-panel.open {
@@ -1024,36 +1092,15 @@ td:hover {
     align-items: center;
     padding: 24px 20px;
     padding-top: calc(24px + env(safe-area-inset-top, 0px));
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .settings-header h3 {
     margin: 0;
-    font-size: 18px;
-    color: #00d9ff;
-}
-
-.settings-btn {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.settings-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(0, 217, 255, 0.5);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 .btn-group {
@@ -1068,11 +1115,11 @@ td:hover {
 }
 
 .settings-close {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: white;
-    width: 36px;
-    height: 36px;
+    background: var(--bg-surface-3);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1083,8 +1130,9 @@ td:hover {
 }
 
 .settings-close:hover {
-    background: rgba(255, 71, 87, 0.4);
-    color: white;
+    background: var(--danger-soft);
+    border-color: var(--danger-border);
+    color: var(--danger);
     transform: rotate(90deg);
 }
 
@@ -1102,50 +1150,49 @@ td:hover {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: #00d9ff;
+    color: var(--text-tertiary);
     margin-bottom: 16px;
-    opacity: 0.8;
+    font-weight: 700;
 }
 
 .settings-section label {
     display: block;
     margin-bottom: 12px;
     font-size: 14px;
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 500;
 }
 
 .settings-section input[type="time"] {
     width: 100%;
     padding: 14px 16px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.4);
-    color: white;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--text-primary);
     font-size: 16px;
     margin-top: 6px;
     font-family: inherit;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .settings-section input[type="time"]:focus {
     outline: none;
-    border-color: #00d9ff;
-    box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .settings-btn {
     width: 100%;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 217, 255, 0.3);
-    background: rgba(0, 217, 255, 0.08);
-    color: #00d9ff;
-    font-size: 15px;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface-2);
+    color: var(--text-primary);
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1153,19 +1200,20 @@ td:hover {
 }
 
 .settings-btn:hover {
-    background: rgba(0, 217, 255, 0.2);
-    border-color: rgba(0, 217, 255, 0.5);
+    background: var(--accent-soft);
+    border-color: var(--accent-border);
+    color: var(--accent);
 }
 
 .settings-btn.danger {
-    border-color: rgba(255, 71, 87, 0.3);
-    background: rgba(255, 71, 87, 0.1);
-    color: #ff4757;
+    border-color: var(--danger-border);
+    background: var(--danger-soft);
+    color: var(--danger);
 }
 
 .settings-btn.danger:hover {
-    background: rgba(255, 71, 87, 0.2);
-    border-color: rgba(255, 71, 87, 0.5);
+    background: rgba(251, 113, 133, 0.22);
+    border-color: var(--danger);
 }
 
 /* Activity picker popup */
@@ -1176,12 +1224,12 @@ td:hover {
     transform: translateY(20px);
     width: 280px;
     max-width: 90vw;
-    background: rgba(20, 20, 20, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    background: var(--bg-glass-heavy);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
     z-index: 1002;
     opacity: 0;
     visibility: hidden;
@@ -1198,19 +1246,19 @@ td:hover {
 }
 
 .picker-header {
-    padding: 20px 24px;
+    padding: 18px 22px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .picker-header h4 {
     margin: 0;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 700;
-    color: #fff;
-    letter-spacing: 0.5px;
+    color: var(--text-primary);
+    letter-spacing: 0.4px;
     text-transform: uppercase;
 }
 
@@ -1221,16 +1269,16 @@ td:hover {
 }
 
 .picker-section {
-    margin-bottom: 24px;
+    margin-bottom: 22px;
 }
 
 .picker-section h5 {
     margin: 0 0 12px 0;
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-tertiary);
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .picker-grid,
@@ -1246,60 +1294,60 @@ td:hover {
     align-items: center;
     justify-content: center;
     padding: 12px 8px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     text-align: center;
-    color: #eee;
+    color: var(--text-secondary);
 }
 
 .picker-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--border-strong);
 }
 
 .picker-item.selected {
-    background: rgba(0, 217, 255, 0.15);
-    border-color: #00d9ff;
-    color: #00d9ff;
-    box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-border);
 }
 
 .picker-icon {
-    font-size: 20px;
+    font-size: 18px;
     margin-bottom: 4px;
 }
 
 .picker-name {
     font-size: 10px;
     font-weight: 500;
-    opacity: 0.8;
+    opacity: 0.85;
 }
 
 .picker-link-container {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.025);
     padding: 16px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
 }
 
 .picker-link-container label {
     display: block;
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-tertiary);
     margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .picker-input {
     width: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
     padding: 10px 12px;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 13px;
     font-family: inherit;
     transition: border-color 0.2s;
@@ -1307,27 +1355,27 @@ td:hover {
 
 .picker-input:focus {
     outline: none;
-    border-color: #00d9ff;
-    background: rgba(0, 0, 0, 0.5);
+    border-color: var(--accent);
+    background: rgba(0, 0, 0, 0.4);
 }
 
 .picker-footer {
     padding: 16px;
-    background: rgba(0, 0, 0, 0.3);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.22);
+    border-top: 1px solid var(--border-subtle);
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
 }
 
 .picker-footer button {
     padding: 12px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-default);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1336,50 +1384,50 @@ td:hover {
 }
 
 .picker-clear {
-    background: rgba(255, 71, 87, 0.1);
-    color: #ff4757;
-    border-color: rgba(255, 71, 87, 0.2) !important;
+    background: var(--danger-soft);
+    color: var(--danger);
+    border-color: var(--danger-border) !important;
 }
 
 .picker-clear:hover {
-    background: rgba(255, 71, 87, 0.2);
+    background: rgba(251, 113, 133, 0.22);
 }
 
 .picker-clear.selected {
-    background: #ff4757;
-    color: white;
+    background: var(--danger);
+    color: #1a0508;
 }
 
 .picker-custom {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
 }
 
 .picker-custom:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .picker-save {
-    background: linear-gradient(135deg, #00d9ff, #00a8ff);
-    color: #000;
+    background: var(--accent);
+    color: var(--bg-void);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     border: none !important;
-    box-shadow: 0 4px 15px rgba(0, 217, 255, 0.3);
+    box-shadow: 0 4px 15px var(--accent-glow);
 }
 
 .picker-save:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+    box-shadow: 0 6px 20px rgba(34, 211, 238, 0.45);
 }
 
 .picker-close {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: white;
-    width: 32px;
-    height: 32px;
+    background: var(--bg-surface-3);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1389,7 +1437,9 @@ td:hover {
 }
 
 .picker-close:hover {
-    background: rgba(255, 71, 87, 0.4);
+    background: var(--danger-soft);
+    border-color: var(--danger-border);
+    color: var(--danger);
     transform: rotate(90deg);
 }
 
@@ -1399,14 +1449,14 @@ td:hover {
 }
 
 .edit-mode td.editable:hover {
-    outline: 2px dashed rgba(0, 217, 255, 0.6);
+    outline: 2px dashed var(--accent-border);
     outline-offset: -2px;
-    background: rgba(0, 217, 255, 0.1) !important;
+    background: var(--accent-soft) !important;
 }
 
 .edit-mode td.rituals-col.editable:hover {
-    outline: 2px dashed rgba(255, 215, 0, 0.6);
-    background: rgba(255, 215, 0, 0.15) !important;
+    outline: 2px dashed var(--gold-border);
+    background: var(--gold-soft) !important;
 }
 
 /* Mobile adjustments for editing UI */
@@ -1414,8 +1464,8 @@ td:hover {
     .edit-toggle {
         bottom: 16px;
         right: 16px;
-        width: 48px;
-        height: 48px;
+        width: 46px;
+        height: 46px;
         font-size: 20px;
     }
 
@@ -1468,6 +1518,17 @@ td:hover {
     transition: opacity 0.5s ease;
 }
 
+/* While editing, or whenever focus mode is off, past slots of today stay
+   fully visible — fading them out fights against seeing/editing them. */
+body.edit-mode .past-slot td.time-col,
+body.edit-mode .past-slot td.rituals-col,
+body.edit-mode .past-slot td.today,
+body:not(.focus-mode) .past-slot td.time-col,
+body:not(.focus-mode) .past-slot td.rituals-col,
+body:not(.focus-mode) .past-slot td.today {
+    opacity: 1 !important;
+}
+
 /* FOCUS MODE */
 /* Updated: Dim inactive DAYS (columns) instead of rows */
 body.focus-mode td,
@@ -1498,10 +1559,10 @@ body.focus-mode .today-header {
     z-index: 5;
 
     /* Slight elevation */
-    box-shadow: 0 0 15px rgba(0, 217, 255, 0.1);
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.1);
 }
 
-/* Keep sticky columns visible but slightly less focused than active day if desired, 
+/* Keep sticky columns visible but slightly less focused than active day if desired,
    or keep them fully opaque as they are reference. */
 body.focus-mode .time-col,
 body.focus-mode .rituals-col,
@@ -1532,15 +1593,14 @@ td.draggable {
 
 td.dragging {
     opacity: 0.5;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    border: 2px dashed rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    border: 2px dashed var(--border-strong);
 }
 
 td.drag-over {
-    background: rgba(255, 255, 255, 0.2) !important;
-    border: 2px dashed #00d9ff;
-    transform: scale(1.05);
+    background: var(--accent-soft) !important;
+    border: 2px dashed var(--accent);
 }
 
 /* Ensure buttons stay in container on mobile */
@@ -1548,7 +1608,8 @@ td.drag-over {
     .floating-controls {
         bottom: 15px;
         right: 15px;
-        gap: 10px;
+        gap: 3px;
+        padding: 5px;
     }
 
     .edit-toggle,
@@ -1581,8 +1642,9 @@ td.drag-over {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(10, 10, 30, 0.95);
-    backdrop-filter: blur(10px);
+    background: rgba(6, 7, 12, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 2000;
     display: none;
     justify-content: center;
@@ -1600,10 +1662,10 @@ td.drag-over {
     width: 90%;
     max-width: 800px;
     height: 80%;
-    background: #16213e;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1611,87 +1673,89 @@ td.drag-over {
 
 .analytics-header {
     padding: 20px;
-    background: linear-gradient(90deg, #0f3460, #16213e);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-surface-2);
+    border-bottom: 1px solid var(--border-subtle);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .analytics-header h2 {
-    color: #00d9ff;
+    color: var(--text-primary);
     margin: 0;
-    font-size: 24px;
-}
-
-.analytics-content {
-    padding: 20px;
-    overflow-y: auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    font-size: 20px;
+    font-weight: 700;
 }
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: transform 0.2s;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.2s ease;
 }
 
 .stat-card:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-default);
 }
 
 .stat-value {
-    font-size: 32px;
-    font-weight: bold;
-    color: white;
-    margin: 10px 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 8px 0;
+    font-variant-numeric: tabular-nums;
 }
 
 .stat-detail {
-    font-size: 12px;
-    color: #74b9ff;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .close-analytics {
     background: none;
     border: none;
-    color: white;
-    font-size: 28px;
+    color: var(--text-secondary);
+    font-size: 26px;
     cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-analytics:hover {
+    color: var(--danger);
 }
 
 /* CUSTOM ACTIVITY PALETTE */
 .palette-section {
     margin-top: 15px;
     padding-top: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .palette-section h4 {
     margin: 0 0 10px 0;
     font-size: 12px;
-    color: #a4b0be;
+    color: var(--text-tertiary);
 }
 
 .settings-toggle-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
 }
 
 .settings-toggle-row span {
-    font-size: 15px;
-    color: #fff;
+    font-size: 14px;
+    color: var(--text-primary);
     font-weight: 500;
 }
 
@@ -1699,8 +1763,9 @@ td.drag-over {
 .switch {
     position: relative;
     display: inline-block;
-    width: 54px;
-    height: 30px;
+    width: 50px;
+    height: 28px;
+    flex-shrink: 0;
 }
 
 .switch input {
@@ -1716,64 +1781,62 @@ td.drag-over {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #4b4b4b;
-    transition: .4s;
-    border-radius: 34px;
+    background-color: var(--bg-surface-3);
+    border: 1px solid var(--border-default);
+    transition: .3s;
+    border-radius: var(--radius-pill);
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 22px;
-    width: 22px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-primary);
+    transition: .3s;
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 input:checked+.slider {
-    background-color: #00d9ff;
+    background-color: var(--accent);
+    border-color: var(--accent);
 }
 
 input:checked+.slider:before {
-    transform: translateX(24px);
+    transform: translateX(22px);
+    background-color: var(--bg-void);
 }
 
 /* WORK SCHEDULE LINES */
 .work-start-cell::before {
     content: '';
     position: absolute;
-    top: -4px;
-    /* Centered for 9px */
+    top: -3px;
     left: 0;
     right: 0;
-    height: 9px;
-    /* 3x of 3px */
-    background: #ffcc00;
-    box-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
+    height: 6px;
+    background: var(--gold);
+    box-shadow: 0 0 12px var(--gold-glow);
     z-index: 5;
 }
 
 .work-end-cell::before {
     content: '';
     position: absolute;
-    top: -4px;
-    /* Centered for 9px */
+    top: -3px;
     left: 0;
     right: 0;
-    height: 9px;
-    /* 3x of 3px */
-    background: #ff4757;
-    box-shadow: 0 0 15px rgba(255, 71, 87, 0.6);
+    height: 6px;
+    background: var(--danger);
+    box-shadow: 0 0 12px rgba(251, 113, 133, 0.5);
     z-index: 5;
 }
 
-/* Internal Workday Lines 3x thicker (3px) */
+/* Internal Workday Lines, slightly thicker for structure */
 tr.work-schedule-row td {
-    border-bottom: 3px solid #334155 !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.14) !important;
 }
 
 
@@ -1782,9 +1845,9 @@ tr.work-schedule-row td {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     padding: 8px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
 }
 
 .day-picker label {
@@ -1793,7 +1856,7 @@ tr.work-schedule-row td {
     align-items: center;
     gap: 4px;
     font-size: 10px;
-    color: #888;
+    color: var(--text-tertiary);
     cursor: pointer;
 }
 
@@ -1802,8 +1865,8 @@ tr.work-schedule-row td {
     -webkit-appearance: none;
     width: 18px;
     height: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
     background: transparent;
     cursor: pointer;
     display: flex;
@@ -1813,13 +1876,13 @@ tr.work-schedule-row td {
 }
 
 .day-picker input[type="checkbox"]:checked {
-    background: #00d9ff;
-    border-color: #00d9ff;
+    background: var(--accent);
+    border-color: var(--accent);
 }
 
 .day-picker input[type="checkbox"]:checked::after {
     content: '\2713';
-    color: #000;
+    color: var(--bg-void);
     font-size: 12px;
     font-weight: bold;
 }
@@ -1836,16 +1899,16 @@ tr.work-schedule-row td {
     flex-direction: column;
     gap: 5px;
     font-size: 11px;
-    color: #aaa;
+    color: var(--text-tertiary);
     text-transform: uppercase;
     font-weight: 600;
 }
 
 .settings-input-row input {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
     padding: 8px;
     font-family: inherit;
     font-size: 14px;
@@ -1905,15 +1968,14 @@ td.active-slot.activity-hike,
     background-image: url('svgs/hike-bg.svg') !important;
 }
 
-/* NEW: Active Cell Glow Effect (Yellow) */
+/* Active Cell Glow Effect (gold — "happening right now") */
 .current-active-cell {
     position: relative;
     z-index: 10;
     box-shadow:
-        inset 0 0 20px rgba(255, 204, 0, 0.4),
-        0 0 15px rgba(255, 204, 0, 0.4),
-        0 0 30px rgba(255, 204, 0, 0.2) !important;
-    border: 2px solid rgba(255, 204, 0, 0.8) !important;
+        inset 0 0 16px rgba(245, 196, 81, 0.32),
+        0 0 14px var(--gold-glow) !important;
+    border: 1px solid var(--gold-border) !important;
     animation: activeGlow 3s ease-in-out infinite;
     will-change: box-shadow;
     transform: translateZ(0);
@@ -1924,15 +1986,270 @@ td.active-slot.activity-hike,
     0%,
     100% {
         box-shadow:
-            inset 0 0 15px rgba(255, 204, 0, 0.3),
-            0 0 10px rgba(255, 204, 0, 0.2) !important;
-        border-color: rgba(255, 204, 0, 0.6);
+            inset 0 0 12px rgba(245, 196, 81, 0.24),
+            0 0 8px rgba(245, 196, 81, 0.18) !important;
+        border-color: rgba(245, 196, 81, 0.5);
     }
 
     50% {
         box-shadow:
-            inset 0 0 25px rgba(255, 204, 0, 0.5),
-            0 0 20px rgba(255, 204, 0, 0.4) !important;
-        border-color: rgba(255, 204, 0, 1);
+            inset 0 0 20px rgba(245, 196, 81, 0.4),
+            0 0 16px var(--gold-glow) !important;
+        border-color: var(--gold);
     }
+}
+
+/* ============================================
+   MODEL-DRIVEN FEATURES
+   (scope pill, fixed/flex affordances, analytics sections)
+   ============================================ */
+
+/* --- Edit scope pill (visible only in edit mode) ---
+   Lives inside the same glass dock as the icon buttons, so it skips its
+   own blur/background and just carries a colored border + text. */
+.scope-toggle {
+    display: none;
+    padding: 9px 14px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--accent-border);
+    background: transparent;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.scope-toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.edit-mode .scope-toggle {
+    display: block;
+}
+
+.scope-toggle.week-scope {
+    border-color: var(--gold-border);
+    color: var(--gold);
+}
+
+/* --- Picker: scope segmented control --- */
+.picker-scope {
+    display: flex;
+    gap: 6px;
+    padding: 8px 14px 0;
+}
+
+.picker-scope-btn {
+    flex: 1;
+    padding: 8px 6px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-tertiary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.picker-scope-btn.selected {
+    border-color: var(--accent-border);
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* --- Picker: fixed toggle row --- */
+.picker-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.picker-toggle-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+/* --- Fixed vs flex affordances in edit mode --- */
+body.edit-mode td.editable[data-fixed="0"] {
+    outline: 1px dashed var(--accent-border);
+    outline-offset: -3px;
+    cursor: grab;
+}
+
+body.edit-mode td.editable[data-fixed="1"]::before {
+    content: '📌';
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    font-size: 8px;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 3;
+}
+
+@keyframes fixedShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-3px);
+    }
+
+    40% {
+        transform: translateX(3px);
+    }
+
+    60% {
+        transform: translateX(-2px);
+    }
+
+    80% {
+        transform: translateX(2px);
+    }
+}
+
+td.fixed-shake {
+    animation: fixedShake 0.4s ease;
+}
+
+/* --- Analytics: category rollup --- */
+.analytics-content {
+    padding: 20px;
+    overflow-y: auto;
+    display: block;
+}
+
+.analytics-section {
+    margin-bottom: 24px;
+}
+
+.analytics-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+    margin: 0 0 14px;
+}
+
+.category-row {
+    display: grid;
+    grid-template-columns: 12px 90px 50px 1fr;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.category-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+}
+
+.category-name {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.category-hours {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.category-bar-track {
+    height: 7px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+}
+
+.category-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    transition: width 0.4s ease;
+}
+
+.stat-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+/* ============================================
+   POWER / PERFORMANCE
+   Respect prefers-reduced-motion (often mirrors OS low-power mode) by
+   killing every decorative infinite animation. Structural feedback
+   (drag, flap flip, hover) stays instant instead of animated.
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+    .today-header,
+    .current-time-row td.time-col,
+    .current-active-cell,
+    .activity-paint.today,
+    .activity-paint.current-active-cell,
+    .activity-paint.active-slot,
+    .activity-gym.today,
+    .activity-gym.current-active-cell,
+    .activity-gym.active-slot,
+    .current-time-row td::before,
+    .live-time,
+    .day-progress-fill::after,
+    .day-cell-progress::after,
+    .time-progress-fill::after,
+    .zzz-flap::after,
+    .zzz-header,
+    .edit-toggle.active {
+        animation: none !important;
+    }
+
+    * {
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================
+   SLEEP RIBBON
+   During sleep hours with the shutters open (disabled in settings, or edit
+   mode), each of today's cells carries a small vertical "SLEEP" marker on
+   its left edge — the schedule has no rows before the first slot of the
+   day, so this stands in for the current-time highlight overnight.
+   ============================================ */
+body.sleep-open td.today::after {
+    content: 'SLEEP';
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: rgba(167, 139, 250, 0.55); /* --cat-rest, muted */
+    text-shadow: 0 0 6px rgba(167, 139, 250, 0.35);
+    pointer-events: none;
+    z-index: 3;
+    display: block;
+}
+
+/* Soft rest-tinted left edge so the ribbon reads as one column-long band */
+body.sleep-open td.today {
+    box-shadow: inset 3px 0 0 rgba(167, 139, 250, 0.28);
 }

@@ -2,36 +2,47 @@
 let WAKEUP_HOUR = 7.5; // 7:30 AM
 let SLEEP_HOUR = 23;   // 11:00 PM
 
-// Storage key for localStorage
-const STORAGE_KEY = 'lifeScheduler';
-
 // Edit mode state
 let isEditMode = false;
 
-// Activity definitions with icons and colors
-const ACTIVITIES = {
-    paint: { name: 'Paint', icon: '🎨', class: 'activity-paint' },
-    gym: { name: 'GYM', icon: '', class: 'activity-gym' },
-    work: { name: 'Work', icon: '', class: 'activity-work' },
-    meal: { name: 'Meal', icon: '', class: 'activity-meal' },
-    meditate: { name: 'Meditate', icon: '', class: 'activity-meditate' },
-    water: { name: 'Water', icon: '', class: 'activity-water' },
-    sleep: { name: 'Sleep', icon: '🌙', class: 'activity-sleep' },
-    commute: { name: 'Commute', icon: '', class: 'activity-commute' },
-    hike: { name: 'Hike', icon: '', class: 'activity-hike' },
-    clean: { name: 'Clean', icon: '🧹', class: 'activity-clean' },
-    wakeup: { name: 'Wake up', icon: '', class: 'activity-wakeup' },
-    home: { name: 'Home Things', icon: '🏠', class: '' },
-    destim: { name: 'De-Stimulate', icon: '🎧', class: '' },
-    plan: { name: 'The Plan', icon: '📝', class: '' },
-    finances: { name: 'Finances', icon: '', class: 'activity-finances' },
-    foodprep: { name: 'Food Prep', icon: '', class: 'activity-meal' },
-    office: { name: 'Office', icon: '', class: 'activity-work' },
-    workout: { name: 'Home Workout', icon: '', class: 'activity-gym' },
-    dinner: { name: 'Dinner', icon: '', class: 'activity-meal' },
-    duar: { name: 'Duar', icon: '', class: 'activity-duar' },
-    custom: { name: 'Custom', icon: '⭐', class: '' }
-};
+// Edit scope: 'template' = every week (the core structure), 'week' = just this week (an override)
+let editScope = 'template';
+
+// Sleep shutters: cover cells during sleep hours (tap & hold to peek). User-toggleable in Settings.
+let sleepShuttersEnabled = true;
+
+// The activity registry and schedule model live in data.js.
+
+// ---- Cell ↔ model helpers ----
+const CELL_DAY = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
+
+function cellDay(cell) {
+    if (cell.classList.contains('rituals-col')) return 'ritual';
+    for (const [name, num] of Object.entries(CELL_DAY)) {
+        if (cell.classList.contains(name)) return num;
+    }
+    return null;
+}
+
+function cellRowTime(cell) {
+    const row = cell.closest('tr');
+    return row ? parseFloat(row.dataset.time) : null;
+}
+
+function cellSlot(cell) {
+    const id = cell.dataset.slotId;
+    return id ? findResolvedSlot(id) : null;
+}
+
+// Re-project the model into the DOM and restore all live UI state
+function refreshUI() {
+    renderWeek();
+    if (isEditMode) enableCellEditing();
+    highlightToday();
+    highlightCurrentTime();
+    updateFlapsVisibility();
+    applyWorkScheduleLines();
+}
 
 // Highlight today's column
 function highlightToday() {
@@ -137,11 +148,12 @@ function highlightToday() {
         }
     });
 
-    // Auto-scroll to today if needed (mobile/small screens)
-    // We delay slightly to ensure layout is complete
-    if (window.innerWidth < 1000) {
-        setTimeout(scrollToToday, 500);
-    }
+    // NOTE: deliberately no unconditional scrollToToday() here — highlightToday()
+    // runs on every refreshUI() (every edit/toggle), and re-snapping the horizontal
+    // scroll on each one yanked the viewport away from wherever the user was
+    // interacting (e.g. tapping a ritual cell on the far-left rail). The header
+    // block above already scrolls once on first render (line ~116); explicit
+    // re-centering elsewhere (edit-mode exit, window resize) covers the rest.
 
     // Cache today class to avoid re-querying all cells every time
     const dayClasses = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -162,6 +174,8 @@ function updateHeaderClocks() {
 
 // Update flaps visibility based on current time (sleep = closed, awake = open)
 function updateFlapsVisibility() {
+    const flaps = document.querySelectorAll('.cell-flap');
+
     const now = new Date();
     const currentHourDecimal = now.getHours() + now.getMinutes() / 60;
 
@@ -173,13 +187,21 @@ function updateFlapsVisibility() {
         isSleepTime = currentHourDecimal >= SLEEP_HOUR && currentHourDecimal < WAKEUP_HOUR;
     }
 
-    const flaps = document.querySelectorAll('.cell-flap');
+    // Shutters forced open (disabled in settings, or actively editing)
+    const flapsForcedOpen = !sleepShuttersEnabled || isEditMode;
+
+    // During sleep hours with the grid still visible, today's cells carry a
+    // vertical "SLEEP" ribbon (see CSS) — the current-time highlight has no row
+    // to anchor to before the first slot of the day, so this is the "it's rest
+    // time" signal instead.
+    document.body.classList.toggle('sleep-open', isSleepTime && flapsForcedOpen);
+
     flaps.forEach(flap => {
-        if (isSleepTime && !isEditMode) {
-            // During sleep hours and NOT editing - close all flaps
+        if (isSleepTime && !flapsForcedOpen) {
+            // During sleep hours - close all flaps
             flap.classList.remove('open');
         } else {
-            // During awake hours (or actively editing) - open all flaps
+            // During awake hours (or forced open) - open all flaps
             flap.classList.add('open');
         }
     });
@@ -252,36 +274,43 @@ function highlightCurrentTime() {
         closestRow.classList.add('current-time-row');
         window.lastActiveRow = closestRow;
 
-        // Manage highlights
-        document.querySelectorAll('.active-slot').forEach(el => el.classList.remove('active-slot'));
-        document.querySelectorAll('.current-active-cell').forEach(el => el.classList.remove('current-active-cell'));
-        document.querySelectorAll('.past-slot').forEach(el => el.classList.remove('past-slot'));
-
         const currentRowTime = parseFloat(closestRow.dataset.time);
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         const currentDayName = dayNames[now.getDay()];
 
-        // Add active-slot to cells within a 4-hour window of the current time, and ALWAYS the closest row
-        rows.forEach(row => {
-            const rowTime = parseFloat(row.dataset.time);
+        // Targeted update: the active/past class sweep only changes when the active row,
+        // the day, or the ±2h window (half-hour grid) shifts — skip it otherwise.
+        // The per-minute work below is then just the progress bar + live clock.
+        const highlightKey = currentRowTime + '|' + currentDayName + '|' + Math.floor(currentHour * 2);
+        if (window.lastHighlightKey !== highlightKey) {
+            window.lastHighlightKey = highlightKey;
 
-            // Fade logic: rows that are in the past
-            if (rowTime < currentRowTime) {
-                row.classList.add('past-slot');
-            }
+            document.querySelectorAll('.active-slot').forEach(el => el.classList.remove('active-slot'));
+            document.querySelectorAll('.current-active-cell').forEach(el => el.classList.remove('current-active-cell'));
+            document.querySelectorAll('.past-slot').forEach(el => el.classList.remove('past-slot'));
 
-            // Check if row is within ±2 hours of current time (4-hour window) OR is the active row
-            if (row === closestRow || (rowTime >= currentHour - 2 && rowTime <= currentHour + 2)) {
-                const targetCells = row.querySelectorAll('.time-col, .rituals-col, .' + currentDayName);
-                targetCells.forEach(td => td.classList.add('active-slot'));
+            // Add active-slot to cells within a 4-hour window of the current time, and ALWAYS the closest row
+            rows.forEach(row => {
+                const rowTime = parseFloat(row.dataset.time);
 
-                // Specifically mark the single cell that is active NOW
-                if (row === closestRow) {
-                    const currentCell = row.querySelector('.' + currentDayName);
-                    if (currentCell) currentCell.classList.add('current-active-cell');
+                // Fade logic: rows that are in the past
+                if (rowTime < currentRowTime) {
+                    row.classList.add('past-slot');
                 }
-            }
-        });
+
+                // Check if row is within ±2 hours of current time (4-hour window) OR is the active row
+                if (row === closestRow || (rowTime >= currentHour - 2 && rowTime <= currentHour + 2)) {
+                    const targetCells = row.querySelectorAll('.time-col, .rituals-col, .' + currentDayName);
+                    targetCells.forEach(td => td.classList.add('active-slot'));
+
+                    // Specifically mark the single cell that is active NOW
+                    if (row === closestRow) {
+                        const currentCell = row.querySelector('.' + currentDayName);
+                        if (currentCell) currentCell.classList.add('current-active-cell');
+                    }
+                }
+            });
+        }
 
         const timeCell = closestRow.querySelector('.time-col');
         if (timeCell) {
@@ -332,44 +361,16 @@ function updateProgressColor(element, progress) {
     else if (progress >= 50) element.classList.add('progress-yellow');
 }
 
-// Initialize flaps for ALL cells - visibility controlled by current time
+// Flap DOM is rendered inline by renderWeek(); this attaches the global
+// tap-and-hold-to-peek listeners (once) and sets the initial open/closed state.
 function initializeFlaps() {
     const tableContainer = document.querySelector('.table-wrapper');
-    const rows = document.querySelectorAll('tbody tr');
-
-    rows.forEach((row, rowIndex) => {
-        const cells = row.querySelectorAll('td');
-        const isLastRow = row === rows[rows.length - 1];
-
-        cells.forEach((cell) => {
-            // Skip time and rituals columns - they should always be visible
-            if (cell.classList.contains('time-col') || cell.classList.contains('rituals-col')) return;
-
-            // Skip if already has a flap
-            if (cell.querySelector('.cell-flap')) return;
-
-            const timeCell = row.querySelector('.time-col');
-            const time = timeCell.dataset.originalTime || timeCell.textContent.trim();
-
-            const flap = document.createElement('div');
-            flap.className = 'cell-flap';
-
-            // Add zzz animation to last row flaps
-            if (isLastRow) {
-                flap.classList.add('zzz-flap');
-            }
-
-            const timeSpan = document.createElement('span');
-            timeSpan.className = 'flap-time';
-            timeSpan.textContent = time;
-
-            flap.appendChild(timeSpan);
-            cell.appendChild(flap);
-        });
-    });
 
     // Initial state based on current time
     updateFlapsVisibility();
+
+    if (window.flapListenersAttached) return;
+    window.flapListenersAttached = true;
 
     // Mass opening logic - ONLY for sleep hours (tap and hold to peek)
     const openAll = (e) => {
@@ -377,6 +378,13 @@ function initializeFlaps() {
     };
 
     const closeAll = () => {
+        // Never re-close while editing or with shutters disabled — this listener
+        // fires on every pointerup on the table (including clicks that open the
+        // activity picker without triggering a refreshUI()), so without this
+        // guard, tapping around in edit mode during sleep hours would flicker
+        // the shutters back shut out from under the user.
+        if (!sleepShuttersEnabled || isEditMode) return;
+
         // Only close flaps if we're in sleep hours
         // During awake hours, flaps should stay open
         const now = new Date();
@@ -471,8 +479,15 @@ function createSettingsPanel() {
                 <h4>Schedule Hours</h4>
                 <label>Wake up: <input type="time" id="wakeupTime" value="07:30"></label>
                 <label>Sleep: <input type="time" id="sleepTime" value="23:00"></label>
+                <div class="settings-toggle-row">
+                    <span>🌙 Sleep Shutters</span>
+                    <label class="switch">
+                        <input type="checkbox" id="sleepShuttersToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
-            
+
             <div class="settings-section">
                 <h4>💼 Work Schedule</h4>
                 <div class="settings-input-row">
@@ -571,6 +586,15 @@ function createSettingsPanel() {
 
     // Toggles
     document.getElementById('focusModeToggle').addEventListener('change', (e) => toggleFocusMode(e.target.checked));
+
+    // Sleep shutters toggle
+    const shuttersToggle = document.getElementById('sleepShuttersToggle');
+    shuttersToggle.checked = sleepShuttersEnabled;
+    shuttersToggle.addEventListener('change', (e) => {
+        sleepShuttersEnabled = e.target.checked;
+        localStorage.setItem('sleepShuttersEnabled', sleepShuttersEnabled);
+        updateFlapsVisibility();
+    });
 
     // Check notification status
     const notifToggle = document.getElementById('notificationToggle');
@@ -676,51 +700,44 @@ function createActivityPicker() {
             const targetCell = picker.targetCell;
             const linkInput = picker.querySelector('#pickerLink');
             const customNameInput = picker.querySelector('#pickerCustomName');
+            const fixedToggle = picker.querySelector('#pickerFixed');
+            const categorySelect = picker.querySelector('#pickerCategory');
             const selectedBtn = picker.querySelector('.picker-item.selected, .picker-clear.selected');
             const customName = customNameInput?.value.trim() || '';
 
             if (!targetCell) return;
 
-            // Determine activity
             if (selectedBtn && selectedBtn.dataset.activity === 'clear') {
-                updateCell(targetCell, null);
+                applySlotEdit(targetCell, null);
             } else {
-                let activityToApply = null;
-
-                if (selectedBtn) {
-                    const key = selectedBtn.dataset.activity;
-                    if (key.startsWith('custom_')) {
-                        const savedCustom = getCustomActivities();
-                        const index = parseInt(key.replace('custom_', ''));
-                        activityToApply = savedCustom[index];
-                    } else {
-                        activityToApply = { ...ACTIVITIES[key] };
-                    }
+                // Resolve which activity identity this cell should carry
+                let activity = null;
+                if (selectedBtn) activity = getActivity(selectedBtn.dataset.activity);
+                if (!activity && customName) {
+                    // Typed name with no selection: reuse a matching activity or mint a new one
+                    activity = ensureCustomActivity(customName, '⭐', categorySelect?.value || 'other');
                 }
 
-                // Custom name overrides
-                if (customName) {
-                    if (activityToApply) {
-                        activityToApply.name = customName;
-                    } else {
-                        activityToApply = { name: customName, icon: '⭐', class: '' };
-                        saveCustomActivity(activityToApply);
-                    }
-                }
-
-                if (activityToApply) {
-                    updateCell(targetCell, activityToApply);
+                if (activity) {
+                    applySlotEdit(targetCell, {
+                        activityId: activity.id,
+                        // A typed name differing from the activity's label is a slot-level label (e.g. "Meal 1")
+                        label: (customName && customName !== activity.label) ? customName : '',
+                        url: linkInput?.value.trim() || '',
+                        fixed: fixedToggle ? fixedToggle.checked : undefined
+                    });
                 }
             }
 
-            if (linkInput) {
-                const finalUrl = linkInput.value.trim();
-                if (finalUrl) targetCell.dataset.url = finalUrl;
-                else delete targetCell.dataset.url;
-            }
-
-            saveSchedule();
             hideActivityPicker();
+            return;
+        }
+
+        // Scope segmented control (Every week ↔ Just this week)
+        const scopeBtn = e.target.closest('.picker-scope-btn');
+        if (scopeBtn) {
+            setEditScope(scopeBtn.dataset.scope);
+            picker.querySelectorAll('.picker-scope-btn').forEach(b => b.classList.toggle('selected', b === scopeBtn));
             return;
         }
 
@@ -739,6 +756,17 @@ function createActivityPicker() {
         // Handle normal selection toggle
         picker.querySelectorAll('.picker-item, .picker-clear').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
+
+        // Sync the Fixed toggle to the activity's default unless the user set it manually
+        const fixedToggle = picker.querySelector('#pickerFixed');
+        if (fixedToggle && !fixedToggle.dataset.touched && btn.dataset.activity !== 'clear') {
+            fixedToggle.checked = defaultFixed(btn.dataset.activity);
+        }
+    });
+
+    // Remember when the user manually flips the Fixed toggle
+    picker.addEventListener('change', (e) => {
+        if (e.target && e.target.id === 'pickerFixed') e.target.dataset.touched = '1';
     });
 
     // Close on outside click
@@ -753,12 +781,14 @@ function renderActivityPickerContent() {
     const picker = document.getElementById('activityPicker');
     if (!picker) return;
 
-    // Get current state of the cell
+    // Current state comes from the model, not from scraping the cell
     const currentCell = picker.targetCell;
-    const currentActivityName = currentCell?.textContent.replace(currentCell?.querySelector('.icon')?.textContent || '', '').replace(currentCell?.querySelector('.cell-flap')?.textContent || '', '').trim();
+    const slot = currentCell ? cellSlot(currentCell) : null;
+    const slotActivity = slot ? getActivity(slot.activityId) : null;
+    const currentName = slot ? (slot.label || (slotActivity ? slotActivity.label : '')) : '';
 
-    // Capture unsaved URL input so it's not lost on re-render (e.g. after adding a New Task)
-    const currentUrl = picker.querySelector('#pickerLink')?.value || currentCell?.dataset.url || '';
+    // Capture unsaved URL input so it's not lost on re-render
+    const currentUrl = picker.querySelector('#pickerLink')?.value || (slot ? slot.url : '') || '';
 
     let displayTitle = 'Select Activity';
     if (currentCell) {
@@ -770,12 +800,14 @@ function renderActivityPickerContent() {
             const headerCell = table.querySelector(`thead th:nth-child(${cellIndex + 1})`);
             const header = headerCell?.innerText?.trim() || '';
             if (header && timeText) {
-                const icon = currentCell?.dataset.icon || currentCell?.querySelector('.icon')?.textContent || '';
-                const activityDisplayName = currentActivityName ? `${icon} ${currentActivityName}` : 'New Task';
+                const icon = slotActivity ? slotActivity.icon : '';
+                const activityDisplayName = currentName ? `${icon} ${currentName}` : 'New Task';
                 displayTitle = `${activityDisplayName} • ${header} @ ${timeText}`;
             }
         }
     }
+
+    const isFixed = slot ? slot.fixed : true;
 
     let html = `
         <div class="picker-header">
@@ -784,44 +816,63 @@ function renderActivityPickerContent() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
         </div>
+        <div class="picker-scope">
+            <button class="picker-scope-btn ${editScope === 'template' ? 'selected' : ''}" data-scope="template">🔁 Every week</button>
+            <button class="picker-scope-btn ${editScope === 'week' ? 'selected' : ''}" data-scope="week">📅 Just this week</button>
+        </div>
         <div class="picker-scroll-area">
             <div class="picker-section">
                 <h5>Quick Tasks</h5>
                 <div class="picker-grid">`;
 
-    for (const [key, activity] of Object.entries(ACTIVITIES)) {
-        if (key === 'custom') continue;
-        const isSelected = currentActivityName === activity.name ? 'selected' : '';
-        html += `<button class="picker-item ${activity.class} ${isSelected}" data-activity="${key}">
+    const currentActivityId = slot ? slot.activityId : null;
+    for (const [key, activity] of Object.entries(BUILTIN_ACTIVITIES)) {
+        const isSelected = currentActivityId === key ? 'selected' : '';
+        html += `<button class="picker-item ${activity.style} ${isSelected}" data-activity="${key}">
             <span class="picker-icon">${activity.icon}</span>
-            <span class="picker-name">${activity.name}</span>
+            <span class="picker-name">${activity.label}</span>
         </button>`;
     }
     html += '</div></div>';
 
-    // Custom Section
-    const customActivities = getCustomActivities();
+    // User-defined palette (lives in the model's activity registry)
+    const customActivities = Object.values(model.activities);
     if (customActivities.length > 0) {
         html += '<div class="picker-section">';
         html += '<h5>My Palette</h5>';
         html += '<div class="palette-grid">';
-        customActivities.forEach((act, index) => {
-            const isSelected = currentActivityName === act.name ? 'selected' : '';
-            html += `<button class="picker-item ${isSelected}" data-activity="custom_${index}">
+        customActivities.forEach(act => {
+            const isSelected = currentActivityId === act.id ? 'selected' : '';
+            html += `<button class="picker-item ${isSelected}" data-activity="${act.id}">
                 <span class="picker-icon">${act.icon}</span>
-                <span class="picker-name">${act.name}</span>
+                <span class="picker-name">${act.label}</span>
             </button>`;
         });
         html += '</div></div>';
     }
 
+    // Category options for newly-typed custom activities
+    let categoryOptions = '';
+    for (const [id, cat] of Object.entries(CATEGORIES)) {
+        if (cat.hidden) continue;
+        categoryOptions += `<option value="${id}">${cat.label}</option>`;
+    }
+
     html += `
             <div class="picker-section">
-                <h5>Link & Custom Actions</h5>
+                <h5>Slot Options</h5>
                 <div class="picker-link-container">
+                    <label class="picker-toggle-row">
+                        <input type="checkbox" id="pickerFixed" ${isFixed ? 'checked' : ''}>
+                        <span>📌 Fixed (anchored — drag-proof)</span>
+                    </label>
+
                     <label for="pickerCustomName">🔧 Custom Activity Name</label>
-                    <input type="text" id="pickerCustomName" placeholder="Override or new name..." class="picker-input" value="${currentActivityName || ''}" style="margin-bottom: 12px;">
-                    
+                    <input type="text" id="pickerCustomName" placeholder="Override or new name..." class="picker-input" value="${currentName || ''}" style="margin-bottom: 12px;">
+
+                    <label for="pickerCategory">🏷️ Category (for new activities)</label>
+                    <select id="pickerCategory" class="picker-input" style="margin-bottom: 12px;">${categoryOptions}</select>
+
                     <label for="pickerLink">🔗 Destination URL</label>
                     <input type="text" id="pickerLink" placeholder="https://..." class="picker-input" value="${currentUrl}">
                 </div>
@@ -836,21 +887,6 @@ function renderActivityPickerContent() {
     picker.innerHTML = html;
 }
 
-
-function getCustomActivities() {
-    const stored = localStorage.getItem('customActivities');
-    return stored ? JSON.parse(stored) : [];
-}
-
-function saveCustomActivity(activity) {
-    const activities = getCustomActivities();
-    // Check duplicates
-    if (!activities.some(a => a.name === activity.name)) {
-        activities.push(activity);
-        localStorage.setItem('customActivities', JSON.stringify(activities));
-    }
-}
-
 // Toggle edit mode
 function toggleEditMode() {
     isEditMode = !isEditMode;
@@ -862,6 +898,8 @@ function toggleEditMode() {
     } else {
         disableCellEditing();
         hideActivityPicker();
+        toggleFocusMode(true);
+        scrollToToday();
     }
     updateFlapsVisibility();
 }
@@ -905,6 +943,15 @@ function disableCellEditing() {
 let draggedCell = null;
 
 function handleDragStart(e) {
+    // Fixed (anchored) slots don't move — flash them instead
+    const slot = cellSlot(this);
+    if (slot && slot.fixed) {
+        e.preventDefault();
+        this.classList.add('fixed-shake');
+        setTimeout(() => this.classList.remove('fixed-shake'), 450);
+        return;
+    }
+
     draggedCell = this;
     this.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
@@ -932,40 +979,20 @@ function handleDrop(e) {
     this.classList.remove('drag-over');
 
     if (draggedCell !== this) {
-        // Swap content logic
-        const sourceHtml = draggedCell.innerHTML;
-        const targetHtml = this.innerHTML;
+        // Moving a slot is a MODEL operation — the DOM re-renders from it.
+        const srcId = draggedCell.dataset.slotId;
+        if (!srcId) return false;
 
-        const sourceClass = Array.from(draggedCell.classList).find(c => c.startsWith('activity-'));
-        const targetClass = Array.from(this.classList).find(c => c.startsWith('activity-'));
+        const srcDay = cellDay(draggedCell), srcTime = cellRowTime(draggedCell);
+        const tgtDay = cellDay(this), tgtTime = cellRowTime(this);
+        if (tgtDay === null || tgtTime === null) return false;
 
-        // Clear old classes
-        if (sourceClass) draggedCell.classList.remove(sourceClass);
-        if (targetClass) this.classList.remove(targetClass);
+        const tgtId = this.dataset.slotId;
+        if (tgtId) moveSlot(tgtId, srcDay, srcTime, editScope); // occupied target → swap
+        moveSlot(srcId, tgtDay, tgtTime, editScope);
 
-        // Swap content
-        // Note: We need to respect the 'flap' if it exists.
-        // Actually, updateCell handles reconstruction more cleanly.
-        // Let's parse data from cells first.
-
-        const getCellData = (cell) => {
-            const icon = cell.querySelector('.icon')?.textContent || '';
-            const flap = cell.querySelector('.cell-flap');
-            // Remove UI elements to get text
-            const clone = cell.cloneNode(true);
-            clone.querySelectorAll('.icon, .cell-flap, .time-progress-fill, .live-time').forEach(el => el.remove());
-            const text = clone.textContent.trim();
-            const cls = Array.from(cell.classList).find(c => c.startsWith('activity-')) || '';
-
-            if (!text && !icon) return null;
-            return { name: text, icon: icon, class: cls };
-        };
-
-        const sourceData = getCellData(draggedCell);
-        const targetData = getCellData(this); // Usually empty, but could swap
-
-        updateCell(this, sourceData);
-        updateCell(draggedCell, targetData); // Clears source if target was empty
+        saveModel();
+        refreshUI();
     }
 
     return false;
@@ -1051,224 +1078,29 @@ function hideActivityPicker() {
     }
 }
 
-// Update cell with activity
-function updateCell(cell, activity) {
+// Apply an edit from the picker to the slot behind a cell.
+// `sel` = { activityId, label, url, fixed } or null to clear the cell.
+// Scope-aware: 'template' edits the core week, 'week' writes a this-week override.
+function applySlotEdit(cell, sel) {
     if (!cell) return;
 
-    // Remove existing activity classes
-    const classes = Array.from(cell.classList);
-    classes.forEach(cls => {
-        if (cls.startsWith('activity-')) cell.classList.remove(cls);
-    });
+    const existing = cell.dataset.slotId ? cell.dataset.slotId : null;
+    const day = cellDay(cell);
+    const time = cellRowTime(cell);
+    if (day === null || time === null) return;
 
-    // Remove flap if exists (will be recreated)
-    const flap = cell.querySelector('.cell-flap');
-
-    if (activity === null) {
-        // Clear cell
-        cell.innerHTML = flap ? flap.outerHTML : '';
-        delete cell.dataset.url;
+    if (sel === null) {
+        if (existing) deleteSlot(existing, editScope);
+    } else if (existing) {
+        const patch = { activityId: sel.activityId, label: sel.label || '', url: sel.url || '' };
+        if (sel.fixed !== undefined) patch.fixed = sel.fixed;
+        updateSlot(existing, patch, editScope);
     } else {
-        // Set new activity
-        if (activity.class) cell.classList.add(activity.class);
-        const flapHtml = flap ? flap.outerHTML : '';
-        cell.innerHTML = `<span class="icon">${activity.icon}</span>${activity.name}${flapHtml}`;
-
-        // Save link IF current picker is for this cell
-        const picker = document.getElementById('activityPicker');
-        if (picker && picker.targetCell === cell) {
-            const linkInput = picker.querySelector('#pickerLink');
-            if (linkInput && linkInput.value.trim()) {
-                cell.dataset.url = linkInput.value.trim();
-            } else {
-                delete cell.dataset.url;
-            }
-        }
+        createSlot({ day, time, activityId: sel.activityId, label: sel.label, url: sel.url, fixed: sel.fixed }, editScope);
     }
 
-    // Save to localStorage
-    saveSchedule();
-}
-
-// Save schedule to localStorage
-function saveSchedule() {
-    const data = {
-        schedule: {},
-        savedAt: new Date().toISOString()
-    };
-
-    const rows = document.querySelectorAll('tbody tr[data-time]');
-    rows.forEach(row => {
-        const time = row.dataset.time;
-        data.schedule[time] = {};
-
-        const cells = row.querySelectorAll('td');
-        cells.forEach((cell, index) => {
-            if (index === 0) return; // Skip time column
-
-            const dayClasses = ['time', 'rituals', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-            const day = dayClasses[index] || `col${index}`;
-
-            // Get activity info from cell
-            const icon = cell.querySelector('.icon')?.textContent || '';
-
-            // Clone cell to extract clean text without hidden flap times, progress bars, or live time displays
-            const clone = cell.cloneNode(true);
-            const uiElements = clone.querySelectorAll('.icon, .cell-flap, .time-progress-fill, .live-time, .time-text, .day-cell-progress');
-            uiElements.forEach(el => el.remove());
-            const text = clone.textContent.trim();
-
-            const activityClass = Array.from(cell.classList).find(c => c.startsWith('activity-')) || '';
-
-            data.schedule[time][day] = {
-                icon,
-                text,
-                class: activityClass,
-                url: cell.dataset.url || ''
-            };
-        });
-    });
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-// Load schedule from localStorage
-function loadSchedule() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return;
-
-    try {
-        const data = JSON.parse(saved);
-        if (!data.schedule) return;
-
-        // Force migrate Sunday Hike block
-        if (!data.migrated_hike_v2 && data.schedule['12'] && data.schedule['13'] && data.schedule['14']) {
-            data.schedule['12'].sunday = { text: 'Hike', icon: '', class: 'activity-hike' };
-            data.schedule['13'].sunday = { text: 'Hike', icon: '', class: 'activity-hike' };
-            data.schedule['14'].sunday = { text: 'Hike', icon: '', class: 'activity-hike' };
-            data.migrated_hike_v2 = true;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
-
-        for (const [time, days] of Object.entries(data.schedule)) {
-            const row = document.querySelector(`tr[data-time="${time}"]`);
-            if (!row) continue;
-
-            const cells = row.querySelectorAll('td');
-            const dayOrder = ['time', 'rituals', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-            cells.forEach((cell, index) => {
-                if (index === 0) return; // Skip time column
-
-                const day = dayOrder[index];
-                const cellData = days[day];
-                if (!cellData || (!cellData.icon && !cellData.text)) return;
-
-                // Clear existing classes
-                Array.from(cell.classList).forEach(cls => {
-                    if (cls.startsWith('activity-')) cell.classList.remove(cls);
-                });
-
-                // Apply saved data
-                if (cellData.class) cell.classList.add(cellData.class);
-
-                // Preserve flap if exists
-                const flap = cell.querySelector('.cell-flap');
-                const flapHtml = flap ? flap.outerHTML : '';
-
-                if (cellData.icon || cellData.text) {
-                    // Clean up text
-                    let cleanText = cellData.text || '';
-                    cleanText = cleanText.replace(/(?:\s*\d{1,2}:\d{2}\s*(?:AM|PM))+$/gi, '').trim();
-
-                    // Migration: Upgrade old icons to emojis
-                    let currentIcon = cellData.icon || '';
-                    const oldToNew = {
-                        '▣': '🎨', '▲': '💪', '■': '💻', '◉': '🧘',
-                        '◈': '💧', '☆': '🌙', '→': '🚗', '◆': '⛰️',
-                        '○': '🧹', '●': '☀️', '⌂': '🏠', '☾': '🎧',
-                        '☐': '📝', '$': '💰'
-                    };
-
-                    if (oldToNew[currentIcon]) {
-                        currentIcon = oldToNew[currentIcon];
-                    }
-
-                    // Handle disambiguation for '◇' (Meal, Prep, Dinner)
-                    if (currentIcon === '◇') {
-                        if (cleanText.toLowerCase().includes('prep')) currentIcon = '🍳';
-                        else if (cleanText.toLowerCase().includes('dinner')) currentIcon = '🍲';
-                        else currentIcon = '🍽️';
-                    }
-                    // Handle Workout
-                    if (currentIcon === '💪' && cleanText.toLowerCase().includes('workout')) currentIcon = '';
-
-                    if (cleanText.toLowerCase() === 'gym' || currentIcon === '💪' || currentIcon === '🏋️') {
-                        currentIcon = '';
-                    }
-                    if (cleanText.toLowerCase() === 'water' || currentIcon === '💧') {
-                        currentIcon = '';
-                    }
-                    if (cleanText.toLowerCase() === 'meditate' || currentIcon === '🧘') {
-                        currentIcon = '';
-                    }
-                    if (cleanText.toLowerCase() === 'work' || currentIcon === '💻') {
-                        currentIcon = '';
-                    }
-                    if (cleanText.toLowerCase().includes('meal') || cleanText.toLowerCase().includes('prep') || cleanText.toLowerCase().includes('dinner') || currentIcon === '🍽️' || currentIcon === '🍳' || currentIcon === '🍲') {
-                        currentIcon = '';
-                    }
-                    if (cleanText.toLowerCase().includes('wake') || currentIcon === '☀️') {
-                        currentIcon = '';
-                        cell.classList.add('activity-wakeup');
-                        cellData.class = 'activity-wakeup';
-                    }
-                    if (cleanText.toLowerCase().includes('office') || cleanText.toLowerCase().includes('commute') || currentIcon === '🏢' || currentIcon === '🚗') {
-                        currentIcon = '';
-                        if (day === 'tuesday') {
-                            cell.classList.add('activity-bus');
-                            cellData.class = 'activity-bus';
-                        } else if (day === 'thursday') {
-                            cell.classList.add('activity-car');
-                            cellData.class = 'activity-car';
-                        }
-                    }
-
-                    // Migrate Duar and Hike explicitly
-                    if (cleanText.toLowerCase() === 'duar' && !cellData.class) {
-                        currentIcon = '';
-                        cell.classList.add('activity-duar');
-                        cellData.class = 'activity-duar';
-                    }
-                    if (cleanText.toLowerCase() === 'hike' && !cellData.class) {
-                        currentIcon = '';
-                        cell.classList.add('activity-hike');
-                        cellData.class = 'activity-hike';
-                    }
-
-                    // Handle arrow continuity
-                    if (cleanText === '↑' || currentIcon === '↑' || currentIcon === '▲') {
-                        cell.classList.add('activity-arrow');
-                        cellData.class = 'activity-arrow';
-                    }
-
-                    cell.innerHTML = (currentIcon ? `<span class="icon">${currentIcon}</span>` : '') +
-                        cleanText + flapHtml;
-
-                    if (cellData.url) {
-                        cell.dataset.url = cellData.url;
-                    } else {
-                        delete cell.dataset.url;
-                    }
-                }
-            });
-        }
-
-        // After migration/load, save it back to ensure emojis are permanent in localStorage
-        saveSchedule();
-    } catch (e) {
-        console.error('Failed to load schedule:', e);
-    }
+    saveModel();
+    refreshUI();
 }
 
 // Add new time slot
@@ -1300,93 +1132,21 @@ function addNewTimeSlot() {
 
     const timeDecimal = hours + minutes / 60;
 
-    // Check if time already exists
-    if (document.querySelector(`tr[data-time="${timeDecimal}"]`)) {
+    // The time grid lives in the model
+    if (model.rowTimes.includes(timeDecimal)) {
         alert('This time slot already exists');
         return;
     }
 
-    // Format display time
-    const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
-    const displayMinutes = minutes.toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const displayTime = `${displayHours}:${displayMinutes} ${ampm}`;
-
-    // Create new row
-    const newRow = document.createElement('tr');
-    newRow.dataset.time = timeDecimal;
-    newRow.innerHTML = `
-        <td class="time-col">${displayTime}</td>
-        <td class="rituals-col"></td>
-        <td class="monday"></td>
-        <td class="tuesday"></td>
-        <td class="wednesday"></td>
-        <td class="thursday"></td>
-        <td class="friday"></td>
-        <td class="saturday"></td>
-        <td class="sunday"></td>
-    `;
-
-    // Find correct position
-    const tbody = document.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr[data-time]'));
-    let inserted = false;
-
-    for (const row of rows) {
-        if (parseFloat(row.dataset.time) > timeDecimal) {
-            tbody.insertBefore(newRow, row);
-            inserted = true;
-            break;
-        }
-    }
-
-    if (!inserted) {
-        tbody.appendChild(newRow);
-    }
-
-    // Reinitialize flaps for new row
-    initializeFlapsForRow(newRow);
-
-    // If in edit mode, make cells editable
-    if (isEditMode) {
-        newRow.querySelectorAll('td:not(.time-col)').forEach(cell => {
-            cell.classList.add('editable');
-            cell.addEventListener('click', handleCellClick);
-        });
-    }
-
-    // Clear caches so new row is picked up
-    window.rowElements = null;
-    window.rowTimesCache = null;
-
-    // Save
-    saveSchedule();
+    model.rowTimes.push(timeDecimal);
+    model.rowTimes.sort((a, b) => a - b);
+    saveModel();
+    refreshUI();
 }
 
-// Initialize flaps for a specific row
-function initializeFlapsForRow(row) {
-    const cells = row.querySelectorAll('td');
-    cells.forEach(cell => {
-        if (cell.classList.contains('time-col') || cell.classList.contains('rituals-col')) return;
-        const timeCell = row.querySelector('.time-col');
-        const time = timeCell.dataset.originalTime || timeCell.textContent.trim();
-
-        const flap = document.createElement('div');
-        flap.className = 'cell-flap';
-
-        const timeSpan = document.createElement('span');
-        timeSpan.className = 'flap-time';
-        timeSpan.textContent = time;
-
-        flap.appendChild(timeSpan);
-        cell.appendChild(flap);
-    });
-    updateFlapsVisibility();
-}
-
-// Export schedule as JSON backup
+// Export schedule as JSON backup (full v4 model: template, overrides, streaks, palette)
 function exportSchedule() {
-    const data = localStorage.getItem(STORAGE_KEY);
+    const data = localStorage.getItem(MODEL_KEY);
     if (!data) {
         alert('No saved data to backup');
         return;
@@ -1401,34 +1161,30 @@ function exportSchedule() {
     URL.revokeObjectURL(url);
 }
 
-// Export schedule as CSV for spreadsheets
+// Export schedule as CSV for spreadsheets (resolved current week)
 function exportCSV() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
-        alert('No saved data to export');
-        return;
-    }
-
     try {
-        const data = JSON.parse(saved);
-        const schedule = data.schedule;
-        const columns = ['time', 'rituals', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        const idx = buildSlotIndex(new Date());
+        const columnDays = ['ritual', 1, 2, 3, 4, 5, 6, 0];
+        const headers = ['Time', 'Rituals', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-        // CSV Header
-        let csvContent = columns.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(',') + '\n';
+        let csvContent = headers.join(',') + '\n';
 
-        // Sort times chronologically
-        const times = Object.keys(schedule).sort((a, b) => parseFloat(a) - parseFloat(b));
-
-        times.forEach(t => {
-            const rowData = schedule[t];
-            const line = columns.map(col => {
-                const cell = rowData[col] || { icon: '', text: '' };
-                const text = (cell.icon ? cell.icon + ' ' : '') + (cell.text || '');
-                // Escape commas and quotes for CSV safety
-                return `"${text.replace(/"/g, '""')}"`;
-            }).join(',');
-            csvContent += line + '\n';
+        sortedRowTimes().forEach(t => {
+            const cells = [formatDecimalTime(t)];
+            columnDays.forEach(day => {
+                const slot = idx[day + '|' + t];
+                let text = '';
+                if (slot) {
+                    const act = getActivity(slot.activityId);
+                    const icon = act ? act.icon : '';
+                    const label = slot.label || (act ? act.label : '');
+                    text = (icon ? icon + ' ' : '') + label;
+                }
+                cells.push(text);
+            });
+            // Escape commas and quotes for CSV safety
+            csvContent += cells.map(c => `"${c.replace(/"/g, '""')}"`).join(',') + '\n';
         });
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1457,7 +1213,17 @@ function importSchedule() {
         reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                if (data && data.version === 4 && data.template) {
+                    // v4 backup: restore directly
+                    localStorage.setItem(MODEL_KEY, JSON.stringify(data));
+                } else if (data && data.schedule) {
+                    // Legacy v3 backup: run it through the migrator
+                    const migrated = migrateScheduleData(data);
+                    if (!migrated) throw new Error('migration failed');
+                    localStorage.setItem(MODEL_KEY, JSON.stringify(migrated));
+                } else {
+                    throw new Error('unrecognized format');
+                }
                 location.reload();
             } catch (err) {
                 alert('Invalid backup file');
@@ -1468,12 +1234,11 @@ function importSchedule() {
     input.click();
 }
 
-// Reset schedule
+// Reset schedule to the default week
 function resetSchedule() {
-    if (confirm('Are you sure you want to reset? This will clear all saved changes.')) {
-        localStorage.removeItem(STORAGE_KEY);
-        // Do not clear custom activities intentionally? Or should we?
-        // Let's keep custom activities.
+    if (confirm('Are you sure you want to reset? This will clear all saved changes (schedule, overrides and streaks).')) {
+        localStorage.removeItem(MODEL_KEY);
+        localStorage.removeItem(LEGACY_KEY); // otherwise the v3 migration would just restore it
         location.reload();
     }
 }
@@ -1510,48 +1275,11 @@ function toggleNotifications(enabled) {
 }
 
 function showAnalytics() {
-    // Calculate stats
-    const counts = {};
-    let total = 0;
+    // All stats come from the model: hours by category (identity), per-activity
+    // breakdown (continuity arrows already resolved), and habit/health streaks.
+    const { byCategory, byActivity, total } = weekRollup(new Date());
 
-    const rows = document.querySelectorAll('tbody tr[data-time]');
-    rows.forEach(row => {
-        const time = parseFloat(row.dataset.time);
-
-        // Find next row time for duration
-        // Simplified duration: 1 hour default
-        let duration = 0.5; // Default slot size check? 
-        // Better: look at next row
-        const nextRow = row.nextElementSibling;
-        if (nextRow && nextRow.dataset.time) {
-            duration = parseFloat(nextRow.dataset.time) - time;
-        } else {
-            duration = 1; // End of day assumption
-        }
-
-        row.querySelectorAll('td').forEach((cell, idx) => {
-            if (idx === 0) return; // Time
-            // Skip rituals column if you want only week days? No, count rituals
-
-            const text = cell.textContent.trim();
-            // Need accurate text extracting
-            const clone = cell.cloneNode(true);
-            clone.querySelectorAll('.icon, .cell-flap').forEach(el => el.remove());
-            const actName = clone.textContent.trim();
-
-            if (actName) {
-                // If it's a weekday column (2-6 for Mon-Fri) vs Weekend (7-8)
-                // idx: 0=time, 1=rituals, 2=Mon ... 8=Sun
-                const isWeekDay = idx >= 2 && idx <= 6;
-                const weight = isWeekDay ? 1 : 1; // Count all equal for now
-
-                counts[actName] = (counts[actName] || 0) + duration;
-                total += duration;
-            }
-        });
-    });
-
-    // Create UI
+    // Create UI shell once
     let overlay = document.querySelector('.analytics-overlay');
     if (!overlay) {
         overlay = document.createElement('div');
@@ -1581,19 +1309,44 @@ function showAnalytics() {
     const content = overlay.querySelector('.analytics-content');
     content.innerHTML = '';
 
-    // Sort counts
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    // --- Section 1: This week by category ---
+    const catSection = document.createElement('div');
+    catSection.className = 'analytics-section';
+    catSection.innerHTML = `<h3 class="analytics-section-title">This Week by Category · ${total.toFixed(1)}h scheduled</h3>`;
 
-    sorted.forEach(([name, hours]) => {
+    Object.entries(byCategory).sort((a, b) => b[1] - a[1]).forEach(([catId, hours]) => {
+        const cat = CATEGORIES[catId] || CATEGORIES.other;
+        const pct = total > 0 ? (hours / total) * 100 : 0;
+        const row = document.createElement('div');
+        row.className = 'category-row';
+        row.innerHTML = `
+            <span class="category-dot" style="background:${cat.color}"></span>
+            <span class="category-name">${cat.label}</span>
+            <span class="category-hours">${hours.toFixed(1)}h</span>
+            <div class="category-bar-track"><div class="category-bar-fill" style="width:${pct.toFixed(1)}%; background:${cat.color}"></div></div>
+        `;
+        catSection.appendChild(row);
+    });
+    content.appendChild(catSection);
+
+    // --- Section 2: Top activities ---
+    const actSection = document.createElement('div');
+    actSection.className = 'analytics-section';
+    actSection.innerHTML = '<h3 class="analytics-section-title">Top Activities</h3>';
+    const cardsWrap = document.createElement('div');
+    cardsWrap.className = 'stat-cards-grid';
+    Object.entries(byActivity).sort((a, b) => b[1] - a[1]).slice(0, 9).forEach(([name, hours]) => {
         const card = document.createElement('div');
         card.className = 'stat-card';
         card.innerHTML = `
             <h3>${name}</h3>
             <div class="stat-value">${hours.toFixed(1)}h</div>
-            <div class="stat-detail">Total Weekly Hours</div>
+            <div class="stat-detail">Weekly Hours</div>
         `;
-        content.appendChild(card);
+        cardsWrap.appendChild(card);
     });
+    actSection.appendChild(cardsWrap);
+    content.appendChild(actSection);
 
     overlay.classList.add('visible');
 }
@@ -1639,14 +1392,35 @@ function checkNotifications() {
     }
 }
 
-// Initialize automatic classes for hardcoded elements
-function initializeAutoClasses() {
-    document.querySelectorAll('td').forEach(cell => {
-        const text = cell.textContent.trim();
-        // Check for ↑ and apply activity-arrow
-        if (text === '↑' && !cell.classList.contains('activity-arrow')) {
-            cell.classList.add('activity-arrow');
-        }
+// Edit scope pill (visible in edit mode): tap to flip between
+// editing the core week and editing just this week.
+function createScopeToggle() {
+    const pill = document.createElement('button');
+    pill.id = 'scopeToggle';
+    pill.className = 'scope-toggle';
+    pill.title = 'Edit scope: core week vs this week only';
+    pill.innerHTML = `<span class="scope-text">🔁 Every week</span>`;
+    pill.addEventListener('click', () => setEditScope(editScope === 'template' ? 'week' : 'template'));
+
+    let container = document.querySelector('.floating-controls');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'floating-controls';
+        document.body.appendChild(container);
+    }
+    container.appendChild(pill);
+}
+
+function setEditScope(scope) {
+    editScope = scope;
+    const pill = document.getElementById('scopeToggle');
+    if (pill) {
+        pill.classList.toggle('week-scope', scope === 'week');
+        pill.querySelector('.scope-text').textContent = scope === 'week' ? '📅 This week' : '🔁 Every week';
+    }
+    // Keep the picker's segmented control in sync if it's open
+    document.querySelectorAll('.picker-scope-btn').forEach(b => {
+        b.classList.toggle('selected', b.dataset.scope === scope);
     });
 }
 
@@ -1654,14 +1428,14 @@ function initializeAutoClasses() {
 // INITIALIZATION
 // ============================================
 
-// Initialize auto classes for harcoded/initial elements
-initializeAutoClasses();
-
-// Initialize base setup
+// Boot: settings → project the model into the DOM → UI chrome
+loadGlobalSettings();
+renderWeek();
 initializeFlaps();
 
 // Create editing UI
 createEditToggle();
+createScopeToggle();
 createActivityPicker();
 createSettingsPanel();
 
@@ -1679,14 +1453,14 @@ function loadGlobalSettings() {
         const [h, m] = sleepSaved.split(':').map(Number);
         SLEEP_HOUR = h + (m / 60);
     }
+    const shuttersSaved = localStorage.getItem('sleepShuttersEnabled');
+    if (shuttersSaved !== null) {
+        sleepShuttersEnabled = shuttersSaved === 'true';
+    }
 }
 
-// Load saved schedule
-loadSchedule();
-loadGlobalSettings();
-applyWorkScheduleLines();
-
 // Initial calculation updates based on settings
+applyWorkScheduleLines();
 highlightToday();
 highlightCurrentTime();
 updateFlapsVisibility();
@@ -1810,7 +1584,7 @@ function ensureAbsoluteUrl(url) {
     return 'https://' + url;
 }
 
-// Add global click listener for Paint activities outside of edit mode
+// Global click listener for cells outside of edit mode
 document.addEventListener('click', (e) => {
     if (isEditMode) return;
 
@@ -1818,7 +1592,7 @@ document.addEventListener('click', (e) => {
     const cell = e.target.closest('td');
     if (!cell) return;
 
-    // 1. Priority: Explicit data-url attribute
+    // 1. Explicit data-url attribute
     if (cell.dataset.url) {
         window.location.href = ensureAbsoluteUrl(cell.dataset.url);
         return;
@@ -1830,8 +1604,35 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Check every second (low CPU cost) for minute change
-setInterval(runUpdates, 1000);
+// Poll for the minute boundary. Only minute-granularity is ever shown (no
+// seconds anywhere in the UI), so polling once a second was pure overhead —
+// every 4s still catches the change within a few seconds, at a quarter of
+// the timer wakeups (a real, measurable battery cost on mobile).
+let updateTimer = null;
+
+function startUpdateTimer() {
+    if (updateTimer) return;
+    updateTimer = setInterval(runUpdates, 4000);
+}
+
+function stopUpdateTimer() {
+    clearInterval(updateTimer);
+    updateTimer = null;
+}
+
+// Stop all polling while the tab/PWA is backgrounded — a hidden tab has no
+// visible clock to keep in sync, so there's nothing to spend battery on.
+// Immediately resync once it's visible again instead of waiting for the timer.
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        stopUpdateTimer();
+    } else {
+        runUpdates();
+        startUpdateTimer();
+    }
+});
+
+if (!document.hidden) startUpdateTimer();
 
 /**
  * Apply work schedule boundary lines
