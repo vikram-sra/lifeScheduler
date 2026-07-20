@@ -55,27 +55,27 @@ function highlightToday() {
     // Calculate current hour as decimal
     const currentHourDecimal = now.getHours() + now.getMinutes() / 60;
 
-    // Calculate day progress from wakeup time (7:30 AM) to sleep time (11:00 PM)
-    const awakeHours = SLEEP_HOUR - WAKEUP_HOUR; // Total awake hours in a day
+    // Calculate day progress from wakeup time to sleep time dynamically
+    const { wakeupHour, sleepHour } = getSleepHoursFor(today);
+    const awakeHours = sleepHour - wakeupHour;
     let dayProgress = 0;
 
     let isSleepTime = false;
-    if (SLEEP_HOUR >= WAKEUP_HOUR) {
-        isSleepTime = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+    if (sleepHour >= wakeupHour) {
+        isSleepTime = currentHourDecimal >= sleepHour || currentHourDecimal < wakeupHour;
     } else {
-        isSleepTime = currentHourDecimal >= SLEEP_HOUR && currentHourDecimal < WAKEUP_HOUR;
+        isSleepTime = currentHourDecimal >= sleepHour && currentHourDecimal < wakeupHour;
     }
 
-    if (currentHourDecimal === WAKEUP_HOUR && currentHourDecimal === SLEEP_HOUR) {
-        alert("Warning: Wake up and Sleep time cannot be identical. Please adjust your settings.");
+    if (wakeupHour === sleepHour) {
+        console.warn("Wake up and Sleep time are identical.");
     }
 
     if (isSleepTime) {
-        // During sleep time - 100% (or 0% depending on interpretation, but 100% matches previous logic)
         dayProgress = 100;
     } else {
         // During awake hours - calculate percentage
-        let hoursAwake = currentHourDecimal - WAKEUP_HOUR;
+        let hoursAwake = currentHourDecimal - wakeupHour;
         if (hoursAwake < 0) hoursAwake += 24;
         dayProgress = Math.round((hoursAwake / awakeHours) * 100);
     }
@@ -89,12 +89,7 @@ function highlightToday() {
     const dateStr = monthNames[currentMonth] + ' ' + currentDate;
 
     // Check if currently in sleep hours (for zzz animation)
-    let isSleepTimeLocal = false;
-    if (SLEEP_HOUR >= WAKEUP_HOUR) {
-        isSleepTimeLocal = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
-    } else {
-        isSleepTimeLocal = currentHourDecimal >= SLEEP_HOUR && currentHourDecimal < WAKEUP_HOUR;
-    }
+    let isSleepTimeLocal = isSleepTime;
 
     // Use static cache for headers and cells to reduce DOM lookups
     if (!window.headerElements) window.headerElements = document.querySelectorAll('th[data-day]');
@@ -178,13 +173,15 @@ function updateFlapsVisibility() {
 
     const now = new Date();
     const currentHourDecimal = now.getHours() + now.getMinutes() / 60;
+    const today = now.getDay();
 
     // Check if currently in sleep hours
+    const { wakeupHour, sleepHour } = getSleepHoursFor(today);
     let isSleepTime = false;
-    if (SLEEP_HOUR >= WAKEUP_HOUR) {
-        isSleepTime = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+    if (sleepHour >= wakeupHour) {
+        isSleepTime = currentHourDecimal >= sleepHour || currentHourDecimal < wakeupHour;
     } else {
-        isSleepTime = currentHourDecimal >= SLEEP_HOUR && currentHourDecimal < WAKEUP_HOUR;
+        isSleepTime = currentHourDecimal >= sleepHour && currentHourDecimal < wakeupHour;
     }
 
     // Shutters forced open (disabled in settings, or actively editing)
@@ -389,11 +386,13 @@ function initializeFlaps() {
         // During awake hours, flaps should stay open
         const now = new Date();
         const currentHourDecimal = now.getHours() + now.getMinutes() / 60;
+        const today = now.getDay();
+        const { wakeupHour, sleepHour } = getSleepHoursFor(today);
         let isSleepTime = false;
-        if (SLEEP_HOUR >= WAKEUP_HOUR) {
-            isSleepTime = currentHourDecimal >= SLEEP_HOUR || currentHourDecimal < WAKEUP_HOUR;
+        if (sleepHour >= wakeupHour) {
+            isSleepTime = currentHourDecimal >= sleepHour || currentHourDecimal < wakeupHour;
         } else {
-            isSleepTime = currentHourDecimal >= SLEEP_HOUR && currentHourDecimal < WAKEUP_HOUR;
+            isSleepTime = currentHourDecimal >= sleepHour && currentHourDecimal < wakeupHour;
         }
 
         if (isSleepTime) {
@@ -473,12 +472,35 @@ function createSettingsPanel() {
                         <span class="slider"></span>
                     </label>
                 </div>
+                <div class="settings-toggle-row" id="notifBufferRow" style="margin-top: 10px;">
+                    <span>Notification Timing</span>
+                    <select id="notificationBuffer" style="background: rgba(0,0,0,0.3); color: #fff; border: 1px solid var(--accent-border); padding: 4px 8px; border-radius: 4px; font-size: 12px; max-width: 120px;">
+                        <option value="0">On time</option>
+                        <option value="5">5m before</option>
+                        <option value="10">10m before</option>
+                    </select>
+                </div>
+                <div class="settings-toggle-row" style="margin-top: 10px;">
+                    <span>Theme</span>
+                    <select id="themeSelector" style="background: rgba(0,0,0,0.3); color: #fff; border: 1px solid var(--accent-border); padding: 4px 8px; border-radius: 4px; font-size: 12px; max-width: 140px;">
+                        <option value="refined-midnight">Refined Midnight</option>
+                        <option value="slate-light">Slate Light</option>
+                        <option value="forest-green">Forest Green</option>
+                        <option value="warm-sepia">Warm Sepia</option>
+                    </select>
+                </div>
             </div>
             
             <div class="settings-section">
                 <h4>Schedule Hours</h4>
-                <label>Wake up: <input type="time" id="wakeupTime" value="07:30"></label>
-                <label>Sleep: <input type="time" id="sleepTime" value="23:00"></label>
+                <div class="settings-input-row" style="margin-bottom: 8px;">
+                    <label>Weekday Wake: <input type="time" id="wakeupTime" value="07:30"></label>
+                    <label>Weekday Sleep: <input type="time" id="sleepTime" value="23:00"></label>
+                </div>
+                <div class="settings-input-row" style="margin-bottom: 8px;">
+                    <label>Weekend Wake: <input type="time" id="wakeupTimeWeekend" value="08:30"></label>
+                    <label>Weekend Sleep: <input type="time" id="sleepTimeWeekend" value="23:30"></label>
+                </div>
                 <div class="settings-toggle-row">
                     <span>🌙 Sleep Shutters</span>
                     <label class="switch">
@@ -502,6 +524,20 @@ function createSettingsPanel() {
                     <label><input type="checkbox" class="work-day" data-day="5" checked>F</label>
                     <label><input type="checkbox" class="work-day" data-day="6">S</label>
                     <label><input type="checkbox" class="work-day" data-day="0">S</label>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h4>Rhythm Templates</h4>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <select id="templateSelector" style="flex: 1; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid var(--accent-border); padding: 5px; border-radius: 4px; min-width: 0; font-size: 13px;">
+                        <option value="Default">Default</option>
+                    </select>
+                    <button class="settings-btn" id="deleteTemplateBtn" style="padding: 5px 10px; margin: 0;" title="Delete selected template">🗑️</button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="newTemplateName" placeholder="New template name" style="flex: 1; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid var(--border-subtle); padding: 5px; border-radius: 4px; font-size: 13px; min-width: 0;">
+                    <button class="settings-btn" id="saveTemplateBtn" style="padding: 5px 10px; margin: 0; white-space: nowrap;">💾 Save</button>
                 </div>
             </div>
 
@@ -542,14 +578,6 @@ function createSettingsPanel() {
         const isFocused = document.body.classList.contains('focus-mode');
         toggleFocusMode(!isFocused);
     });
-    // Insert Focus button BEFORE Edit button if desired, or just append. 
-    // Usually Focus -> Settings -> Edit (Left to Right)
-    // If container has Edit, and we append, it becomes Edit -> Focus -> Settings.
-    // We want Focus -> Settings -> Edit.
-    // So we should prepend?
-    // Actually, let's just use prepend or insertBefore.
-    // Since createEditToggle runs first, 'Edit' is already the first child.
-    // We want Focus to be FIRST.
     if (container.firstChild) {
         container.insertBefore(focusBtn, container.firstChild);
     } else {
@@ -562,12 +590,24 @@ function createSettingsPanel() {
     settingsBtn.className = 'settings-toggle';
     settingsBtn.title = 'Settings';
     settingsBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`;
-    settingsBtn.addEventListener('click', () => panel.classList.toggle('open'));
+    settingsBtn.addEventListener('click', () => {
+        panel.classList.toggle('open');
+        if (panel.classList.contains('open')) {
+            // Load and bind initial values dynamically from the model
+            document.getElementById('wakeupTime').value = getSetting('wakeupTime', '07:30');
+            document.getElementById('sleepTime').value = getSetting('sleepTime', '23:00');
+            document.getElementById('wakeupTimeWeekend').value = getSetting('wakeupTimeWeekend', '08:30');
+            document.getElementById('sleepTimeWeekend').value = getSetting('sleepTimeWeekend', '23:30');
+            
+            document.getElementById('notificationBuffer').value = getSetting('notificationBuffer', '0');
+            document.getElementById('themeSelector').value = getSetting('activeTheme', 'refined-midnight');
+            
+            document.getElementById('workStart').value = getSetting('workStart', '09:00');
+            document.getElementById('workEnd').value = getSetting('workEnd', '17:00');
+            populateTemplatesDropdown();
+        }
+    });
 
-    // We want Settings between Focus and Edit.
-    // Current Order: Focus, Edit.
-    // Insert Settings before Edit (which is now second child, or last child).
-    // container.children[1] should be Edit
     if (container.children.length > 1) {
         container.insertBefore(settingsBtn, container.children[1]);
     } else {
@@ -576,15 +616,8 @@ function createSettingsPanel() {
 
     // Close button
     document.getElementById('settingsClose').addEventListener('click', () => panel.classList.remove('open'));
-    // Focus Button Block ...
-    // Settings Button Block ...
 
-    // I need to target the whole range.
-
-    // Close button
-    document.getElementById('settingsClose').addEventListener('click', () => panel.classList.remove('open'));
-
-    // Toggles
+    // Focus Mode Toggle
     document.getElementById('focusModeToggle').addEventListener('change', (e) => toggleFocusMode(e.target.checked));
 
     // Sleep shutters toggle
@@ -592,7 +625,7 @@ function createSettingsPanel() {
     shuttersToggle.checked = sleepShuttersEnabled;
     shuttersToggle.addEventListener('change', (e) => {
         sleepShuttersEnabled = e.target.checked;
-        localStorage.setItem('sleepShuttersEnabled', sleepShuttersEnabled);
+        updateSetting('sleepShuttersEnabled', sleepShuttersEnabled);
         updateFlapsVisibility();
     });
 
@@ -603,13 +636,24 @@ function createSettingsPanel() {
     }
     notifToggle.addEventListener('change', (e) => toggleNotifications(e.target.checked));
 
+    // Notification buffer select timing
+    document.getElementById('notificationBuffer').addEventListener('change', (e) => {
+        updateSetting('notificationBuffer', e.target.value);
+    });
+
+    // Theme selector
+    document.getElementById('themeSelector').addEventListener('change', (e) => {
+        const theme = e.target.value;
+        updateSetting('activeTheme', theme);
+        applyTheme(theme);
+    });
+
     // Work Schedule Settings
     ['workStart', 'workEnd'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.value = localStorage.getItem(id) || el.value;
             el.addEventListener('change', (e) => {
-                localStorage.setItem(id, e.target.value);
+                updateSetting(id, e.target.value);
                 applyWorkScheduleLines();
             });
         }
@@ -624,40 +668,87 @@ function createSettingsPanel() {
         });
     });
 
+    // Rhythm Templates bindings
+    const populateTemplatesDropdown = () => {
+        const selector = document.getElementById('templateSelector');
+        if (!selector) return;
+        selector.innerHTML = '';
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = 'Default';
+        defaultOpt.textContent = 'Default';
+        selector.appendChild(defaultOpt);
+        if (model.templates) {
+            Object.keys(model.templates).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                selector.appendChild(opt);
+            });
+        }
+        selector.value = getSetting('activeTemplateName', 'Default');
+    };
+
+    document.getElementById('templateSelector').addEventListener('change', (e) => {
+        const name = e.target.value;
+        loadTemplate(name);
+        renderWeek();
+        highlightToday();
+        highlightCurrentTime();
+        updateFlapsVisibility();
+        applyWorkScheduleLines();
+    });
+
+    document.getElementById('saveTemplateBtn').addEventListener('click', () => {
+        const input = document.getElementById('newTemplateName');
+        const name = input.value.trim();
+        if (!name) return alert('Please enter a template name.');
+        if (name === 'Default') return alert('Cannot overwrite "Default" template.');
+        saveAsTemplate(name);
+        populateTemplatesDropdown();
+        input.value = '';
+        alert(`Template "${name}" saved!`);
+    });
+
+    document.getElementById('deleteTemplateBtn').addEventListener('click', () => {
+        const selector = document.getElementById('templateSelector');
+        const name = selector.value;
+        if (name === 'Default') return alert('Cannot delete the Default template.');
+        if (confirm(`Are you sure you want to delete template "${name}"?`)) {
+            deleteTemplate(name);
+            populateTemplatesDropdown();
+            renderWeek();
+            highlightToday();
+            highlightCurrentTime();
+            updateFlapsVisibility();
+            applyWorkScheduleLines();
+        }
+    });
+
     // Initial apply
     setTimeout(applyWorkScheduleLines, 500);
 
     const applyBtn = document.getElementById('applyAllSettings');
     if (applyBtn) {
         applyBtn.addEventListener('click', () => {
-            // Force save Wakeup/Sleep if they were changed
-            ['wakeupTime', 'sleepTime', 'workStart', 'workEnd'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) localStorage.setItem(id, el.value);
-            });
+            // Save Wakeup/Sleep to model settings
+            updateSetting('wakeupTime', document.getElementById('wakeupTime').value);
+            updateSetting('sleepTime', document.getElementById('sleepTime').value);
+            updateSetting('wakeupTimeWeekend', document.getElementById('wakeupTimeWeekend').value);
+            updateSetting('sleepTimeWeekend', document.getElementById('sleepTimeWeekend').value);
+            updateSetting('workStart', document.getElementById('workStart').value);
+            updateSetting('workEnd', document.getElementById('workEnd').value);
 
-            // Update global vars
-            const wakeEl = document.getElementById('wakeupTime');
-            if (wakeEl && wakeEl.value) {
-                const [h, m] = wakeEl.value.split(':').map(Number);
-                WAKEUP_HOUR = h + (m / 60);
-            }
-            const sleepEl = document.getElementById('sleepTime');
-            if (sleepEl && sleepEl.value) {
-                const [h, m] = sleepEl.value.split(':').map(Number);
-                SLEEP_HOUR = h + (m / 60);
-            }
+            // Keep global variables in sync with today's values
+            const todayDow = (new Date()).getDay();
+            const hoursToday = getSleepHoursFor(todayDow);
+            WAKEUP_HOUR = hoursToday.wakeupHour;
+            SLEEP_HOUR = hoursToday.sleepHour;
 
-            if (WAKEUP_HOUR === SLEEP_HOUR) {
-                alert("Wake and Sleep times cannot be the same!");
-            }
-
-            // Manually re-trigger calculations
             highlightToday();
             highlightCurrentTime();
             updateFlapsVisibility();
-
             applyWorkScheduleLines();
+
             applyBtn.innerText = '✨ SETTINGS APPLIED!';
             setTimeout(() => applyBtn.innerText = '⚡ APPLY ALL CHANGES', 2000);
         });
@@ -674,6 +765,14 @@ function createSettingsPanel() {
     document.getElementById('exportData').addEventListener('click', exportSchedule);
     document.getElementById('importData').addEventListener('click', importSchedule);
     document.getElementById('resetData').addEventListener('click', resetSchedule);
+}
+
+function applyTheme(theme) {
+    // Remove other theme classes
+    document.body.className = document.body.className.replace(/\btheme-[a-z-]+\b/g, '').trim();
+    if (theme && theme !== 'refined-midnight') {
+        document.body.classList.add('theme-' + theme);
+    }
 }
 
 // Create activity picker popup
@@ -1355,40 +1454,47 @@ function checkNotifications() {
     const toggle = document.getElementById('notificationToggle');
     if (!toggle || !toggle.checked) return;
 
+    const bufferMinutes = parseInt(getSetting('notificationBuffer', '0'));
     const now = new Date();
-    // Only check if we just hit a new minute that matches a row time
-    // Current 'highlightCurrentTime' finds the 'closestRow'. 
+    // Get the target time to notify for
+    const targetTime = new Date(now.getTime() + bufferMinutes * 60 * 1000);
+    const targetHourDecimal = parseFloat((targetTime.getHours() + targetTime.getMinutes() / 60).toFixed(4));
 
-    // If we are exactly at the start of a block, notify.
-    // Allow 1 min buffer
-    const currentRow = window.lastActiveRow;
-    if (currentRow && !currentRow.dataset.notified) {
-        const timeCell = currentRow.querySelector('.time-row');
-        // Get activity for today
-        const dayIdx = now.getDay(); // 0-6
-        // Map to column index: Sun=0 -> col 8? 
-        // Columns: Time(0), Rituals(1), Mon(2)...Sat(7), Sun(8)
+    // Find the row that starts at exactly this hour (e.g. 9.5)
+    // We allow a small tolerance since float representations can vary slightly
+    const rows = Array.from(document.querySelectorAll('tr[data-time]'));
+    const matchingRow = rows.find(row => {
+        const time = parseFloat(row.dataset.time);
+        return Math.abs(time - targetHourDecimal) < 0.008; // 0.008 hour is ~0.5 minute
+    });
+
+    if (matchingRow) {
+        // Only notify once per slot
+        const notifyKey = 'notified_' + matchingRow.dataset.time + '_' + targetTime.toDateString();
+        if (matchingRow.dataset.lastNotifiedKey === notifyKey) return;
+
+        const dayIdx = targetTime.getDay();
         const colIdx = dayIdx === 0 ? 8 : dayIdx + 1;
-
-        const cell = currentRow.children[colIdx];
+        const cell = matchingRow.children[colIdx];
         if (cell) {
             const clone = cell.cloneNode(true);
             clone.querySelectorAll('.icon, .cell-flap').forEach(el => el.remove());
             const actName = clone.textContent.trim();
 
             if (actName) {
-                new Notification('Up Next', {
-                    body: `${actName} starts now`,
+                let title = 'Up Next';
+                let body = `${actName} starts in ${bufferMinutes} minutes`;
+                if (bufferMinutes === 0) {
+                    title = 'Starting Now';
+                    body = `${actName} starts now`;
+                }
+                new Notification(title, {
+                    body: body,
                     icon: 'apple-touch-icon.png'
                 });
             }
         }
-        currentRow.dataset.notified = 'true';
-
-        // Reset others
-        document.querySelectorAll('tr').forEach(tr => {
-            if (tr !== currentRow) delete tr.dataset.notified;
-        });
+        matchingRow.dataset.lastNotifiedKey = notifyKey;
     }
 }
 
@@ -1443,20 +1549,17 @@ createSettingsPanel();
 toggleFocusMode(true);
 
 function loadGlobalSettings() {
-    const wakeSaved = localStorage.getItem('wakeupTime');
-    if (wakeSaved) {
-        const [h, m] = wakeSaved.split(':').map(Number);
-        WAKEUP_HOUR = h + (m / 60);
-    }
-    const sleepSaved = localStorage.getItem('sleepTime');
-    if (sleepSaved) {
-        const [h, m] = sleepSaved.split(':').map(Number);
-        SLEEP_HOUR = h + (m / 60);
-    }
-    const shuttersSaved = localStorage.getItem('sleepShuttersEnabled');
-    if (shuttersSaved !== null) {
-        sleepShuttersEnabled = shuttersSaved === 'true';
-    }
+    const shuttersSaved = getSetting('sleepShuttersEnabled', true);
+    sleepShuttersEnabled = shuttersSaved;
+
+    const themeSaved = getSetting('activeTheme', 'refined-midnight');
+    applyTheme(themeSaved);
+
+    // Keep global variables in sync with today's values
+    const todayDow = (new Date()).getDay();
+    const hoursToday = getSleepHoursFor(todayDow);
+    WAKEUP_HOUR = hoursToday.wakeupHour;
+    SLEEP_HOUR = hoursToday.sleepHour;
 }
 
 // Initial calculation updates based on settings

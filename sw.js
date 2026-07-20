@@ -1,4 +1,4 @@
-const CACHE_NAME = 'life-scheduler-v9';
+const CACHE_NAME = 'life-scheduler-v10';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

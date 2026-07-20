@@ -316,6 +316,22 @@ function loadModel() {
             const parsed = JSON.parse(raw);
             if (parsed && parsed.version === 4 && parsed.template) {
                 model = parsed;
+                // Backwards compatibility for older v4 models
+                if (!model.settings) {
+                    model.settings = {
+                        wakeupTime: localStorage.getItem('wakeupTime') || '07:30',
+                        sleepTime: localStorage.getItem('sleepTime') || '23:00',
+                        wakeupTimeWeekend: localStorage.getItem('wakeupTimeWeekend') || '08:30',
+                        sleepTimeWeekend: localStorage.getItem('sleepTimeWeekend') || '23:30',
+                        sleepShuttersEnabled: (localStorage.getItem('sleepShuttersEnabled') !== 'false'),
+                        notificationBuffer: localStorage.getItem('notificationBuffer') || '0',
+                        activeTheme: localStorage.getItem('activeTheme') || 'refined-midnight',
+                        activeTemplateName: 'Default'
+                    };
+                }
+                if (!model.templates) {
+                    model.templates = {};
+                }
                 return;
             }
         } catch (e) {
@@ -324,6 +340,77 @@ function loadModel() {
     }
     model = migrateFromV3() || seedDefaultModel();
     saveModel();
+}
+
+function getSetting(key, defaultValue) {
+    if (model && model.settings && model.settings[key] !== undefined) {
+        return model.settings[key];
+    }
+    return defaultValue;
+}
+
+function updateSetting(key, value) {
+    if (model) {
+        if (!model.settings) model.settings = {};
+        model.settings[key] = value;
+        saveModel();
+    }
+}
+
+function getSleepHoursFor(day) {
+    const isWeekend = (day === 0 || day === 6);
+    const wakeStr = isWeekend ? getSetting('wakeupTimeWeekend', '08:30') : getSetting('wakeupTime', '07:30');
+    const sleepStr = isWeekend ? getSetting('sleepTimeWeekend', '23:30') : getSetting('sleepTime', '23:00');
+    const [wH, wM] = wakeStr.split(':').map(Number);
+    const [sH, sM] = sleepStr.split(':').map(Number);
+    return {
+        wakeupHour: wH + (wM / 60),
+        sleepHour: sH + (sM / 60),
+        wakeupStr: wakeStr,
+        sleepStr: sleepStr
+    };
+}
+
+function saveAsTemplate(name) {
+    if (model) {
+        if (!model.templates) model.templates = {};
+        model.templates[name] = JSON.parse(JSON.stringify(Object.values(model.template)));
+        model.settings.activeTemplateName = name;
+        saveModel();
+    }
+}
+
+function loadTemplate(name) {
+    if (!model) return false;
+    if (name === 'Default') {
+        const defaultM = seedDefaultModel();
+        model.template = defaultM.template;
+        model.settings.activeTemplateName = 'Default';
+        saveModel();
+        return true;
+    }
+    if (model.templates && model.templates[name]) {
+        model.template = {};
+        model.templates[name].forEach(slot => {
+            model.template[slot.id] = JSON.parse(JSON.stringify(slot));
+        });
+        model.settings.activeTemplateName = name;
+        saveModel();
+        return true;
+    }
+    return false;
+}
+
+function deleteTemplate(name) {
+    if (model && model.templates && model.templates[name]) {
+        delete model.templates[name];
+        if (model.settings.activeTemplateName === name) {
+            model.settings.activeTemplateName = 'Default';
+        }
+        saveModel();
+        return true;
+    }
+    return false;
 }
 
 // --------------------------------------------
@@ -360,7 +447,25 @@ function classToActivityId(cls, text) {
 }
 
 function emptyModel() {
-    return { version: 4, rowTimes: [], template: {}, overrides: {}, done: {}, activities: {} };
+    return {
+        version: 4,
+        rowTimes: [],
+        template: {},
+        overrides: {},
+        done: {},
+        activities: {},
+        settings: {
+            wakeupTime: '07:30',
+            sleepTime: '23:00',
+            wakeupTimeWeekend: '08:30',
+            sleepTimeWeekend: '23:30',
+            sleepShuttersEnabled: true,
+            notificationBuffer: '0',
+            activeTheme: 'refined-midnight',
+            activeTemplateName: 'Default'
+        },
+        templates: {}
+    };
 }
 
 function migrateScheduleData(data) {
@@ -427,6 +532,18 @@ function migrateFromV3() {
 function seedDefaultModel() {
     const m = emptyModel();
     model = m;
+
+    m.settings = {
+        wakeupTime: '07:30',
+        sleepTime: '23:00',
+        wakeupTimeWeekend: '08:30',
+        sleepTimeWeekend: '23:30',
+        sleepShuttersEnabled: true,
+        notificationBuffer: '0',
+        activeTheme: 'refined-midnight',
+        activeTemplateName: 'Default'
+    };
+    m.templates = {};
 
     // Per row: [ritual, Mon, Tue, Wed, Thu, Fri, Sat, Sun]
     // Entry: null | 'activityId' | ['activityId', 'Label override']

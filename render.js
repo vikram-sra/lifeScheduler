@@ -62,8 +62,8 @@ function renderWeek() {
     window.slotIndex = buildSlotIndex(now);
     const times = sortedRowTimes();
 
-    const workStart = timeToDecimal(localStorage.getItem('workStart') || '09:00');
-    const workEnd = timeToDecimal(localStorage.getItem('workEnd') || '17:00');
+    const workStart = timeToDecimal(getSetting('workStart', '09:00'));
+    const workEnd = timeToDecimal(getSetting('workEnd', '17:00'));
 
     const ctx = { todayDow: now.getDay(), displayTime: '', isLastRow: false };
 
